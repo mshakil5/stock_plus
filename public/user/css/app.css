@@ -1,0 +1,208 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+a {
+  text-decoration: none;
+}
+
+.txt-primary {
+  color: #6375cf !important;
+}
+
+.txt-secondary {
+  color: #1A4A5A !important;
+}
+
+.bg-secondary {
+  background: #1A4A5A !important;
+}
+
+html {
+  overflow-x: hidden;
+}
+
+.card-style {
+  overflow: hidden;
+  border-radius: 20px;
+  box-shadow: 0 4px 24px 0 rgba(0, 0, 0, 0.1019607843);
+}
+
+@font-face {
+  font-family: "poppins-regular";
+  src: url(../fonts/Poppins-Regular.otf);
+}
+@font-face {
+  font-family: "poppins-medium";
+  src: url(../fonts/Poppins-Medium.otf);
+}
+@font-face {
+  font-family: "poppins-bold";
+  src: url(../fonts/Poppins-Bold.otf);
+}
+@font-face {
+  font-family: "poppins-Light";
+  src: url(../fonts/Poppins-Light.otf);
+}
+body {
+  overflow-x: hidden;
+  font-family: "poppins-light";
+  background-color: #F7F8FE;
+  color: #444444;
+}
+
+.poppins-light {
+  font-family: "poppins-Light";
+}
+
+.poppins-medium {
+  font-family: "poppins-medium";
+}
+
+.poppins-bold {
+  font-family: "poppins-bold";
+}
+
+.btn-theme {
+  font-size: 12px;
+  text-transform: uppercase;
+  font-weight: 400;
+  color: #ffffff;
+  background: #6375cf !important;
+  padding: 4px 7px;
+  border-radius: 3px;
+  transition: all 0.2s ease-in;
+  text-decoration: none;
+  font-family: "poppins-medium";
+}
+.btn-theme:hover {
+  background: #1A4A5A !important;
+  color: #fff;
+}
+
+.main {
+  width: 100%;
+  /* background: aliceblue; */
+  /* border-radius: 4px; */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.main .content-container {
+  background-color: #ffffff;
+  width: 100%;
+}
+.main .content-container .header {
+  background: #fff;
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  align-items: center;
+}
+.main .content-container .header .brand {
+  padding: 5px;
+  width: 90px;
+}
+.main .content-container .header .brand img {
+  width: 100%;
+}
+.main .content-container .header .nav-link {
+  margin: 3px 4px;
+  background: #1A4A5A !important;
+  color: white;
+  padding: 6px 10px;
+  border-radius: 5px;
+  font-size: 12px;
+}
+.main .content-container .header .nav-link:hover {
+  background-color: #6375cf !important;
+}
+.main .content-container .inner .content {
+  width: 98%;
+}
+.main .content-container .inner .content hr {
+  background-color: #bcc4cb;
+}
+.main .content-container .inner .content .box {
+  margin: 4px 0;
+  background-color: white;
+  padding: 2px;
+  border-radius: 5px;
+  box-shadow: 0px 0px 25px 5px rgba(10, 10, 10, 0.0392156863);
+}
+.main .content-container .inner .content .box .box-title {
+  font-size: 14px;
+  background: rgba(26, 74, 90, 0.09);
+  padding: 2px 5px;
+  color: #1a4a5a;
+  font-family: "poppins-medium";
+  border-radius: 5px;
+  text-align: center;
+}
+
+.modal-box-title {
+  font-size: 14px;
+  background: rgba(26, 74, 90, 0.09);
+  padding: 2px 5px;
+  color: #1a4a5a;
+  font-family: "poppins-medium";
+  border-radius: 5px;
+  text-align: center;
+  width: 94%;
+}
+.main .content-container .inner .content label {
+  margin-right: 5px;
+  font-size: 14px;
+  flex: 1;
+}
+.main .content-container .inner .content .form-control {
+  font-size: 12px;
+  border-radius: 0;
+  height: 28px;
+  flex: 1.6;
+}
+.main .content-container .inner .content .form-control:focus {
+  box-shadow: none !important;
+  border: 1px solid #6375cf !important;
+}
+
+.title {
+  font-size: 18px;
+  font-family: "poppins-medium";
+  background: #27495b;
+  padding: 5px 5px;
+  color: white;
+}
+
+.w-90 {
+  width: 90%;
+}
+
+.flex-1 {
+  flex: 1 1 auto;
+}
+
+.form-group {
+  display: flex;
+  align-items: center;
+  margin-bottom: 0;
+  margin-bottom: 5px;
+}
+.form-group label {
+  margin-bottom: 0;
+}
+.form-group input[type=checkbox] {
+  margin: 0 5px;
+}
+.form-group input[type=radio] {
+  margin: 0 5px;
+}/*# sourceMappingURL=app.css.map */
+
+
+.select2-container--default .select2-selection--multiple{
+  width: 100%;
+  border: 1px solid #ccc!important;
+  box-shadow: inset 0 1px 1px rgb(0 0 0 / 8%);
+}

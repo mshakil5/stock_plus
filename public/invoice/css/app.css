@@ -1,0 +1,59 @@
+* {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+}
+
+@font-face {
+  font-family: "Roboto-Regular";
+  src: url(../fonts/Roboto-Regular.ttf);
+}
+@font-face {
+  font-family: "Roboto-Bold";
+  src: url(../fonts/Roboto-Bold.ttf);
+}
+@font-face {
+  font-family: "Roboto-Light";
+  src: url(../fonts/Roboto-Light.ttf);
+}
+a {
+  text-decoration: none;
+}
+
+body {
+  font-family: "Roboto-Regular";
+}
+
+.footer {
+  background: #FF9A38 !important;
+}
+
+.invoice header {
+  background-color: #FF9A38;
+}
+.invoice .title {
+  font-size: 2.4rem;
+  font-weight: bold;
+}
+.invoice .infos {
+  font-size: 1.7rem;
+}
+
+.box-round {
+  border-radius: 10px;
+}
+
+.table-custom {
+  border: 1px solid grey;
+}
+.table-custom thead {
+  vertical-align: middle;
+}
+.table-custom thead tr th {
+  padding: 0 15px;
+}
+
+.overflow {
+  max-width: 100%;
+  overflow-x: auto;
+}/*# sourceMappingURL=app.css.map */

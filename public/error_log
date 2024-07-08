@@ -1,0 +1,1 @@
+[08-Dec-2022 07:53:59 America/Boise] PHP Fatal error:  Composer detected issues in your platform: Your Composer dependencies require a PHP version ">= 8.1.0". You are running 8.0.25. in /home1/wokfirec/public_html/pos-mentosoftware-co-uk/vendor/composer/platform_check.php on line 24
