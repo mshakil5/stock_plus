@@ -21,6 +21,7 @@ use App\Http\Controllers\Admin\StockController;
 use App\Http\Controllers\Admin\ReportController;
 use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\OrderController;
+use App\Http\Controllers\Admin\ChartOfAccountController;
 
 
 /*------------------------------------------
@@ -197,6 +198,12 @@ Route::group(['prefix' =>'admin/', 'middleware' => ['auth', 'is_admin']], functi
     Route::get('profit-loss-report', [ReportController::class, 'getProfitLossReport'])->name('profitLossReport');
     Route::post('profit-loss-report', [ReportController::class, 'getProfitLossReport'])->name('profitLossReport.search');
 
+    //Chart of account
+    Route::get('chart-of-account', [ChartOfAccountController::class, 'index'])->name('admin.addchartofaccount');
+    Route::post('chart-of-account', [ChartOfAccountController::class, 'store']);
+    Route::get('chart-of-account/{id}', [ChartOfAccountController::class, 'edit']);
+    Route::put('chart-of-account/{id}', [ChartOfAccountController::class, 'update']);
+    Route::get('chart-of-account/{id}/change-status', [ChartOfAccountController::class, 'changeStatus']);
     
 
 });

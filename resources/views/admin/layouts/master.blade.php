@@ -310,6 +310,14 @@
                         </a>
                     </li>
 
+                    <li class="{{ (request()->is('admin/chart-of-account')) ? 'active' : '' }}">
+                        <a href="{{ route('admin.addchartofaccount')}}">
+                            <i class="fa fa-users"></i>
+                            <span>Chart Of Accounts</span>
+                            <span class="pull-right-container"> </span>
+                        </a>
+                    </li>
+
 
                     {{-- <li>
                         <a href="">
