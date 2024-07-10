@@ -28,16 +28,24 @@ class ChartOfAccountController extends Controller
 
     public function store(Request $request)
     {
-
         if (empty($request->account_name)) {
-            $message ="<div class='alert alert-warning'><a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a><b>Name Field Is Required..!</b></div>";
-            return response()->json(['status'=> 303,'message'=>$message]);
-            exit();
-          }
+            return response()->json(['status' => 303, 'message' => 'Name Field Is Required..!']);
+        }
+        if (empty($request->account_head)) {
+            return response()->json(['status' => 303, 'message' => 'Account Head Field Is Required..!']);
+        }
+        if (empty($request->sub_account_head)) {
+            return response()->json(['status' => 303, 'message' => 'Sub Account Field Is Required..!']);
+        }
 
-        $request->validate([
-            'account_name' => 'required',
-        ]);
+        $existingAccount = ChartOfAccount::where('account_name', $request->account_name)
+                                     ->where('branch_id', Auth::user()->branch_id)
+                                     ->first();
+    
+        if ($existingAccount) {
+            return response()->json(['status' => 303, 'message' => 'Account Name already exists for this branch..!']);
+        }
+
         $chartOfAccount = new ChartOfAccount();
         $chartOfAccount->account_head = $request->account_head;
         $chartOfAccount->sub_account_head = $request->sub_account_head;
@@ -49,8 +57,7 @@ class ChartOfAccountController extends Controller
         $chartOfAccount->created_by = Auth::user()->id;
         $chartOfAccount->save();
 
-        return $chartOfAccount;
-
+        return response()->json(['status' => 200, 'message' => 'Created Successfully']);
     }
 
     public function edit($id)
@@ -65,18 +72,26 @@ class ChartOfAccountController extends Controller
 
     public function update(Request $request, $id)
     {
+        if (empty($request->account_name)) {
+            return response()->json(['status' => 303, 'message' => 'Name Field Is Required..!']);
+        }
+        if (empty($request->account_head)) {
+            return response()->json(['status' => 303, 'message' => 'Account Head Field Is Required..!']);
+        }
+        if (empty($request->sub_account_head)) {
+            return response()->json(['status' => 303, 'message' => 'Sub Account Field Is Required..!']);
+        }
+
         $chartOfAccount = ChartOfAccount::find($id);
-        $request->validate([
-            'account_name' => 'required',
-        ]);
+
         $chartOfAccount->account_head = $request->account_head;
         $chartOfAccount->sub_account_head = $request->sub_account_head;
-        $chartOfAccount->date = Carbon::now()->format('d-m-Y');
         $chartOfAccount->account_name = $request->account_name;
         $chartOfAccount->description = $request->description;
         $chartOfAccount->updated_by = Auth::user()->id;
         $chartOfAccount->save();
-        return $chartOfAccount;
+
+        return response()->json(['status' => 200, 'message' => 'Updated Successfully']);
     }
 
     public function changeStatus($id)

@@ -4,6 +4,7 @@
 
 <div class="row">
     <div class="col-md-12">
+        <div id="alert-container"></div>
         @component('components.widget')
             @slot('title')
                Chart Of Accounts
@@ -24,7 +25,7 @@
                     @slot('head')
                         <th>ID</th>
                         <th>Date</th>
-                        <th>Accout Name</th>
+                        <th>Account Name</th>
                         <th>Account Head</th>
                         <th>Sub Account Head</th>
                         <th>Branch</th>
@@ -76,7 +77,7 @@
                     <div class="form-group">
                         <label for="account_name" class="col-sm-3 control-label">Account Name</label>
                         <div class="col-sm-9">
-                            <input type="account_name" name="account_name" class="form-control " id="account_name"
+                            <input type="text" name="account_name" class="form-control " id="account_name"
                                    placeholder="John Doe">
                         </div>
                     </div>
@@ -145,29 +146,6 @@
         ]
     });
 
-    $(document).on('click', '.mstatus-btn', function () {
-        let confirmation = confirm("Are you sure to change the Membership status?");
-        if (confirmation) {
-            let id = $(this).val();
-            // console.log(id);
-            $.ajax({
-                url: '/customer/' + id + '/member-status',
-                type: 'GET',
-                beforeSend: function (request) {
-                    return request.setRequestHeader('X-CSRF-Token', $("meta[name='csrf-token']").attr('content'));
-                },
-                success: function (response) {
-                    showSnakBar('Membership Status Changed Successfully');
-                    customerTBL.draw();
-                },
-                error: function (err) {
-                    console.log(err);
-                    alert("Something Went Wrong, Please check again");
-                }
-            });
-        }
-    });
-
     $(document).on('click', '.status-btn', function () {
         let confirmation = confirm("Are you sure to change the status?");
         if (confirmation) {
@@ -204,9 +182,39 @@
                     return request.setRequestHeader('X-CSRF-Token', $("meta[name='csrf-token']").attr('content'));
                 },
                 success: function (response) {
+                    var accountHead = response.account_head;
+                    var selectedSubHead = response.sub_account_head;
+
+                    $("#sub_account_head").empty();
+
+                    switch (accountHead) {
+                        case "Assets":
+                            $("<option>").val("Current Asset").text("Current Asset").prop('selected', selectedSubHead === "Current Asset").appendTo("#sub_account_head");
+                            $("<option>").val("Fixed Asset").text("Fixed Asset").prop('selected', selectedSubHead === "Fixed Asset").appendTo("#sub_account_head");
+                            break;
+                        case "Expenses":
+                            $("<option>").val("Cost Of Good Sold").text("Cost Of Good Sold").prop('selected', selectedSubHead === "Cost Of Good Sold").appendTo("#sub_account_head");
+                            $("<option>").val("Overhead Expense").text("Overhead Expense").prop('selected', selectedSubHead === "Overhead Expense").appendTo("#sub_account_head");
+                            break;
+                        case "Income":
+                            $("<option>").val("Direct Income").text("Direct Income").prop('selected', selectedSubHead === "Direct Income").appendTo("#sub_account_head");
+                            $("<option>").val("Indirect Income").text("Indirect Income").prop('selected', selectedSubHead === "Indirect Income").appendTo("#sub_account_head");
+                            break;
+                        case "Liabilities":
+                            $("<option>").val("Current Liabilities").text("Current Liabilities").prop('selected', selectedSubHead === "Current Liabilities").appendTo("#sub_account_head");
+                            $("<option>").val("Long Term Liabilities").text("Long Term Liabilities").prop('selected', selectedSubHead === "Long Term Liabilities").appendTo("#sub_account_head");
+                            $("<option>").val("Account Payable").text("Account Payable").prop('selected', selectedSubHead === "Account Payable").appendTo("#sub_account_head");
+                            break;
+                        case "Equity":
+                            $("<option>").val("Equity Capital").text("Equity Capital").prop('selected', selectedSubHead === "Equity Capital").appendTo("#sub_account_head");
+                            $("<option>").val("Retained Earnings").text("Retained Earnings").prop('selected', selectedSubHead === "Retained Earnings").appendTo("#sub_account_head");
+                            break;
+                        default:
+                            return;
+                    }
+
                     // console.log(response);
                     modal.find('#account_head').val(response.account_head);
-                    modal.find('#sub_account_head').val(response.sub_account_head);
                     modal.find('#account_name').val(response.account_name);
                     modal.find('#description').val(response.description);
                     $('#chartModal .submit-btn').removeClass('save-btn').addClass('update-btn').text('Update').val(response.id);
@@ -223,18 +231,23 @@
 
     $(document).on('click', '.save-btn', function () {
         let formData = $('#customer-form').serialize();
-        // console.log(formData);
         $.ajax({
             url: charturl,
             type: 'POST',
             data: formData,
             beforeSend: function (request) {
-                return request.setRequestHeader('X-CSRF-Token', $("meta[name='csrf-token']").attr('content'));
+                request.setRequestHeader('X-CSRF-Token', $("meta[name='csrf-token']").attr('content'));
             },
             success: function (response) {
-                $('#chartModal').modal('toggle');
-                showSnakBar('Created Successfully');
-                customerTBL.draw();
+                if (response.status === 200) {
+                    $('#chartModal').modal('toggle');
+                    showSnakBar(response.message);
+                    customerTBL.draw();
+                    $('#alert-container').html('');
+                } else if (response.status === 303) {
+                    let alertMessage = `<div class='alert alert-warning'><a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a><b>${response.message}</b></div>`;
+                    $('#alert-container').html(alertMessage);
+                }
             },
             error: function(xhr, status, error) {
                 console.error(xhr.responseText);
@@ -252,12 +265,18 @@
             type: 'PUT',
             data: formData,
             beforeSend: function (request) {
-                return request.setRequestHeader('X-CSRF-Token', $("meta[name='csrf-token']").attr('content'));
+                request.setRequestHeader('X-CSRF-Token', $("meta[name='csrf-token']").attr('content'));
             },
             success: function (response) {
-                $('#chartModal').modal('toggle');
-                showSnakBar("Updated Successfully");
-                customerTBL.draw();
+                if (response.status === 200) {
+                    $('#chartModal').modal('toggle');
+                    showSnakBar(response.message);
+                    customerTBL.draw();
+                    $('#alert-container').html('');
+                } else if (response.status === 303) {
+                    let alertMessage = `<div class='alert alert-warning'><a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a><b>${response.message}</b></div>`;
+                    $('#alert-container').html(alertMessage);
+                }
             },
             error: function (err) {
                 console.log(err);
@@ -270,8 +289,15 @@
 
 <script>
 
+    function clearSubAccountHead() {
+        $("#sub_account_head").empty();
+    }
+
+    $('#chartModal').on('hidden.bs.modal', function () {
+        clearSubAccountHead();
+    });
+
     function clearfield() {
-        $("#sub_account_head").val('').trigger('change');
         $("#sub_account_head").html("<option value=''>Please Select</option>");
     }
 
@@ -295,7 +321,7 @@
               }else if(val == "Liabilities"){
 
                   clearfield();
-                  $("#sub_account_head").html("<option value=''>Please Select</option><option value='Current Liabilities'>Current Liabilities</option><option value='Long Term Liabilities'>Long Term Liabilities</option>");
+                  $("#sub_account_head").html("<option value=''>Please Select</option><option value='Current Liabilities'>Current Liabilities</option><option value='Long Term Liabilities'>Long Term Liabilities</option> <option value='Account Payable'>Account Payable</option>");
 
               }else if(val == "Equity"){
 
@@ -306,7 +332,7 @@
                 
               }
           });
-  }).change();
+    }).change();
 </script>
 
 @endsection

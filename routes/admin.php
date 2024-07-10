@@ -22,6 +22,11 @@ use App\Http\Controllers\Admin\ReportController;
 use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\Admin\ChartOfAccountController;
+use App\Http\Controllers\Admin\ExpenseController;
+use App\Http\Controllers\Admin\AssetController;
+use App\Http\Controllers\Admin\IncomeController;
+use App\Http\Controllers\Admin\LiabilityController;
+use App\Http\Controllers\Admin\EquityController;
 
 
 /*------------------------------------------
@@ -204,6 +209,35 @@ Route::group(['prefix' =>'admin/', 'middleware' => ['auth', 'is_admin']], functi
     Route::get('chart-of-account/{id}', [ChartOfAccountController::class, 'edit']);
     Route::put('chart-of-account/{id}', [ChartOfAccountController::class, 'update']);
     Route::get('chart-of-account/{id}/change-status', [ChartOfAccountController::class, 'changeStatus']);
-    
+
+    //Expense
+    Route::get('expense', [ExpenseController::class, 'index'])->name('admin.expense');
+    Route::post('expense', [ExpenseController::class, 'store']);
+    Route::get('expense/{id}', [ExpenseController::class, 'edit']);
+    Route::put('expense/{id}', [ExpenseController::class, 'update']); 
+
+    //Asset
+    Route::get('asset', [AssetController::class, 'index'])->name('admin.asset');
+    Route::post('asset', [AssetController::class, 'store']);
+    Route::get('asset/{id}', [AssetController::class, 'edit']);
+    Route::put('asset/{id}', [AssetController::class, 'update']); 
+
+    //Income
+    Route::get('income', [IncomeController::class, 'index'])->name('admin.income');
+    Route::post('income', [IncomeController::class, 'store']);
+    Route::get('income/{id}', [IncomeController::class, 'edit']);
+    Route::put('income/{id}', [IncomeController::class, 'update']); 
+
+    //Income
+    Route::get('liabilities', [LiabilityController::class, 'index'])->name('admin.liabilities');
+    Route::post('liabilities', [LiabilityController::class, 'store']);
+    Route::get('liabilities/{id}', [LiabilityController::class, 'edit']);
+    Route::put('liabilities/{id}', [LiabilityController::class, 'update']); 
+
+    //Equity
+    Route::get('equity', [EquityController::class, 'index'])->name('admin.equity');
+    Route::post('equity', [EquityController::class, 'store']);
+    Route::get('equity/{id}', [EquityController::class, 'edit']);
+    Route::put('equity/{id}', [EquityController::class, 'update']); 
 
 });

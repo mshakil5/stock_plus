@@ -319,6 +319,51 @@
                     </li>
 
 
+                    <li class="{{ (request()->is('admin/expense')) ? 'active' : '' }}">
+                        <a href="{{ route('admin.expense')}}">
+                            <i class="fa fa-users"></i>
+                            <span>Expense</span>
+                            <span class="pull-right-container"> </span>
+                        </a>
+                    </li>
+
+
+                    <li class="{{ (request()->is('admin/asset')) ? 'active' : '' }}">
+                        <a href="{{ route('admin.asset')}}">
+                            <i class="fa fa-users"></i>
+                            <span>Assets</span>
+                            <span class="pull-right-container"> </span>
+                        </a>
+                    </li>
+
+
+                    <li class="{{ (request()->is('admin/income')) ? 'active' : '' }}">
+                        <a href="{{ route('admin.income')}}">
+                            <i class="fa fa-users"></i>
+                            <span>Income</span>
+                            <span class="pull-right-container"> </span>
+                        </a>
+                    </li>
+
+
+                    <li class="{{ (request()->is('admin/liabilities')) ? 'active' : '' }}">
+                        <a href="{{ route('admin.liabilities')}}">
+                            <i class="fa fa-users"></i>
+                            <span>Liabilities</span>
+                            <span class="pull-right-container"> </span>
+                        </a>
+                    </li>
+
+
+                    <li class="{{ (request()->is('admin/equity')) ? 'active' : '' }}">
+                        <a href="{{ route('admin.equity')}}">
+                            <i class="fa fa-users"></i>
+                            <span>Equity</span>
+                            <span class="pull-right-container"> </span>
+                        </a>
+                    </li>
+
+
                     {{-- <li>
                         <a href="">
                             <i class="fa fa-cogs"></i>
