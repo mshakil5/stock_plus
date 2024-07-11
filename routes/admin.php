@@ -28,6 +28,7 @@ use App\Http\Controllers\Admin\IncomeController;
 use App\Http\Controllers\Admin\LiabilityController;
 use App\Http\Controllers\Admin\EquityController;
 use App\Http\Controllers\Admin\EquityHolderController;
+use App\Http\Controllers\Admin\LedgerController;
 
 
 /*------------------------------------------
@@ -247,5 +248,8 @@ Route::group(['prefix' =>'admin/', 'middleware' => ['auth', 'is_admin']], functi
     Route::post('equity', [EquityController::class, 'store']);
     Route::get('equity/{id}', [EquityController::class, 'edit']);
     Route::put('equity/{id}', [EquityController::class, 'update']); 
+
+    Route::get('ledger', [LedgerController::class, 'index'])->name('admin.ledger');
+    Route::get('ledger/account/{id}', [LedgerController::class, 'show'])->name('account.ledger.show');
 
 });

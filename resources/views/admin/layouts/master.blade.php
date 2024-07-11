@@ -371,6 +371,15 @@
                     </li>
 
 
+                    <li class="{{ (request()->is('admin/ledger')) ? 'active' : '' }}">
+                        <a href="{{ route('admin.ledger')}}">
+                            <i class="fa fa-users"></i>
+                            <span>Ledger</span>
+                            <span class="pull-right-container"> </span>
+                        </a>
+                    </li>
+
+
                     {{-- <li>
                         <a href="">
                             <i class="fa fa-cogs"></i>
