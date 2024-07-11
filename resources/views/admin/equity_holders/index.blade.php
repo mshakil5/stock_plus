@@ -7,31 +7,28 @@
         <div id="alert-container"></div>
         @component('components.widget')
             @slot('title')
-               Equity
+               Share Holders
                     <button class="btn btn-lg btn-success pull-right" data-toggle="modal"
                             data-target="#chartModal"
                             data-purpose="0">+
-                        Add New
+                        Add New Share Holder
                     </button>
             @endslot
             @slot('description')
-
+                <!-- Share Holder -->
             @endslot
             @slot('body')
                 @component('components.table')
                     @slot('tableID')
-                        expenseTBL
+                        chartTBL
                     @endslot
                     @slot('head')
                         <th>ID</th>
-                        <th>Date</th>
-                        <th>Account</th>
-                        <th>Ref</th>
-                        <th>Description</th>
-                        <th>Transaction Type</th>
-                        <th>Payment Type</th>
-                        <th>Gross Amount</th>
-                        <th>Share Holder</th>
+                        <th>Name</th>
+                        <th>Company Name</th>
+                        <th>Balance</th>
+                        <th>Phone</th>
+                        <th>Branch</th>
                         <th><i class=""></i> Action</th>
                     @endslot
                 @endcomponent
@@ -46,96 +43,51 @@
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title">Equity</h4>
+                <h4 class="modal-title">Share Holder</h4>
             </div>
             <form class="form-horizontal" id="customer-form">
                 <div class="modal-body">
                     {{csrf_field()}}
                     
                     <div class="form-group">
-                        <label for="date" class="col-sm-3 control-label">Date</label>
+                        <label for="name" class="col-sm-3 control-label">Name</label>
                         <div class="col-sm-9">
-                            <input type="date" name="date" class="form-control " id="date" value="{{date('Y-m-d')}}">
+                            <input type="text" name="name" class="form-control " id="name" placeholder="John Doe">
                         </div>
                     </div>
 
                     <div class="form-group">
-                        <label for="chart_of_account_id" class="col-sm-3 control-label">Chart of Account</label>
-                            <div class="col-sm-9">
-                                <select class="form-control" id="chart_of_account_id" name="chart_of_account_id">
-                                    <option value="">Select chart of account</option>
-                                    @php
-                                        use App\Models\ChartOfAccount;
-                                        use App\Models\EquityHolder;
-                                        $shareHolders = ChartOfAccount::where('account_head', 'Equity')->get();
-                                        $equityHolders = EquityHolder::latest()->get();
-                                    @endphp
-                                    @foreach($shareHolders as $shareHolder)
-                                        <option value="{{ $shareHolder->id }}">{{ $shareHolder->account_name }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="ref" class="col-sm-3 control-label">Reference</label>
+                        <label for="company_name" class="col-sm-3 control-label">Company Name</label>
                         <div class="col-sm-9">
-                            <input type="text" name="ref" class="form-control " id="ref">
+                            <input type="text" name="company_name" class="form-control " id="company_name" placeholder="Company Name">
                         </div>
                     </div>
 
                     <div class="form-group">
-                        <label for="transaction_type" class="col-sm-3 control-label">Transaction Type</label>
+                        <label for="phone" class="col-sm-3 control-label">phone</label>
                         <div class="col-sm-9">
-                            <select class="form-control" id="transaction_type" name="transaction_type">
-                                <option value="">Select transaction type</option>
-                                <option value="Received">Received</option>
-                                <option value="Payment">Payment</option>
-                            </select>
+                            <input type="number" name="phone" class="form-control " id="phone">
                         </div>
                     </div>
 
                     <div class="form-group">
-                        <label for="amount" class="col-sm-3 control-label">Amount</label>
+                        <label for="tax_number" class="col-sm-3 control-label">Tax Number</label>
                         <div class="col-sm-9">
-                            <input type="text" name="amount" class="form-control " id="amount">
-                        </div>
-                    </div>
-
-                    <div class="form-group" style="display: none">
-                        <label for="at_amount" class="col-sm-3 control-label">Total Amount</label>
-                        <div class="col-sm-9">
-                            <input type="text" name="at_amount" class="form-control " id="at_amount">
-                        </div>
-                    </div>
-
-                    <div class="form-group" id="payment_type_container">
-                        <label for="payment_type" class="col-sm-3 control-label">Payment Type</label>
-                        <div class="col-sm-9">
-                            <select class="form-control" id="payment_type" name="payment_type">
-                                <option value="">Select payment type</option>
-                                <option value="Cash">Cash</option>
-                                <option value="Bank">Bank</option>
-                            </select>
+                            <input type="number" name="tax_number" class="form-control " id="tax_number">
                         </div>
                     </div>
 
                     <div class="form-group">
-                        <label for="share_holder_id" class="col-sm-3 control-label">Share Holder</label>
-                            <div class="col-sm-9">
-                                <select class="form-control" id="share_holder_id" name="share_holder_id">
-                                    <option value="">Select share holder</option>
-                                    @foreach($equityHolders as $equityHolder)
-                                        <option value="{{ $equityHolder->id }}">{{ $equityHolder->name }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
+                        <label for="tin" class="col-sm-3 control-label">Tin Number</label>
+                        <div class="col-sm-9">
+                            <input type="number" name="tin" class="form-control " id="tin">
+                        </div>
                     </div>
 
                     <div class="form-group">
-                        <label for="description" class="col-sm-3 control-label">Description</label>
+                        <label for="address" class="col-sm-3 control-label">Address</label>
                         <div class="col-sm-9">
-                                <textarea class="form-control" id="description" rows="3" placeholder="Description" name="description"></textarea>
+                            <textarea class="form-control" id="address" rows="3" placeholder="Address" name="address"></textarea>
                         </div>
                     </div>
 
@@ -152,31 +104,28 @@
     
 @section('script')
 
-<!-- Main script -->
 <script>
+    
+    var charturl = "{{URL::to('/admin/share-holders')}}";
 
-    var charturl = "{{URL::to('/admin/equity')}}";
-    var customerTBL = $('#expenseTBL').DataTable({
+
+    var customerTBL = $('#chartTBL').DataTable({
         processing: true,
         serverSide: true,
         ajax: {
         url: charturl,
-        type: 'GET',
-        error: function (xhr, error, thrown) {
-            console.log(xhr.responseText);
-        }
+            error: function(xhr, status, error) {
+                console.error(xhr.responseText);
+            }
         },
         deferRender: true,
         columns: [
             {data: 'id', name: 'id'},
-            {data: 'date', name: 'date'},
-            {data: 'chart_of_account', name: 'chart_of_account'},
-            {data: 'ref', name: 'ref'},
-            {data: 'description', name: 'description'},
-            {data: 'transaction_type', name: 'transaction_type'},
-            {data: 'payment_type', name: 'payment_type'},
-            {data: 'amount', name: 'amount'},
-            {data: 'share_holder_name', name: 'share_holder_name'},
+            {data: 'name', name: 'name'},
+            {data: 'company_name', name: 'company_name'},
+            {data: 'balance', name: 'balance'},
+            {data: 'phone', name: 'phone'},
+            {data: 'branch_name', name: 'branch_name'},
             {
                 data: 'action',
                 name: 'action',
@@ -192,8 +141,6 @@
         ]
     });
 
-    // modal
-
     $('#chartModal').on('show.bs.modal', function (event) {
         var button = $(event.relatedTarget);
         let purpose = button.data('purpose');
@@ -207,16 +154,12 @@
                     return request.setRequestHeader('X-CSRF-Token', $("meta[name='csrf-token']").attr('content'));
                 },
                 success: function (response) {
-                    // console.log(response);
-                    $('#date').val(response.date);
-                    $('#ref').val(response.ref);
-                    $('#transaction_type').val(response.transaction_type);
-                    $('#amount').val(response.amount);
-                    $('#payment_type').val(response.payment_type);
-                    $('#description').val(response.description);
-                    $('#share_holder_id').val(response.share_holder_id);
-                    $('#chart_of_account_id').val(response.chart_of_account_id);
-
+                    modal.find('#name').val(response.name);
+                    modal.find('#company_name').val(response.company_name);
+                    modal.find('#phone').val(response.phone);
+                    modal.find('#tax_number').val(response.tax_number);
+                    modal.find('#tin').val(response.tin);
+                    modal.find('#address').val(response.address);
                     $('#chartModal .submit-btn').removeClass('save-btn').addClass('update-btn').text('Update').val(response.id);
                 }
             });
@@ -230,12 +173,7 @@
     // save button event
 
     $(document).on('click', '.save-btn', function () {
-        let formDataSerialized = $('#customer-form').serializeArray();
-        formDataSerialized.push({ name: 'table_type', value: 'Expenses' });
-        let formData = $.param(formDataSerialized);
-        // console.log(formData);
-
-
+        let formData = $('#customer-form').serialize();
         $.ajax({
             url: charturl,
             type: 'POST',
@@ -244,7 +182,6 @@
                 request.setRequestHeader('X-CSRF-Token', $("meta[name='csrf-token']").attr('content'));
             },
             success: function (response) {
-                // console.log(response);
                 if (response.status === 200) {
                     $('#chartModal').modal('toggle');
                     showSnakBar(response.message);
@@ -266,7 +203,6 @@
     $(document).on('click', '.update-btn', function () {
         let formData = $('#customer-form').serialize();
         let id = $(this).val();
-        // console.log(id);
         $.ajax({
             url: charturl + '/' + id,
             type: 'PUT',
@@ -285,12 +221,61 @@
                     $('#alert-container').html(alertMessage);
                 }
             },
-            error: function(xhr, status, error) {
-                console.error(xhr.responseText);
+            error: function (err) {
+                console.log(err);
+                alert("Something Went Wrong, Please check again");
             }
         });
     });
 
+</script>
+
+<script>
+
+    function clearSubAccountHead() {
+        $("#sub_account_head").empty();
+    }
+
+    $('#chartModal').on('hidden.bs.modal', function () {
+        clearSubAccountHead();
+    });
+
+    function clearfield() {
+        $("#sub_account_head").html("<option value=''>Please Select</option>");
+    }
+
+    $("#account_head").change(function(){
+          $(this).find("option:selected").each(function(){
+              var val = $(this).val();
+              if( val == "Assets"){
+                  clearfield();
+                  $("#sub_account_head").html("<option value=''>Please Select</option><option value='Current Asset'>Current Asset</option><option value='Fixed Asset'>Fixed Asset</option><option value='Account Receivable'>Account Receivable</option>");
+
+              } else if(val == "Expenses"){
+
+                  clearfield();
+                  $("#sub_account_head").html("<option value=''>Please Select</option><option value='Cost Of Good Sold'>Cost Of Good Sold</option><option value='Overhead Expense'>Overhead Expense</option>");
+
+              }else if(val == "Income"){
+
+                  clearfield();
+                  $("#sub_account_head").html("<option value=''>Please Select</option><option value='Direct Income'>Direct Income</option><option value='Indirect Income'>Indirect Income</option>");
+
+              }else if(val == "Liabilities"){
+
+                  clearfield();
+                  $("#sub_account_head").html("<option value=''>Please Select</option><option value='Current Liabilities'>Current Liabilities</option><option value='Long Term Liabilities'>Long Term Liabilities</option> <option value='Account Payable'>Account Payable</option>");
+
+              }else if(val == "Equity"){
+
+                  clearfield();
+                  $("#sub_account_head").html("<option value=''>Please Select</option><option value='Equity Capital'>Equity Capital</option><option value='Retained Earnings'>Retained Earnings</option>");
+
+              }else{
+                
+              }
+          });
+    }).change();
 </script>
 
 @endsection

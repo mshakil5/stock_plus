@@ -29,6 +29,7 @@ return new class extends Migration
             $table->decimal('at_amount', 10, 2)->default(0)->nullable();
             $table->string('transaction_type')->nullable();
             $table->string('liability_id')->nullable();
+            $table->string('share_holder_id')->nullable();
             $table->string('payment_type')->nullable();
             $table->string('asset_id')->nullable();
             $table->string('liablity_id')->nullable();

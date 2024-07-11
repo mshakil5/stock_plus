@@ -68,11 +68,10 @@
                                     <option value="">Select chart of account</option>
                                     @php
                                         use App\Models\ChartOfAccount;
-                                        $accounts = ChartOfAccount::where('sub_account_head', 'Account Receivable')->get(['account_name', 'id']);
-                                        $assets = ChartOfAccount::where('account_head', 'Income')->get();
+                                        $incomes = ChartOfAccount::where('account_head', 'Income')->get();
                                     @endphp
-                                    @foreach($assets as $asset)
-                                        <option value="{{ $asset->id }}">{{ $asset->account_name }}</option>
+                                    @foreach($incomes as $income)
+                                        <option value="{{ $income->id }}">{{ $income->account_name }}</option>
                                     @endforeach
                                 </select>
                             </div>
@@ -90,10 +89,9 @@
                         <div class="col-sm-9">
                             <select class="form-control" id="transaction_type" name="transaction_type">
                                 <option value="">Select transaction type</option>
-                                <option value="Payment">Payment</option>
-                                <option value="Purchase">Purchase</option>
-                                <option value="Sold">Sold</option>
-                                <option value="Depreciation">Depreciation</option>
+                                <option value="Current">Current</option>
+                                <option value="Advance">Advance</option>
+                                <option value="Advance Adjust">Advance Adjust</option>
                             </select>
                         </div>
                     </div>
@@ -105,6 +103,7 @@
                         </div>
                     </div>
 
+                    <div id="pre_adjust">
                     <div class="form-group">
                         <label for="tax_rate" class="col-sm-3 control-label">Tax %</label>
                         <div class="col-sm-9">
@@ -136,19 +135,6 @@
                                 </select>
                             </div>
                     </div>
-
-                    <div class="form-group d-none" id="showpayable" >
-                        <label for="" class="col-sm-3 control-label">Payable Holder Name</label>
-                        <div class="col-sm-9">
-
-                        <select class="form-control" id="payable_holder_id" name="payable_holder_id">
-                            <option value="">Select payable holder</option>
-                            @foreach($accounts as $account)
-                                <option value="{{ $account->id }}">{{ $account->account_name }}</option>
-                            @endforeach
-                        </select>
-
-                        </div>
                     </div>
 
                     <div class="form-group">
@@ -176,43 +162,12 @@
     $(document).ready(function() {
         $("#transaction_type").change(function () {
             var transaction_type = $(this).val();
-            if (transaction_type == "Due") {
-                $("#payment_type").html("<option value=''>Please Select</option><option value='Account Payable'>Account Payable</option>");
-            } else if (transaction_type == "Current") {
-                $("#showpayable").hide();
-                $("#payment_type").html("<option value=''>Please Select</option><option value='Cash'>Cash</option><option value='Bank'>Bank</option>");
-                clearPayableHolder();
-            } else if (transaction_type == "Payment") {
-                $("#showpayable").hide();
-                $("#payment_type").html("<option value=''>Please Select</option><option value='Cash'>Cash</option><option value='Bank'>Bank</option>");
-                clearPayableHolder();
-            } else if (transaction_type == "Prepaid") {
-                $("#showpayable").hide();
-                $("#payment_type").html("<option value=''>Please Select</option><option value='Cash'>Cash</option><option value='Bank'>Bank</option>");
-                clearPayableHolder();
-            } else if (transaction_type == "Prepaid Adjust") {
-                clearTaxPaymentTypefield();
-                $("#showpayable").hide();
-                $("#payment_type").html("<option value=''>Please Select</option>");
-                clearPayableHolder();
+            if (transaction_type == "Advance Adjust") {
+                $("#pre_adjust").hide();
+            }  else  {
+                $("#pre_adjust").show();
             }
         });
-
-        $("#payment_type").change(function(){
-            $(this).find("option:selected").each(function(){
-                var val = $(this).val();
-                if( val == "Account Payable" ){
-                    $("#showpayable").show();
-                } else{
-                    $("#showpayable").hide();
-                    clearPayableHolder();
-                }
-            });
-        }).change();
-
-        function clearPayableHolder() {
-            $("#payable_holder_id").val('');
-        }
     });
 </script>
 
@@ -295,6 +250,13 @@
                     // console.log(response);
                     $('#date').val(response.date);
                     $('#ref').val(response.ref);
+
+                    if (response.transaction_type == 'Advance Adjust') {
+                        $("#pre_adjust").hide();
+                    }else{
+                        $("#pre_adjust").show();
+                    }
+
                     $('#transaction_type').val(response.transaction_type);
                     $('#amount').val(response.amount);
                     $('#tax_rate').val(response.tax_rate);
@@ -302,21 +264,7 @@
                     $('#at_amount').val(response.at_amount);
                     $('#payment_type').val(response.payment_type);
                     $('#description').val(response.description);
-
                     $('#chart_of_account_id').val(response.chart_of_account_id);
-
-                    if (response.payment_type == 'Account Payable') {
-                        $('#showpayable').show();
-                        $("#payment_type").html("<option value=''>Please Select</option><option selected value='Account Payable'>Account Payable</option>")
-                        
-                    } else {
-                        $("#payment_type").html("<option value=''>Please Select</option>" + "<option value='Cash'>Cash</option>" + "<option value='Bank'>Bank</option>");
-                        $('#payment_type').val(response.payment_type);
-                        $('#showpayable').hide();     
-                    }
-
-                    var payableHolderId = response.payable_holder_id;
-                    $('#payable_holder_id').val(payableHolderId);
 
                     $('#chartModal .submit-btn').removeClass('save-btn').addClass('update-btn').text('Update').val(response.id);
                 }
@@ -334,18 +282,18 @@
         let formDataSerialized = $('#customer-form').serializeArray();
         formDataSerialized.push({ name: 'table_type', value: 'Expenses' });
         let formData = $.param(formDataSerialized);
-        console.log(formData);
+        // console.log(formData);
 
 
         $.ajax({
-            url: 'charturl',
+            url: charturl,
             type: 'POST',
             data: formData,
             beforeSend: function (request) {
                 request.setRequestHeader('X-CSRF-Token', $("meta[name='csrf-token']").attr('content'));
             },
             success: function (response) {
-                console.log(response);
+                // console.log(response);
                 if (response.status === 200) {
                     $('#chartModal').modal('toggle');
                     showSnakBar(response.message);
@@ -367,7 +315,7 @@
     $(document).on('click', '.update-btn', function () {
         let formData = $('#customer-form').serialize();
         let id = $(this).val();
-        console.log(id);
+        // console.log(id);
         $.ajax({
             url: charturl + '/' + id,
             type: 'PUT',
@@ -376,6 +324,7 @@
                 request.setRequestHeader('X-CSRF-Token', $("meta[name='csrf-token']").attr('content'));
             },
             success: function (response) {
+                // console.log(response);
                 if (response.status === 200) {
                     $('#chartModal').modal('toggle');
                     showSnakBar(response.message);
@@ -400,6 +349,7 @@
     $(document).ready(function() {
         $('#chartModal').on('hidden.bs.modal', function (e) {
             $('#payment_type').val('');
+            $("#pre_adjust").show();
             $('#payment_type_container').show();
         });
     });

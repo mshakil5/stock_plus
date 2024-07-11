@@ -14,7 +14,7 @@ class ExpenseController extends Controller
     public function index(Request $request)
     {
         if($request->ajax()){
-            $transactions = Transaction::with('chartOfAccount')->where('table_type', 'Expenses')->get();
+            $transactions = Transaction::with('chartOfAccount')->where('table_type', 'Expenses')->latest()->get();
             return DataTables::of($transactions)
                 ->addColumn('chart_of_account', function ($transaction) {
                     return $transaction->chartOfAccount->account_name;
@@ -47,9 +47,9 @@ class ExpenseController extends Controller
             return response()->json(['status' => 303, 'message' => 'Transaction Type Field Is Required..!']);
         }
 
-        if (empty($request->payment_type)) {
-            return response()->json(['status' => 303, 'message' => 'Payment Type Field Is Required..!']);
-        }
+        // if (empty($request->payment_type)) {
+        //     return response()->json(['status' => 303, 'message' => 'Payment Type Field Is Required..!']);
+        // }
 
         $transaction = new Transaction();
 
@@ -117,9 +117,9 @@ class ExpenseController extends Controller
             return response()->json(['status' => 303, 'message' => 'Transaction Type Field Is Required..!']);
         }
 
-        if (empty($request->payment_type)) {
-            return response()->json(['status' => 303, 'message' => 'Payment Type Field Is Required..!']);
-        }
+        // if (empty($request->payment_type)) {
+        //     return response()->json(['status' => 303, 'message' => 'Payment Type Field Is Required..!']);
+        // }
 
         $transaction = Transaction::find($id);
 
@@ -128,17 +128,35 @@ class ExpenseController extends Controller
         $transaction->ref = $request->input('ref');
         $transaction->description = $request->input('description');
         $transaction->amount = $request->input('amount');
-        $transaction->tax_rate = $request->input('tax_rate');
-        $transaction->tax_amount = $request->input('tax_amount');
+        // $transaction->tax_rate = $request->input('tax_rate');
+        // $transaction->tax_amount = $request->input('tax_amount');
         $transaction->vat_rate = $request->input('vat_rate');
         $transaction->vat_amount = $request->input('vat_amount');
         $transaction->at_amount = $request->input('at_amount');
         $transaction->transaction_type = $request->input('transaction_type');
-        $transaction->liability_id = $request->input('payable_holder_id');
-        $transaction->payment_type = $request->input('payment_type');
+
+        if ($request->input('transaction_type') !== 'Due') {
+        $transaction->liability_id = null;
+        } else {
+            $transaction->liability_id = $request->input('payable_holder_id');
+        }
+
+        // $transaction->liability_id = $request->input('payable_holder_id');
+        // $transaction->payment_type = $request->input('payment_type');
         $transaction->expense_id = $request->input('chart_of_account_id');
         $transaction->updated_by = Auth()->user()->id;
         $transaction->updated_ip = request()->ip();
+
+        if ($request->input('transaction_type') === 'Prepaid Adjust') {
+            $transaction->tax_rate = null;
+            $transaction->tax_amount = null;
+            $transaction->payment_type = null;
+            $transaction->at_amount = $request->input('amount');
+        } else {
+            $transaction->tax_rate = $request->input('tax_rate');
+            $transaction->tax_amount = $request->input('tax_amount');
+            $transaction->payment_type = $request->input('payment_type');
+        }
 
         $transaction->save();
 

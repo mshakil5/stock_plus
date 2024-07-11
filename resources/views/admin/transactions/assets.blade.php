@@ -68,7 +68,8 @@
                                     <option value="">Select chart of account</option>
                                     @php
                                         use App\Models\ChartOfAccount;
-                                        $accounts = ChartOfAccount::where('sub_account_head', 'Account Receivable')->get(['account_name', 'id']);
+                                        $accounts = ChartOfAccount::where('sub_account_head', 'Account Payable')->get(['account_name', 'id']);
+                                        $recivible = ChartOfAccount::where('sub_account_head', 'Account Receivable')->get(['account_name', 'id']);
                                         $assets = ChartOfAccount::where('account_head', 'Assets')->get();
                                     @endphp
                                     @foreach($assets as $asset)
@@ -138,16 +139,26 @@
                     </div>
 
                     <div class="form-group d-none" id="showpayable" >
-                        <label for="" class="col-sm-3 control-label">Payable Holder Name</label>
+                        <label for="payable_holder_id" class="col-sm-3 control-label">Payable Holder Name</label>
                         <div class="col-sm-9">
+                            <select class="form-control" id="payable_holder_id" name="payable_holder_id">
+                                <option value="">Select payable holder</option>
+                                @foreach($accounts as $account)
+                                    <option value="{{ $account->id }}">{{ $account->account_name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
 
-                        <select class="form-control" id="payable_holder_id" name="payable_holder_id">
-                            <option value="">Select payable holder</option>
-                            @foreach($accounts as $account)
-                                <option value="{{ $account->id }}">{{ $account->account_name }}</option>
-                            @endforeach
-                        </select>
-
+                    <div class="form-group d-none" id="showreceivable" >
+                        <label for="recivible_holder_id" class="col-sm-3 control-label">Receivable Holder Name</label>
+                        <div class="col-sm-9">
+                            <select class="form-control" id="recivible_holder_id" name="recivible_holder_id">
+                                <option value="">Select recivible holder</option>
+                                @foreach($recivible as $recivible)
+                                    <option value="{{ $recivible->id }}">{{ $recivible->account_name }}</option>
+                                @endforeach
+                            </select>
                         </div>
                     </div>
 
@@ -176,24 +187,24 @@
     $(document).ready(function() {
         $("#transaction_type").change(function () {
             var transaction_type = $(this).val();
-            if (transaction_type == "Due") {
-                $("#payment_type").html("<option value=''>Please Select</option><option value='Account Payable'>Account Payable</option>");
-            } else if (transaction_type == "Current") {
-                $("#showpayable").hide();
+            if (transaction_type == "Purchase") {
+                $("#payment_type").html("<option value=''>Please Select</option><option value='Cash'>Cash</option><option value='Bank'>Bank</option><option value='Account Payable'>Account Payable</option>");
+            } else if (transaction_type == "Receipt") {
+                $("#showpayable, #showreceivable").hide();
                 $("#payment_type").html("<option value=''>Please Select</option><option value='Cash'>Cash</option><option value='Bank'>Bank</option>");
                 clearPayableHolder();
             } else if (transaction_type == "Payment") {
-                $("#showpayable").hide();
+                $("#showpayable , #showreceivable").hide();
                 $("#payment_type").html("<option value=''>Please Select</option><option value='Cash'>Cash</option><option value='Bank'>Bank</option>");
                 clearPayableHolder();
-            } else if (transaction_type == "Prepaid") {
-                $("#showpayable").hide();
+            } else if (transaction_type == "Depreciation") {
+                $("#showpayable , #showreceivable").hide();
                 $("#payment_type").html("<option value=''>Please Select</option><option value='Cash'>Cash</option><option value='Bank'>Bank</option>");
                 clearPayableHolder();
-            } else if (transaction_type == "Prepaid Adjust") {
-                clearTaxPaymentTypefield();
-                $("#showpayable").hide();
-                $("#payment_type").html("<option value=''>Please Select</option>");
+            } else if (transaction_type == "Sold") {
+                // clearTaxPaymentTypefield();
+                $("#showpayable , #showreceivable").hide();
+                $("#payment_type").html("<option value=''>Please Select</option><option value='Cash'>Cash</option><option value='Bank'>Bank</option> <option value='Account Receivable'>Account Receivable</option>");
                 clearPayableHolder();
             }
         });
@@ -203,15 +214,17 @@
                 var val = $(this).val();
                 if( val == "Account Payable" ){
                     $("#showpayable").show();
+                } else if( val == "Account Receivable" ){
+                    $("#showreceivable").show();
                 } else{
-                    $("#showpayable").hide();
+                    $("#showpayable, #showreceivable").hide();
                     clearPayableHolder();
                 }
             });
         }).change();
 
         function clearPayableHolder() {
-            $("#payable_holder_id").val('');
+            $("#payable_holder_id, #recivible_holder_id").val('');
         }
     });
 </script>
@@ -305,18 +318,36 @@
 
                     $('#chart_of_account_id').val(response.chart_of_account_id);
 
-                    if (response.payment_type == 'Account Payable') {
+                    if (response.transaction_type == 'Purchase') {
+
+                        if(response.payment_type == 'Account Payable') {
+                           $('#showpayable').show();
+                        }
+
                         $('#showpayable').show();
-                        $("#payment_type").html("<option value=''>Please Select</option><option selected value='Account Payable'>Account Payable</option>")
+                        $("#payment_type").html("<option value=''>Please Select</option><option selected value='Account Payable'>Account Payable</option><option value='Cash'>Cash</option><option value='Bank'>Bank</option>");
+                        $('#payment_type').val(response.payment_type);
+                        $('#showreceivable').hide();
                         
-                    } else {
+                    } else if (response.transaction_type == 'Sold') {
+                        if(response.payment_type == 'Account Receivable') {
+                            $('#showreceivable').show();
+                        }
+                        $("#payment_type").html("<option value=''>Please Select</option><option selected value='Account Receivable'>Account Receivable</option><option value='Cash'>Cash</option><option value='Bank'>Bank</option>");
+                        $('#payment_type').val(response.payment_type);
+                        $('#showpayable').hide();
+                    } 
+                    else {
                         $("#payment_type").html("<option value=''>Please Select</option>" + "<option value='Cash'>Cash</option>" + "<option value='Bank'>Bank</option>");
                         $('#payment_type').val(response.payment_type);
-                        $('#showpayable').hide();     
+                        $('#showpayable, #showreceivable').hide();     
                     }
 
                     var payableHolderId = response.payable_holder_id;
                     $('#payable_holder_id').val(payableHolderId);
+
+                    var receivableHolderId = response.recivible_holder_id;
+                    $('#recivible_holder_id').val(receivableHolderId);
 
                     $('#chartModal .submit-btn').removeClass('save-btn').addClass('update-btn').text('Update').val(response.id);
                 }
@@ -331,21 +362,23 @@
     // save button event
 
     $(document).on('click', '.save-btn', function () {
-        let formDataSerialized = $('#customer-form').serializeArray();
-        formDataSerialized.push({ name: 'table_type', value: 'Expenses' });
-        let formData = $.param(formDataSerialized);
-        console.log(formData);
+        let formData = $('#customer-form').serialize();
+        let formDataArray = $('#customer-form').serializeArray();
+
+        // formDataArray.forEach(function(item) {
+        //     console.log(item.name + ": " + item.value);
+        // });
 
 
         $.ajax({
-            url: 'charturl',
+            url: charturl,
             type: 'POST',
             data: formData,
             beforeSend: function (request) {
                 request.setRequestHeader('X-CSRF-Token', $("meta[name='csrf-token']").attr('content'));
             },
             success: function (response) {
-                console.log(response);
+                // console.log(response);
                 if (response.status === 200) {
                     $('#chartModal').modal('toggle');
                     showSnakBar(response.message);
@@ -367,7 +400,7 @@
     $(document).on('click', '.update-btn', function () {
         let formData = $('#customer-form').serialize();
         let id = $(this).val();
-        console.log(id);
+        // console.log(id);
         $.ajax({
             url: charturl + '/' + id,
             type: 'PUT',
@@ -397,12 +430,27 @@
 <!-- Main script -->
 
 <script>
-    $(document).ready(function() {
-        $('#chartModal').on('hidden.bs.modal', function (e) {
-            $('#payment_type').val('');
-            $('#payment_type_container').show();
-        });
-    });
+    // $(document).ready(function() {
+    //     $('#chartModal').on('hidden.bs.modal', function (e) {
+    //         // alert('hidden');
+    //         $('#payment_type').val('').change();
+    //         $('#showpayable, #showreceivable').hide()
+    //     });
+    // });
+
+    $('#chartModal').on('hidden.bs.modal', function (e) {
+    $('#customer-form')[0].reset(); 
+    $('#customer-form textarea').text(''); 
+    $('#chartModal .submit-btn').removeClass('update-btn').addClass('save-btn').text('Save').val("");
+    $('#payment_type').html("<option value=''>Please Select</option>" + 
+                            "<option value='Cash'>Cash</option>" + 
+                            "<option value='Bank'>Bank</option>");
+    $('#showpayable, #showreceivable').hide();
+    $('#payable_holder_id').val('');
+    $('#recivible_holder_id').val('');
+});
+
+
 </script>
 
 

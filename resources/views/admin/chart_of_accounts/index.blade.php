@@ -191,6 +191,7 @@
                         case "Assets":
                             $("<option>").val("Current Asset").text("Current Asset").prop('selected', selectedSubHead === "Current Asset").appendTo("#sub_account_head");
                             $("<option>").val("Fixed Asset").text("Fixed Asset").prop('selected', selectedSubHead === "Fixed Asset").appendTo("#sub_account_head");
+                            $("<option>").val("Account Receivable").text("Account Receivable").prop('selected', selectedSubHead === "Account Receivable").appendTo("#sub_account_head");
                             break;
                         case "Expenses":
                             $("<option>").val("Cost Of Good Sold").text("Cost Of Good Sold").prop('selected', selectedSubHead === "Cost Of Good Sold").appendTo("#sub_account_head");
@@ -306,7 +307,7 @@
               var val = $(this).val();
               if( val == "Assets"){
                   clearfield();
-                  $("#sub_account_head").html("<option value=''>Please Select</option><option value='Current Asset'>Current Asset</option><option value='Fixed Asset'>Fixed Asset</option>");
+                  $("#sub_account_head").html("<option value=''>Please Select</option><option value='Current Asset'>Current Asset</option><option value='Fixed Asset'>Fixed Asset</option><option value='Account Receivable'>Account Receivable</option>");
 
               } else if(val == "Expenses"){
 

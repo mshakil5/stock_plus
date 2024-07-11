@@ -105,6 +105,7 @@
                         </div>
                     </div>
 
+                    <div id="pre_adjust">
                     <div class="form-group">
                         <label for="tax_rate" class="col-sm-3 control-label">Tax %</label>
                         <div class="col-sm-9">
@@ -150,6 +151,7 @@
 
                         </div>
                     </div>
+                    </div>
 
                     <div class="form-group">
                         <label for="description" class="col-sm-3 control-label">Description</label>
@@ -177,21 +179,26 @@
         $("#transaction_type").change(function () {
             var transaction_type = $(this).val();
             if (transaction_type == "Due") {
+                $("#pre_adjust").show();
                 $("#payment_type").html("<option value=''>Please Select</option><option value='Account Payable'>Account Payable</option>");
             } else if (transaction_type == "Current") {
+                $("#pre_adjust").show();
                 $("#showpayable").hide();
                 $("#payment_type").html("<option value=''>Please Select</option><option value='Cash'>Cash</option><option value='Bank'>Bank</option>");
                 clearPayableHolder();
             } else if (transaction_type == "Payment") {
+                $("#pre_adjust").show();
                 $("#showpayable").hide();
                 $("#payment_type").html("<option value=''>Please Select</option><option value='Cash'>Cash</option><option value='Bank'>Bank</option>");
                 clearPayableHolder();
             } else if (transaction_type == "Prepaid") {
+                $("#pre_adjust").show();
                 $("#showpayable").hide();
                 $("#payment_type").html("<option value=''>Please Select</option><option value='Cash'>Cash</option><option value='Bank'>Bank</option>");
                 clearPayableHolder();
             } else if (transaction_type == "Prepaid Adjust") {
-                clearTaxPaymentTypefield();
+                $("#pre_adjust").hide();
+                // clearTaxPaymentTypefield();
                 $("#showpayable").hide();
                 $("#payment_type").html("<option value=''>Please Select</option>");
                 clearPayableHolder();
@@ -295,6 +302,12 @@
                     // console.log(response);
                     $('#date').val(response.date);
                     $('#ref').val(response.ref);
+
+                    if (response.transaction_type == 'Prepaid Adjust') {
+                        $("#pre_adjust").hide();
+                    }else{
+                        $("#pre_adjust").show();
+                    }
                     $('#transaction_type').val(response.transaction_type);
                     $('#amount').val(response.amount);
                     $('#tax_rate').val(response.tax_rate);
@@ -328,24 +341,34 @@
         }
     });
 
+
+    $('#chartModal').on('hidden.bs.modal', function (e) {
+        $('#customer-form')[0].reset();
+        $('#customer-form textarea').text(''); 
+
+        $('#chartModal .submit-btn').removeClass('update-btn').addClass('save-btn').text('Save').val("");
+
+    });
+
+
     // save button event
 
     $(document).on('click', '.save-btn', function () {
         let formDataSerialized = $('#customer-form').serializeArray();
         formDataSerialized.push({ name: 'table_type', value: 'Expenses' });
         let formData = $.param(formDataSerialized);
-        console.log(formData);
+        // console.log(formData);
 
 
         $.ajax({
-            url: 'charturl',
+            url: charturl,
             type: 'POST',
             data: formData,
             beforeSend: function (request) {
                 request.setRequestHeader('X-CSRF-Token', $("meta[name='csrf-token']").attr('content'));
             },
             success: function (response) {
-                console.log(response);
+                // console.log(response);
                 if (response.status === 200) {
                     $('#chartModal').modal('toggle');
                     showSnakBar(response.message);
@@ -367,7 +390,7 @@
     $(document).on('click', '.update-btn', function () {
         let formData = $('#customer-form').serialize();
         let id = $(this).val();
-        console.log(id);
+        // console.log(id);
         $.ajax({
             url: charturl + '/' + id,
             type: 'PUT',
@@ -394,16 +417,19 @@
 
 </script>
 
-<!-- Main script -->
-
 <script>
-    $(document).ready(function() {
-        $('#chartModal').on('hidden.bs.modal', function (e) {
-            $('#payment_type').val('');
-            $('#payment_type_container').show();
-        });
+    $('#chartModal').on('hidden.bs.modal', function (e) {
+
+        $('#customer-form')[0].reset();
+        $("#pre_adjust").show();
+        $('#customer-form textarea').text(''); 
+
+        $('#chartModal .submit-btn').removeClass('update-btn').addClass('save-btn').text('Save').val("");
+
+        $('#payment_type').html("<option value=''>Please Select</option>" + "<option value='Cash'>Cash</option>" + "<option value='Bank'>Bank</option>");
+        $('#showpayable').hide();
+        $('#payable_holder_id').val('');
     });
 </script>
-
 
 @endsection

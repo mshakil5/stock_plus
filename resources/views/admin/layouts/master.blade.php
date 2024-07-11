@@ -318,6 +318,13 @@
                         </a>
                     </li>
 
+                    <li class="{{ (request()->is('admin/share-holders')) ? 'active' : '' }}">
+                        <a href="{{ route('admin.equityholders')}}">
+                            <i class="fa fa-users"></i>
+                            <span>Share Holders</span>
+                            <span class="pull-right-container"> </span>
+                        </a>
+                    </li>
 
                     <li class="{{ (request()->is('admin/expense')) ? 'active' : '' }}">
                         <a href="{{ route('admin.expense')}}">
