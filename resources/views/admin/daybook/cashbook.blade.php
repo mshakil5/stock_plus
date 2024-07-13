@@ -14,7 +14,6 @@
         <div id="alert-container"></div>
         @component('components.widget')
             @slot('title')
-               
             @endslot
             @slot('description')
                 
@@ -27,47 +26,44 @@
                         <h3>{{ Auth::user()->branch->name}} Branch</h3>
                     @endif
 
-                    @if (!empty($assets->first()->chartOfAccount))
-                        <h4>{{ $assets->first()->chartOfAccount->account_name }} Ledger</h4>
-                    @else
-                        <h4>Account Name Not Found</h4>
-                    @endif
+                    <h4>Cashbook</h4>
+
                 </div>
 
                 <div class="table-responsive">
                     <table id="assetTransactionsTable" class="table table-striped table-bordered">
                         <thead>
                             <tr>
-                                <th>SL</th>
                                 <th>Date</th>
-                                <th>Description</th>
-                                <th>Payment Type</th>
-                                <th>Ref</th>
-                                <th>Debit</th>
-                                <th>Credit</th>
-                                <th>Balance</th>                                
+                                <th>Account</th>
+                                <th>Ref</th>                            
+                                <th>Debit</th>                            
+                                <th>Credit</th>                            
+                                <th>Balance</th>                            
                             </tr>
                         </thead>
                         <tbody>
+
                             @php
-                                $balance = $totalAsset;
+                                $balance = $totalAmount;
                             @endphp
 
-                            @foreach($assets as $index => $asset)
+                            @foreach($cashbooks as $cashbook)
                                 <tr>
-                                    <td>{{ $index + 1 }}</td>
-                                    <td>{{ \Carbon\Carbon::parse($asset->date)->format('d-m-Y') }}</td>
-                                    <td>{{ $asset->description }}</td>
-                                    <td>{{ $asset->payment_type }}</td>
-                                    <td>{{ $asset->ref }}</td>
+                                    <td>{{ \Carbon\Carbon::parse($cashbook->date)->format('d-m-Y') }}</td>
+                                    <td>{{ $cashbook->chartOfAccount->account_name }}</td>
+                                    <td>{{ $cashbook->ref }}</td>
+                                    @if(in_array($cashbook->transaction_type, ['Current', 'Received', 'Sold', 'Advance']))
+                                    <td>{{ $cashbook->at_amount }}</td>
                                     <td></td>
-                                    <td>{{ $asset->at_amount }}</td>
-                                    <td>
-                                        {{ $balance }}
-                                        @php
-                                            $balance = $balance - $asset->at_amount;
-                                        @endphp
-                                    </td>
+                                    @elseif(in_array($cashbook->transaction_type, ['Purchase', 'Payment', 'Prepaid']))
+                                    <td></td>
+                                    <td>{{ $cashbook->at_amount }}</td>
+                                    @else   
+                                    <td></td>
+                                    <td></td> 
+                                    @endif
+                                    <td>{{ $balance }}</td>
                                 </tr>
                             @endforeach
                         </tbody>

@@ -29,6 +29,7 @@ use App\Http\Controllers\Admin\LiabilityController;
 use App\Http\Controllers\Admin\EquityController;
 use App\Http\Controllers\Admin\EquityHolderController;
 use App\Http\Controllers\Admin\LedgerController;
+use App\Http\Controllers\Admin\DaybookController;
 
 
 /*------------------------------------------
@@ -256,5 +257,9 @@ Route::group(['prefix' =>'admin/', 'middleware' => ['auth', 'is_admin']], functi
     Route::get('ledger/income-details/{id}', [LedgerController::class, 'income']);
     Route::get('ledger/liability-details/{id}', [LedgerController::class, 'liability']);
     Route::get('ledger/equity-details/{id}', [LedgerController::class, 'equity']);
+
+    // Daybook
+    Route::get('cashbook', [DaybookController::class, 'cashbook'])->name('admin.cashbook');
+    Route::get('bankbook', [DaybookController::class, 'bankbook'])->name('admin.bankbook');
 
 });

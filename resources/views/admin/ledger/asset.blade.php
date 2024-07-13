@@ -28,7 +28,7 @@
                     @endif
 
                     @if (!empty($assets->first()->chartOfAccount))
-                        <h4>{{ $assets->first()->chartOfAccount->account_name }} Bill Ledger</h4>
+                        <h4>{{ $assets->first()->chartOfAccount->account_name }} Ledger</h4>
                     @else
                         <h4>Account Name Not Found</h4>
                     @endif

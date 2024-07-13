@@ -379,6 +379,18 @@
                         </a>
                     </li>
 
+                    
+                    <li class="treeview {{ (request()->is('admin/cashbook')) ? 'active' : '' }}">
+                        <a href="#">
+                            <i class="fa fa-user"></i> <span>Day Book</span><span class="pull-right-container">
+                            <i class="fa fa-angle-left pull-right"></i></span>
+                        </a>
+                        <ul class="treeview-menu">
+                                <li><a href="{{ route('admin.cashbook')}}"><i class="fa fa-adjust"></i> Day Cashbook</a></li>
+                                <li class="{{ (request()->is('admin/bankbook')) ? 'active' : '' }}"><a href="{{ route('admin.bankbook')}}"><i class="fa fa-adjust"></i> Day Bankbook</a></li>
+                        </ul>
+                    </li>
+
 
                     {{-- <li>
                         <a href="">
