@@ -29,6 +29,7 @@
                         <th>Balance</th>
                         <th>Phone</th>
                         <th>Branch</th>
+                        <th>Ledger</th>
                         <th><i class=""></i> Action</th>
                     @endslot
                 @endcomponent
@@ -126,6 +127,16 @@
             {data: 'balance', name: 'balance'},
             {data: 'phone', name: 'phone'},
             {data: 'branch_name', name: 'branch_name'},
+            {
+                data: null,
+                name: 'ledger_action',
+                orderable: false,
+                searchable: false,
+                render: function(data, type, row) {
+                    var ledgerUrl = '{{ url("admin/shareholder-ledger") }}/' + row.id;
+                    return '<a href="' + ledgerUrl + '" class="btn btn-primary btn-xs" title="Ledger"><i class="fa fa-book" aria-hidden="true"></i></a>';
+                }
+            },
             {
                 data: 'action',
                 name: 'action',

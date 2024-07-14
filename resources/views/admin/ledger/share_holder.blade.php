@@ -27,8 +27,8 @@
                         <h3>{{ Auth::user()->branch->name}} Branch</h3>
                     @endif
 
-                    @if (!empty($assets->first()->chartOfAccount))
-                        <h4>{{ $assets->first()->chartOfAccount->account_name }} Ledger</h4>
+                    @if (!empty($ledgers->first()->chartOfAccount))
+                        <h4>{{ $ledgers->first()->chartOfAccount->account_name }} Ledger</h4>
                     @else
                         <h4>Account Name Not Found</h4>
                     @endif
@@ -51,30 +51,30 @@
                         </thead>
                         <tbody>
                             @php
-                                $balance = $totalAsset;
+                                $balance = $totalAmount;
                             @endphp
 
-                            @foreach($assets as $index => $asset)
+                            @foreach($ledgers as $index => $ledger)
                                 <tr>
                                     <td>{{ $index + 1 }}</td>
-                                    <td>{{ \Carbon\Carbon::parse($asset->date)->format('d-m-Y') }}</td>
-                                    <td>{{ $asset->description }}</td>
-                                    <td>{{ $asset->payment_type }}</td>
-                                    <td>{{ $asset->ref }}</td>
-                                    <td>{{ $asset->transaction_type }}</td>  
-                                    @if(in_array($asset->transaction_type, ['Purchase', 'Payment']))
-                                    <td>{{ $asset->at_amount }}</td>
+                                    <td>{{ \Carbon\Carbon::parse($ledger->date)->format('d-m-Y') }}</td>
+                                    <td>{{ $ledger->description }}</td>
+                                    <td>{{ $ledger->payment_type }}</td>
+                                    <td>{{ $ledger->ref }}</td>
+                                    <td>{{ $ledger->transaction_type }}</td>  
+                                    @if(in_array($ledger->transaction_type, ['Payment']))
+                                    <td>{{ $ledger->at_amount }}</td>
                                     <td></td>
                                     <td>{{ $balance }}</td>
                                     @php
-                                        $balance = $balance - $asset->at_amount;
+                                        $balance = $balance - $ledger->at_amount;
                                     @endphp
-                                    @elseif(in_array($asset->transaction_type, ['Sold', 'Deprication']))
+                                    @elseif(in_array($ledger->transaction_type, ['Received']))
                                     <td></td>
-                                    <td>{{ $asset->at_amount }}</td>
+                                    <td>{{ $ledger->at_amount }}</td>
                                     <td>{{ $balance }}</td>
                                     @php
-                                        $balance = $balance + $asset->at_amount;
+                                        $balance = $balance + $ledger->at_amount;
                                     @endphp
                                     @endif
                                 </tr>

@@ -94,6 +94,7 @@
                                 <option value="Prepaid">Prepaid</option>
                                 <option value="Due">Due</option>
                                 <option value="Prepaid Adjust">Prepaid Adjust</option>
+                                <option value="Due Adjust">Due Adjust</option>
                             </select>
                         </div>
                     </div>
@@ -196,7 +197,12 @@
                 $("#showpayable").hide();
                 $("#payment_type").html("<option value=''>Please Select</option><option value='Cash'>Cash</option><option value='Bank'>Bank</option>");
                 clearPayableHolder();
-            } else if (transaction_type == "Prepaid Adjust") {
+            }else if (transaction_type == "Due Adjust") {
+                $("#pre_adjust").show();
+                $("#showpayable").hide();
+                $("#payment_type").html("<option value=''>Please Select</option><option value='Cash'>Cash</option><option value='Bank'>Bank</option>");
+                clearPayableHolder();
+            }else if (transaction_type == "Prepaid Adjust") {
                 $("#pre_adjust").hide();
                 // clearTaxPaymentTypefield();
                 $("#showpayable").hide();

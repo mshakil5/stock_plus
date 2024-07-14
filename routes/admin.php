@@ -220,6 +220,9 @@ Route::group(['prefix' =>'admin/', 'middleware' => ['auth', 'is_admin']], functi
     Route::put('share-holders/{id}', [EquityHolderController::class, 'update']);
     Route::get('share-holders/{id}/change-status', [EquityHolderController::class, 'changeStatus']);
 
+    // Share holder ledger
+    Route::get('shareholder-ledger/{id}', [EquityHolderController::class, 'shareHolderLedger'])->name('admin.shareholders-ledger');
+
     //Expense
     Route::get('expense', [ExpenseController::class, 'index'])->name('admin.expense');
     Route::post('expense', [ExpenseController::class, 'store']);

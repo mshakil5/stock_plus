@@ -8,7 +8,7 @@
     }
 </style>
 
-<div class="page-header"><a href="{{ url()->previous() }}" class="btn btn-primary">Back</a></div>
+<!-- <div class="page-header"><a href="{{ url()->previous() }}" class="btn btn-primary">Back</a></div> -->
 <div class="row">
     <div class="col-md-12">
         <div id="alert-container"></div>
@@ -34,8 +34,9 @@
                     <table id="assetTransactionsTable" class="table table-striped table-bordered">
                         <thead>
                             <tr>
+                                <th>Sl</th>
                                 <th>Date</th>
-                                <th>Account</th>
+                                <th>Description</th>
                                 <th>Ref</th>                            
                                 <th>Debit</th>                            
                                 <th>Credit</th>                            
@@ -49,24 +50,28 @@
                         @endphp
 
                         @foreach($bankbooks as $index => $bankbook)
-                            <tr>
-                                <td>{{ \Carbon\Carbon::parse($bankbook->date)->format('d-m-Y') }}</td>
-                                <td>{{ $bankbook->chartOfAccount->account_name }}</td>
-                                <td>{{ $bankbook->ref }}</td>
-
-                                @if(in_array($bankbook->transaction_type, ['Current', 'Received', 'Sold', 'Advance']))
+                                <tr>
+                                    <td> {{ $index + 1 }} </td>
+                                    <td>{{ \Carbon\Carbon::parse($bankbook->date)->format('d-m-Y') }}</td>
+                                    <td>{{ $bankbook->chartOfAccount->account_name }}</td>
+                                    <td>{{ $bankbook->ref }}</td>
+                                    @if(in_array($bankbook->transaction_type, ['Current', 'Received', 'Sold', 'Advance']))
                                     <td>{{ $bankbook->at_amount }}</td>
-                                    <td></td> <!-- Empty cell for Credit -->
-                                @elseif(in_array($bankbook->transaction_type, ['Purchase', 'Payment', 'Prepaid']))
-                                    <td></td> <!-- Empty cell for Debit -->
+                                    <td></td>
+                                    <td>{{ $balance }}</td>
+                                    @php
+                                        $balance = $balance - $bankbook->at_amount;
+                                    @endphp
+                                    @elseif(in_array($bankbook->transaction_type, ['Purchase', 'Payment', 'Prepaid']))
+                                    <td></td>
                                     <td>{{ $bankbook->at_amount }}</td>
-                                @else
-                                    <td></td>
-                                    <td></td>
-                                @endif
+                                    <td>{{ $balance }}</td>
+                                    @php
+                                        $balance = $balance + $bankbook->at_amount;
+                                    @endphp
 
-                                <td>{{ $balance }}</td>
-                            </tr>
+                                    @endif
+                                </tr>
                         @endforeach
 
                         </tbody>
@@ -82,9 +87,7 @@
 <script>
     $(document).ready(function() {
         $('#assetTransactionsTable').DataTable({
-            "columnDefs": [
-                { "orderable": false, "targets": "_all" }
-            ]
+            pageLength: 25,
         });
     });
 </script>

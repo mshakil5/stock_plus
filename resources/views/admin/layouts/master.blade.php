@@ -318,7 +318,7 @@
                         </a>
                     </li>
 
-                    <li class="{{ (request()->is('admin/share-holders')) ? 'active' : '' }}">
+                    <li class="{{ request()->routeIs('admin.equityholders', 'admin.shareholders-ledger') ? 'active' : '' }}">
                         <a href="{{ route('admin.equityholders')}}">
                             <i class="fa fa-users"></i>
                             <span>Share Holders</span>
@@ -380,14 +380,14 @@
                     </li>
 
                     
-                    <li class="treeview {{ (request()->is('admin/cashbook')) ? 'active' : '' }}">
+                    <li class="treeview {{ (request()->is('admin/cashbook') || request()->is('admin/bankbook')) ? 'active' : '' }}">
                         <a href="#">
                             <i class="fa fa-user"></i> <span>Day Book</span><span class="pull-right-container">
                             <i class="fa fa-angle-left pull-right"></i></span>
                         </a>
                         <ul class="treeview-menu">
-                                <li><a href="{{ route('admin.cashbook')}}"><i class="fa fa-adjust"></i> Day Cashbook</a></li>
-                                <li class="{{ (request()->is('admin/bankbook')) ? 'active' : '' }}"><a href="{{ route('admin.bankbook')}}"><i class="fa fa-adjust"></i> Day Bankbook</a></li>
+                            <li class="{{ (request()->is('admin/cashbook')) ? 'active' : '' }}"><a href="{{ route('admin.cashbook') }}"><i class="fa fa-adjust"></i> Day Cashbook</a></li>
+                            <li class="{{ (request()->is('admin/bankbook')) ? 'active' : '' }}"><a href="{{ route('admin.bankbook') }}"><i class="fa fa-adjust"></i> Day Bankbook</a></li>
                         </ul>
                     </li>
 

@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\EquityHolder;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Facades\Auth;
+use App\Models\Transaction;
 
 class EquityHolderController extends Controller
 {
@@ -107,5 +108,18 @@ class EquityHolderController extends Controller
         $equityHolder->save();
 
         return response()->json(['status' => 200, 'message' => 'Updated Successfully']);
+    }
+
+    public function shareHolderLedger($id, Request $request)
+    {
+        $ledgers = Transaction::where('share_holder_id', $id)->get();
+
+        $totalDrAmount = Transaction::where('share_holder_id', $id)->where('transaction_type', ['Payment'])->sum('at_amount');
+
+        $totalCrAmount = Transaction::where('share_holder_id', $id)->where('transaction_type', ['Received'])->sum('at_amount');
+
+        // dd($totalDrAmount, $totalCrAmount);
+        $totalAmount = $totalDrAmount - $totalCrAmount;
+        return view('admin.ledger.share_holder', compact('ledgers', 'totalAmount'));
     }
 }

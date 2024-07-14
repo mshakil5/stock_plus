@@ -92,6 +92,7 @@
                                 <option value="Current">Current</option>
                                 <option value="Advance">Advance</option>
                                 <option value="Advance Adjust">Advance Adjust</option>
+                                <option value="Refund">Refund</option>
                             </select>
                         </div>
                     </div>

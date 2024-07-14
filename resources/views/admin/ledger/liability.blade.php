@@ -43,6 +43,7 @@
                                 <th>Description</th>
                                 <th>Payment Type</th>
                                 <th>Ref</th>
+                                <th>Transaction Type</th>
                                 <th>Debit</th>
                                 <th>Credit</th>
                                 <th>Balance</th>                                
@@ -60,14 +61,22 @@
                                     <td>{{ $asset->description }}</td>
                                     <td>{{ $asset->payment_type }}</td>
                                     <td>{{ $asset->ref }}</td>
+                                    <td>{{ $asset->transaction_type }}</td>  
+                                    @if(in_array($asset->transaction_type, ['Payment']))
+                                    <td>{{ $asset->at_amount }}</td>
+                                    <td></td>
+                                    <td>{{ $balance }}</td>
+                                    @php
+                                        $balance = $balance - $asset->at_amount;
+                                    @endphp
+                                    @elseif(in_array($asset->transaction_type, ['Received']))
                                     <td></td>
                                     <td>{{ $asset->at_amount }}</td>
-                                    <td>
-                                        {{ $balance }}
-                                        @php
-                                            $balance = $balance - $asset->at_amount;
-                                        @endphp
-                                    </td>
+                                    <td>{{ $balance }}</td>
+                                    @php
+                                        $balance = $balance + $asset->at_amount;
+                                    @endphp
+                                    @endif
                                 </tr>
                             @endforeach
                         </tbody>
@@ -83,9 +92,7 @@
 <script>
     $(document).ready(function() {
         $('#assetTransactionsTable').DataTable({
-            "columnDefs": [
-                { "orderable": false, "targets": "_all" }
-            ]
+            pageLength: 25,
         });
     });
 </script>
