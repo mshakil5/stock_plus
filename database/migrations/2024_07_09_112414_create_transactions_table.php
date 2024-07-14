@@ -36,6 +36,7 @@ return new class extends Migration
             $table->string('income_id')->nullable();
             $table->string('expense_id')->nullable();
             $table->string('equity_id')->nullable();
+            $table->boolean('status')->default(0);
             $table->string('created_by')->nullable();
             $table->string('updated_by')->nullable();
             $table->string('created_ip')->nullable();

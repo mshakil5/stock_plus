@@ -8,6 +8,7 @@ use App\Models\Transaction;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
+use App\Models\EquityHolder;
 
 class EquityController extends Controller
 {
@@ -63,6 +64,16 @@ class EquityController extends Controller
 
         $transaction->save();
 
+        $shareHolder = EquityHolder::find($request->input('share_holder_id'));
+
+        if ($request->input('transaction_type') == 'Received') {
+            $shareHolder->balance += $request->input('amount');
+        } elseif ($request->input('transaction_type') == 'Payment') {
+            $shareHolder->balance -= $request->input('amount');
+        }
+
+        $shareHolder->save();
+
         return response()->json(['status' => 200, 'message' => 'Created Successfully']);
 
     }
@@ -109,6 +120,12 @@ class EquityController extends Controller
 
         $transaction = Transaction::find($id);
 
+        $oldAmount = $transaction->amount;
+        $oldTransactionType = $transaction->transaction_type;
+
+
+        $transaction = Transaction::find($id);
+
         $transaction->date = $request->input('date');
         $transaction->chart_of_account_id = $request->input('chart_of_account_id');
         $transaction->ref = $request->input('ref');
@@ -122,6 +139,26 @@ class EquityController extends Controller
         $transaction->updated_ip = request()->ip();
 
         $transaction->save();
+
+        if ($oldAmount != $transaction->amount || $oldTransactionType != $transaction->transaction_type) 
+        
+        {
+             $shareHolder = EquityHolder::find($request->input('share_holder_id'));
+
+            if ($oldTransactionType == 'Received') {
+                $shareHolder->balance -= $oldAmount;
+            } elseif ($oldTransactionType == 'Payment') {
+                $shareHolder->balance += $oldAmount;
+            }
+
+            if ($transaction->transaction_type == 'Received') {
+                $shareHolder->balance += $transaction->amount;
+            } elseif ($transaction->transaction_type == 'Payment') {
+                $shareHolder->balance -= $transaction->amount;
+            }
+
+            $shareHolder->save();
+        }
 
         return response()->json(['status' => 200, 'message' => 'Updated Successfully']);
 
