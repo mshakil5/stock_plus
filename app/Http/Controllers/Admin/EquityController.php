@@ -59,6 +59,7 @@ class EquityController extends Controller
         $transaction->transaction_type = $request->input('transaction_type');
         $transaction->payment_type = $request->input('payment_type');
         $transaction->share_holder_id = $request->input('share_holder_id');
+        $transaction->branch_id = Auth::user()->branch_id;
         $transaction->created_by = Auth()->user()->id;
         $transaction->created_ip = request()->ip();
 

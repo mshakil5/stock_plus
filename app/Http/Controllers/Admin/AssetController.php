@@ -64,6 +64,7 @@ class AssetController extends Controller
         $transaction->liability_id = $request->input('payable_holder_id');
         $transaction->payment_type = $request->input('payment_type');
         $transaction->asset_id = $request->input('recivible_holder_id');
+        $transaction->branch_id = Auth::user()->branch_id;
         $transaction->created_by = Auth()->user()->id;
         $transaction->created_ip = request()->ip();
 

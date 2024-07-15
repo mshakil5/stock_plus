@@ -30,6 +30,7 @@ use App\Http\Controllers\Admin\EquityController;
 use App\Http\Controllers\Admin\EquityHolderController;
 use App\Http\Controllers\Admin\LedgerController;
 use App\Http\Controllers\Admin\DaybookController;
+use App\Http\Controllers\Admin\CashflowController;
 
 
 /*------------------------------------------
@@ -264,5 +265,9 @@ Route::group(['prefix' =>'admin/', 'middleware' => ['auth', 'is_admin']], functi
     // Daybook
     Route::get('cashbook', [DaybookController::class, 'cashbook'])->name('admin.cashbook');
     Route::get('bankbook', [DaybookController::class, 'bankbook'])->name('admin.bankbook');
+
+    //Ledger
+    Route::get('cash-flow', [CashflowController::class, 'cashFlow'])->name('admin.cashflow');
+    Route::get('income-statement', [CashflowController::class, 'index'])->name('admin.incomestatement');
 
 });
