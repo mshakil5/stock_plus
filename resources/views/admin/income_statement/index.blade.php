@@ -2,6 +2,12 @@
 
 @section('content')
 
+<style>
+    .company-name-container {
+        margin-top: -30px;
+    }
+</style>
+
 <div class="row">
     <div class="col-md-12">
         <div id="alert-container"></div>
@@ -12,7 +18,7 @@
             @endslot
             @slot('body')
                 <div class="text-center mb-4 company-name-container">
-                    <form class="col-md-12" method="POST" action="{{ route('admin.cashflow') }}">
+                    <form class="col-md-12" method="POST" action="{{ route('admin.incomestatement') }}">
                         @csrf
                         <div class="form-group col-md-5 d-flex align-items-center">
                             <label for="startDate" class="mr-2 mb-0">Start Date</label>
@@ -35,7 +41,7 @@
                     @if (isset(Auth::user()->branch))
                         <h3>{{ Auth::user()->branch->name }} Branch</h3>
                     @endif
-                    <h4>Cash Flow</h4>
+                    <h4>Income Statement</h4>
                 </div>
 
             <div class="table-responsive">
@@ -50,19 +56,8 @@
                     </thead>
                     <tbody>
                         <tr>
-                            <td>
-                                <strong>(1) Opening Balance</strong>
-                            </td>
-                            <td></td>
-                            <td></td>
-                            <td><strong>18000.00</strong></td>
-                        </tr>
-                        <tr>
-                            <td colspan="4"></td>
-                        </tr>
-                        <tr>
                             <td colspan="4">
-                                <strong>Cash Incoming</strong>
+                                <strong>Turn Over Sales</strong>
                             </td>
                         </tr>
                         @foreach($incomes as $income)
@@ -74,39 +69,28 @@
                             </tr>
                         @endforeach
                         <tr>
-                            <td></td>
-                            <td>Asset Sold</td>        
-                            <td>{{ number_format($assetSold, 2) }}</td>
-                            <td></td>
-                        </tr>
-                        <tr>
-                            <td></td>
-                            <td>Liabilities Received</td>        
-                            <td>{{ number_format($liabilityReceived, 2) }}</td>
-                            <td></td>
-                        </tr>
-                        <tr>
-                            <td></td>
-                            <td>Equity Received</td>        
-                            <td>{{ number_format($equityReceived, 2) }}</td>
-                            <td></td>
-                        </tr>
-                        <tr>
                             <td colspan="4"></td>
                         </tr>
                         <tr>
                             @php
-                                $totalCashIncoming = $incomes->sum('at_amount') + $assetSold + $liabilityReceived + $equityReceived;
+                                $income = $incomes->sum('at_amount');
                             @endphp
-                            <td colspan="3"><strong>(2) Total Cash Incoming</strong></td>
-                            <td><strong>{{ number_format($totalCashIncoming, 2) }}</strong></td>
+                            <td colspan="3"><strong>Total Income</strong></td>
+                            <td><strong>{{ number_format($income, 2) }}</strong></td>
+                        </tr>
+                        <tr>
+                            @php
+                                $income = $incomes->sum('at_amount');
+                            @endphp
+                            <td colspan="3"><strong>Gross Profit</strong></td>
+                            <td><strong>{{ number_format($income, 2) }}</strong></td>
                         </tr>
                         <tr>
                             <td colspan="4"></td>
                         </tr>
                         <tr>
                             <td colspan="4">
-                                <strong>Cash Outgoing</strong>
+                                <strong>Expenditure</strong>
                             </td>
                         </tr>
                         @foreach($expenses as $expense)
@@ -118,40 +102,38 @@
                             </tr>
                         @endforeach
                         <tr>
-                            <td></td>
-                            <td>Asset Purchase</td>        
-                            <td>{{ number_format($assetPurchase, 2) }}</td>
-                            <td></td>
-                        </tr>
-                        <tr>
-                            <td></td>
-                            <td>Liabilities Payment</td>        
-                            <td>{{ number_format($liabilityPayment, 2) }}</td>
-                            <td></td>
-                        </tr>
-                        <tr>
-                            <td></td>
-                            <td>Equity Payment</td>        
-                            <td>{{ number_format($equityPayment, 2) }}</td>
-                            <td></td>
+                            <td colspan="4"></td>
                         </tr>
                         <tr>
                             @php
-                                $totalCashOutGoing = $expenses->sum('at_amount') + $assetPurchase + $liabilityPayment + $equityPayment;
+                                $expense = $expenses->sum('at_amount');
                             @endphp
-                            <td colspan="3"><strong>(3) Total Cash Outgoing</strong></td>
-                            <td><strong>{{ number_format($totalCashOutGoing, 2) }}</strong></td>
+                            <td colspan="3"><strong>Total Expenses</strong></td>
+                            <td><strong>{{ number_format($expense, 2) }}</strong></td>
+                        </tr>
+                        <tr>
+                            @php
+                                $profitLossBeforeVat = $incomes->sum('amount') - $expenses->sum('amount');
+                            @endphp
+                            <td colspan="3"><strong>Profit/Lose before vat</strong></td>
+                            <td><strong>{{ number_format($profitLossBeforeVat, 2) }}</strong></td>
+                        </tr>
+                        <tr>
+                            @php
+                                $taxProvision = $incomes->sum('tax_amount') - $expenses->sum('tax_amount');
+                            @endphp
+                            <td colspan="3"><strong>Tax Provision</strong></td>
+                            <td><strong>{{ number_format($taxProvision, 2) }}</strong></td>
                         </tr>
                         <tr>
                             <td colspan="4"></td>
                         </tr>
-
                         <tr>
                             @php
-                                $closingBalance = $totalCashIncoming - $totalCashOutGoing;
+                                $netProfit = $profitLossBeforeVat - $taxProvision;
                             @endphp
-                            <td colspan="3"><strong>Closing Balance (3-4)</strong></td>
-                            <td><strong>{{ number_format($closingBalance, 2) }}</strong></td>
+                            <td colspan="3"><strong>Net Profit</strong></td>
+                            <td><strong>{{ number_format($netProfit, 2) }}</strong></td>
                         </tr>
 
                     </tbody>

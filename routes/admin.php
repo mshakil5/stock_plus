@@ -31,6 +31,7 @@ use App\Http\Controllers\Admin\EquityHolderController;
 use App\Http\Controllers\Admin\LedgerController;
 use App\Http\Controllers\Admin\DaybookController;
 use App\Http\Controllers\Admin\CashflowController;
+use App\Http\Controllers\Admin\IncomestatementController;
 
 
 /*------------------------------------------
@@ -268,6 +269,8 @@ Route::group(['prefix' =>'admin/', 'middleware' => ['auth', 'is_admin']], functi
 
     //Ledger
     Route::get('cash-flow', [CashflowController::class, 'cashFlow'])->name('admin.cashflow');
-    Route::get('income-statement', [CashflowController::class, 'index'])->name('admin.incomestatement');
+    Route::post('cash-flow', [CashflowController::class, 'cashFlowByDate'])->name('admin.cashflow');
+    Route::get('income-statement', [IncomestatementController::class, 'incomeStatement'])->name('admin.incomestatement');
+    Route::post('income-statement', [IncomestatementController::class, 'incomeStatementByDate'])->name('admin.incomestatement');
 
 });
