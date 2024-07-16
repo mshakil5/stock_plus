@@ -280,7 +280,7 @@
 
 
                     @if(Auth::user()->type == '1' && in_array('8', json_decode(Auth::user()->role->permission)) || Auth::user()->type == '0' && in_array('8', json_decode(Auth::user()->role->permission)))
-                    <li class="treeview {{ (request()->is('admin/role*')) ? 'active' : '' }}{{ (request()->is('admin/manage-user')) ? 'active' : '' }}{{ (request()->is('admin/create-user')) ? 'active' : '' }}{{ (request()->is('admin/manage-admin')) ? 'active' : '' }}{{ (request()->is('admin/create-admin')) ? 'active' : '' }}">
+                    <li class="treeview {{ (request()->is('admin/role*')) ? 'active' : '' }}{{ (request()->is('admin/manage-user')) ? 'active' : '' }}{{ (request()->is('admin/create-user')) ? 'active' : '' }}{{ (request()->is('admin/manage-admin')) ? 'active' : '' }}{{ (request()->is('admin/create-admin')) ? 'active' : '' }}{{ (request()->is('admin/create-employee')) ? 'active' : '' }}{{ (request()->is('admin/manage-employee')) ? 'active' : '' }}">
                         <a href="#">
                             <i class="fa fa-users"></i>
                             <span>System Users</span>
@@ -288,14 +288,20 @@
                             <i class="fa fa-angle-left pull-right"></i></span>
                         </a>
                         <ul class="treeview-menu">
-                            <li class="{{ (request()->is('admin/create-user')) ? 'active' : '' }}"><a href="{{ route('create_user')}}"><i class="fa fa-plus"></i> Add New User</a>
-                            </li>
-                            <li class="{{ (request()->is('admin/manage-user')) ? 'active' : '' }}"><a href="{{ route('manage_user')}}"><i class="fa fa-adjust"></i>Manage User</a>
-                            </li>
+                            <!-- <li class="{{ (request()->is('admin/create-user')) ? 'active' : '' }}"><a href="{{ route('create_user')}}"><i class="fa fa-plus"></i> Add New User</a>
+                            </li> -->
+                            <!-- <li class="{{ (request()->is('admin/manage-user')) ? 'active' : '' }}"><a href="{{ route('manage_user')}}"><i class="fa fa-adjust"></i>Manage User</a>
+                            </li> -->
                             <li class="{{ (request()->is('admin/create-admin')) ? 'active' : '' }}"><a href="{{ route('create_admin')}}"><i class="fa fa-plus"></i> Add New Admin</a>
                             
                             <li class="{{ (request()->is('admin/manage-admin')) ? 'active' : '' }}"><a href="{{ route('manage_admin')}}"><i class="fa fa-adjust"></i>Manage Admin</a>
                             </li>
+
+                            <li class="{{ (request()->is('admin/create-employee')) ? 'active' : '' }}"><a href="{{ route('create_employee')}}"><i class="fa fa-plus"></i> Add New Employee</a>
+                            </li>
+                            <li class="{{ (request()->is('admin/manage-employee')) ? 'active' : '' }}"><a href="{{ route('manage_employee')}}"><i class="fa fa-adjust"></i>Manage Employee</a>
+                            </li>
+
                             <li class="{{ (request()->is('admin/role*')) ? 'active' : '' }}"><a href="{{ route('admin.role')}}"><i class="fa fa-adjust"></i>Manage Role</a>
                             </li>
                         </ul>

@@ -33,6 +33,7 @@ use App\Http\Controllers\Admin\DaybookController;
 use App\Http\Controllers\Admin\CashflowController;
 use App\Http\Controllers\Admin\IncomestatementController;
 use App\Http\Controllers\Admin\BalancesheetController;
+use App\Http\Controllers\Admin\EmployeeController;
 
 
 /*------------------------------------------
@@ -58,6 +59,11 @@ Route::group(['prefix' =>'admin/', 'middleware' => ['auth', 'is_admin']], functi
     Route::post('/create-user', [UserController::class, 'save_user'])->name('save_user');
     Route::get('/manage-user', [UserController::class, 'manage_user'])->name('manage_user');
     Route::post('/update-user', [UserController::class, 'update_user'])->name('update_user');
+
+    Route::get('/create-employee', [EmployeeController::class, 'create_employee'])->name('create_employee');
+    Route::post('/create-employee', [EmployeeController::class, 'save_employee'])->name('save_employee');
+    Route::get('/manage-employee', [EmployeeController::class, 'manage_employee'])->name('manage_employee');
+    Route::post('/update-employee', [EmployeeController::class, 'update_employee'])->name('update_employee');
 
     Route::get('/create-admin', [UserController::class, 'create_admin'])->name('create_admin');
     Route::post('/create-admin', [UserController::class, 'save_admin'])->name('save_admin');

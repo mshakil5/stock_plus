@@ -149,7 +149,7 @@ class UserController extends Controller
           $data->role_id = $request['role_id'];
           $data->phone = $request['phone'];
           $data->save();
-           return redirect()->back()->with('success', 'User Updated Successfully'); 
+           return redirect()->back()->with('success', 'Updated Successfully'); 
         }
   	}
 
@@ -278,7 +278,7 @@ class UserController extends Controller
           }
           $data->branchaccess = json_encode($branchIDs);
           $data->save();
-           return redirect()->back()->with('success', 'User Updated Successfully'); 
+           return redirect()->back()->with('success', 'Updated Successfully'); 
         }
   	}
 
@@ -359,7 +359,7 @@ class UserController extends Controller
             $data->password = Hash::make($request['password']);
           }
           $data->save();
-           return redirect()->back()->with('success', 'User Updated Successfully'); 
+           return redirect()->back()->with('success', 'Updated Successfully'); 
         }
   	}
 
