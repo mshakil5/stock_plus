@@ -84,7 +84,7 @@
 
                             <div class="form-row">
                                 <div class="form-group col-md-4">
-                                  <label for="date">Transaction Type</label>
+                                  <label for="date">Payment Type</label>
                                   <select name="type" id="type" class="form-control">
                                     <option value="">Select</option>
                                     <option value="Cash">Cash</option>

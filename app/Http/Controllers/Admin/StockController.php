@@ -16,8 +16,9 @@ use DB;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\support\Facades\Auth;
+use Illuminate\Support\Facades\Auth;
 use Yajra\DataTables\Facades\DataTables;
+use App\Models\Transaction;
 
 class StockController extends Controller
 {
@@ -142,6 +143,28 @@ class StockController extends Controller
                 $purchase->net_amount = $request->net_amount;
                 $purchase->created_by= Auth::user()->id;
             if ($purchase->save()) {
+
+                $transaction = new Transaction();
+                $transaction->purchase_id = $purchase->id;
+                $transaction->date = $request->input('date');
+                $transaction->table_type = 'Cogs';
+                $transaction->ref = 'Purchase';
+                $transaction->description = 'Purchase';
+                $transaction->amount = $request->total_amount;
+                $transaction->vat_amount = $request->total_vat_amount;
+                $transaction->at_amount = $request->net_amount;
+                $transaction->transaction_type = 'Current';
+                if ($request->purchase_type == "Credit") {
+                    $transaction->payment_type = "Account Payable";
+                } else {
+                    $transaction->payment_type = $request->purchase_type;
+                }
+
+                $transaction->supplier_id = $request->vendor_id;
+                $transaction->branch_id = Auth::user()->branch_id;
+                $transaction->created_by = Auth()->user()->id;
+                $transaction->created_ip = request()->ip();
+                $transaction->save();
                 
                 foreach($request->input('product_id') as $key => $value)
                     {
@@ -271,6 +294,22 @@ class StockController extends Controller
                 $purchase->net_amount = $request->net_amount;
                 $purchase->created_by= Auth::user()->id;
             if ($purchase->save()) {
+
+                $transaction = Transaction::where('purchase_id', $request->purchase_id)->first();
+                $transaction->date = $request->input('date');
+                $transaction->amount = $request->total_amount;
+                $transaction->vat_amount = $request->total_vat_amount;
+                $transaction->at_amount = $request->net_amount;
+                if ($request->purchase_type == "Credit") {
+                    $transaction->payment_type = "Account Payable";
+                } else {
+                    $transaction->payment_type = $request->purchase_type;
+                }
+
+                $transaction->supplier_id = $request->vendor_id;
+                $transaction->updated_by = Auth()->user()->id;
+                $transaction->updated_ip = request()->ip();
+                $transaction->save();
 
                 // $collection = PurchaseHistory::where('purchase_id', $request->purchase_id)->get(['id']);
                 // PurchaseHistory::destroy($collection->toArray());
