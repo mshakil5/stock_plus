@@ -326,7 +326,7 @@
                         </a>
                     </li>
 
-                    <li class="treeview {{ (request()->is('admin/cash-flow') || request()->is('admin/income-statement')) ? 'active' : '' }}">
+                    <li class="treeview {{ (request()->is('admin/cash-flow') || request()->is('admin/income-statement') || request()->is('admin/balance-sheet')) ? 'active' : '' }}">
                         <a href="#">
                             <i class="fa fa-user"></i> <span>Financial Statement</span><span class="pull-right-container">
                             <i class="fa fa-angle-left pull-right"></i></span>
@@ -334,6 +334,7 @@
                         <ul class="treeview-menu">
                             <li class="{{ (request()->is('admin/cash-flow')) ? 'active' : '' }}"><a href="{{ route('admin.cashflow') }}"><i class="fa fa-adjust"></i> Cash Flow</a></li>
                             <li class="{{ (request()->is('admin/income-statement')) ? 'active' : '' }}"><a href="{{ route('admin.incomestatement') }}"><i class="fa fa-adjust"></i>Income Statement</a></li>
+                            <li class="{{ (request()->is('admin/balance-sheet')) ? 'active' : '' }}"><a href="{{ route('admin.balancesheet') }}"><i class="fa fa-adjust"></i>Balance Sheet</a></li>
                         </ul>
                     </li>
 

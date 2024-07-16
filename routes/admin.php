@@ -32,6 +32,7 @@ use App\Http\Controllers\Admin\LedgerController;
 use App\Http\Controllers\Admin\DaybookController;
 use App\Http\Controllers\Admin\CashflowController;
 use App\Http\Controllers\Admin\IncomestatementController;
+use App\Http\Controllers\Admin\BalancesheetController;
 
 
 /*------------------------------------------
@@ -267,10 +268,12 @@ Route::group(['prefix' =>'admin/', 'middleware' => ['auth', 'is_admin']], functi
     Route::get('cashbook', [DaybookController::class, 'cashbook'])->name('admin.cashbook');
     Route::get('bankbook', [DaybookController::class, 'bankbook'])->name('admin.bankbook');
 
-    //Ledger
+    //Financial statistics
     Route::get('cash-flow', [CashflowController::class, 'cashFlow'])->name('admin.cashflow');
     Route::post('cash-flow', [CashflowController::class, 'cashFlowByDate'])->name('admin.cashflow');
     Route::get('income-statement', [IncomestatementController::class, 'incomeStatement'])->name('admin.incomestatement');
     Route::post('income-statement', [IncomestatementController::class, 'incomeStatementByDate'])->name('admin.incomestatement');
+    Route::get('balance-sheet', [BalancesheetController::class, 'balanceSheet'])->name('admin.balancesheet');
+    Route::post('balance-sheet', [BalancesheetController::class, 'balanceSheetByDate'])->name('admin.balancesheet');
 
 });
