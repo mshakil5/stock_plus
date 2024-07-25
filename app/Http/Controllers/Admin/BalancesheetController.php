@@ -38,7 +38,43 @@ class BalancesheetController extends Controller
             ->where('branch_id', auth()->user()->branch_id)
             ->sum('at_amount');
 
-        return view('admin.balance_sheet.index', compact('fixedAssets', 'currentBankAsset', 'currentCashAsset', 'accountReceiveable'));
+        $accountPayableIds = ChartOfAccount::where('sub_account_head', 'Account Payable')
+            ->pluck('id');
+        $accountPayable = Transaction::whereIn('chart_of_account_id', $accountPayableIds)
+            ->where('status', 0)
+            ->where('branch_id', auth()->user()->branch_id)
+            ->sum('at_amount');
+
+        $currentLiabilityIds = ChartOfAccount::where('sub_account_head', 'Current Liabilities')
+            ->pluck('id');
+        $currentLiability = Transaction::whereIn('chart_of_account_id', $currentLiabilityIds)
+            ->where('status', 0)
+            ->where('branch_id', auth()->user()->branch_id)
+            ->sum('at_amount');
+
+        $longTermLiabilityIds = ChartOfAccount::where('sub_account_head', 'Long Term Liabilities')
+            ->pluck('id');
+        $longTermLiabilities = Transaction::whereIn('chart_of_account_id', $longTermLiabilityIds)
+            ->where('status', 0)
+            ->where('branch_id', auth()->user()->branch_id)
+            ->get();
+
+        $equityCapitalIds = ChartOfAccount::where('sub_account_head', 'Equity Capital')
+            ->pluck('id');
+        $equityCapital = Transaction::whereIn('chart_of_account_id', $equityCapitalIds)
+            ->where('status', 0)
+            ->where('branch_id', auth()->user()->branch_id)
+            ->sum('at_amount');
+
+        $retainedEarningIds = ChartOfAccount::where('sub_account_head', 'Retained Earnings')
+            ->pluck('id');
+        $retainedEarning = Transaction::whereIn('chart_of_account_id', $retainedEarningIds)
+            ->where('status', 0)
+            ->where('branch_id', auth()->user()->branch_id)
+            ->sum('at_amount');
+            // dd($equityCapital);
+
+        return view('admin.balance_sheet.index', compact('fixedAssets', 'currentBankAsset', 'currentCashAsset', 'accountReceiveable', 'accountPayable', 'currentLiability', 'longTermLiabilities', 'equityCapital', 'retainedEarning'));
     }
 
     public function balanceSheetByDate(Request $request)

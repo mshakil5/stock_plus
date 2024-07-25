@@ -60,7 +60,7 @@
                     <tbody>
                         <tr>
                             <td colspan="4">
-                            <strong>(1)Fixed Asset</strong>
+                            <strong>Fixed Asset</strong>
                             </td>
                         </tr>
                         @foreach($fixedAssets as $fixedAsset)
@@ -78,7 +78,7 @@
                             @php
                                 $totalFixedAsset = $fixedAssets->sum('at_amount');
                             @endphp
-                            <td colspan="2"><strong>Net Fixed Asset</strong></td>
+                            <td colspan="2"><strong>(1)Net Fixed Asset</strong></td>
                             <td></td>
                             <td><strong>{{ number_format($totalFixedAsset, 2) }}</strong></td>
                         </tr>
@@ -88,7 +88,7 @@
 
                         <tr>
                             <td colspan="4">
-                            <strong>(2)Current Asset</strong>
+                            <strong>Current Asset</strong>
                             </td>
                         </tr>
                         <tr>
@@ -116,14 +116,136 @@
                             @php
                                 $totalCurrentAsset = $currentCashAsset + $currentBankAsset + $accountReceiveable;
                             @endphp
-                            <td colspan="3"><strong>Total Current Asset</strong></td>    
+                            <td colspan="3"><strong>(2)Total Current Asset</strong></td>    
                             <td><strong>{{ number_format($totalCurrentAsset, 2) }}</strong></td>
+                        </tr>
+                        <tr>
+                            <td colspan="4"></td>
+                        </tr>
+                        <tr>
+                            <td colspan="4">
+                            <strong>Short Term Liabilities</strong>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Account Payable</td>     
+                            <td>{{ number_format($accountPayable, 2) }}</td>
+                            <td></td> 
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td>Current Liabilities</td>     
+                            <td>{{ number_format($currentLiability, 2) }}</td>
+                            <td></td> 
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td colspan="4"></td>
+                        </tr>
+                        <tr>
+                            @php
+                                $totalCurrentLiability = $accountPayable + $currentLiability;
+                            @endphp
+                            <td colspan="2"><strong>(3)Total Current Liabilities</strong></td>    
+                            <td><strong>{{ number_format($totalCurrentLiability, 2) }}</strong></td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td colspan="4"></td>
+                        </tr>
+                        <tr>
+                            @php
+                                $netCurrentAsset = $totalCurrentAsset - $totalCurrentLiability;
+                            @endphp
+                            <td colspan="3"><strong>(4)Net Current Assets( 2 - 3 = )</strong></td>    
+                            <td><strong>{{ number_format($netCurrentAsset, 2) }}</strong></td>
+                        </tr>
+                        <tr>
+                            <td colspan="4"></td>
+                        </tr>
+                        <tr>
+                            @php
+                                $grossAsset = $totalFixedAsset - $netCurrentAsset;
+                            @endphp
+                            <td colspan="3"><strong>(5)Gross Assets SubTotal( 1 + 4 = )</strong></td>    
+                            <td><strong>{{ number_format($grossAsset, 2) }}</strong></td>
+                        </tr>
+
+                        <tr>
+                            <td colspan="4"></td>
+                        </tr>
+
+                        <tr>
+                            <td colspan="4">
+                            <strong>long Term Liabilities</strong>
+                            </td>
+                        </tr>
+                        @foreach($longTermLiabilities as $longTermLiabilitie)
+                            <tr>
+                                <td>{{ $longTermLiabilitie->chartOfAccount->account_name }}</td>     
+                                <td>{{ number_format($longTermLiabilitie->at_amount, 2) }}</td>
+                                <td></td>   
+                                <td></td>
+                            </tr>
+                        @endforeach
+                        <tr>
+                            <td colspan="4"></td>
+                        </tr>
+                        <tr>
+                            @php
+                                $totalLongTermLiabilities = $longTermLiabilities->sum('at_amount');
+                            @endphp
+                            <td colspan="1"><strong>(6)Long Term Liabilities</strong></td>
+                            <td></td>
+                            <td><strong>{{ number_format($totalLongTermLiabilities, 2) }}</strong></td>
                             <td></td>
                         </tr>
                         <tr>
                             <td colspan="4"></td>
                         </tr>
 
+                        <tr>
+                            @php
+                                $netAssets = $grossAsset - $totalLongTermLiabilities;
+                            @endphp
+                            <td colspan="3"><strong>Net Assets( 5 - 6 =)</strong></td>
+                            <td><strong>{{ number_format($netAssets, 2) }}</strong></td>
+                        </tr>
+
+                        <tr>
+                            <td colspan="4"></td>
+                        </tr>
+
+                        <tr>
+                            <td colspan="4">
+                            <strong>StakeHolder's Equity</strong>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td>Equity Capital</td>     
+                            <td colspan="1">
+                            <td>{{ number_format($equityCapital, 2) }}</td>
+                            <td></td>
+                        </tr>
+
+                        <tr>
+                            <td>Retained Earnings</td>     
+                            <td>{{ number_format($retainedEarning, 2) }}</td>
+                            <td colspan="2"></td>          
+                        </tr>
+
+                        <tr>
+                            <td colspan="4"></td>
+                        </tr>
+
+                        <tr>
+                            @php
+                                $stakeHoldersEquity = $equityCapital - $retainedEarning;
+                            @endphp 
+                            <td colspan="3"><strong>Total StakeHolder's Equity</strong></td> 
+                            <td><strong>{{ number_format($stakeHoldersEquity, 2) }}</strong></td>     
+                        </tr>
                     </tbody>
 
                 </table>
