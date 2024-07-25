@@ -21,7 +21,10 @@
             @endslot
             @slot('body')
                 <div class="text-center mb-4 company-name-container">
-                    <h2>Company Name</h2>
+                    @php
+                    $company = \App\Models\CompanyDetails::select('company_name')->first();
+                    @endphp
+                    <h2>{{ $company->company_name }}</h2>
                 
                     @if (isset(Auth::user()->branch))
                         <h3>{{ Auth::user()->branch->name }} Branch</h3>

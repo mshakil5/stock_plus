@@ -31,6 +31,7 @@
     <script src="{{ asset('admin/datatables.net-bs/js/dataTables.bootstrap.min.js')}}"></script>
     <script src="{{ asset('admin/js/gijgo.min.js') }}" type="text/javascript"></script>
     <link href="{{ asset('admin/css/gijgo.min.css') }}" rel="stylesheet" type="text/css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.20/summernote-bs4.min.css">
     <!-- Google Font -->
 
 </head>
@@ -409,6 +410,14 @@
                         </ul>
                     </li>
 
+                    <li class="{{ (request()->is('admin/company-details')) ? 'active' : '' }}">
+                        <a href="{{ route('admin.companyDetail')}}">
+                            <i class="fa fa-users"></i>
+                            <span>Company Details</span>
+                            <span class="pull-right-container"> </span>
+                        </a>
+                    </li>
+
 
                     {{-- <li>
                         <a href="">
@@ -466,6 +475,7 @@
 <script src="{{asset('admin/js')}}/pdfmake.min.js"></script>
 <script src="{{asset('admin/js')}}/vfs_fonts.js"></script>
 <script src="{{asset('admin/js')}}/buttons.html5.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.20/summernote.min.js"></script>
 
 <script>
     function showSnakBar(msg = null) {

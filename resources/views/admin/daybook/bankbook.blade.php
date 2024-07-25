@@ -8,7 +8,6 @@
     }
 </style>
 
-<!-- <div class="page-header"><a href="{{ url()->previous() }}" class="btn btn-primary">Back</a></div> -->
 <div class="row">
     <div class="col-md-12">
         <div id="alert-container"></div>
@@ -20,7 +19,29 @@
             @endslot
             @slot('body')
                 <div class="text-center mb-4 company-name-container">
-                    <h2>Company Name</h2>
+                    <form class="col-md-12" method="POST" action="{{ route('admin.bankbook') }}">
+                        @csrf
+                        <div class="form-group col-md-5 d-flex align-items-center">
+                            <label for="startDate" class="mr-2 mb-0">Start Date</label>
+                            <input type="date" id="startDate" name="start_date" class="form-control" value="{{ request('start_date') }}">
+                        </div>
+                        <div class="form-group col-md-5 d-flex align-items-center">
+                            <label for="endDate" class="mr-2 mb-0">End Date</label>
+                            <input type="date" id="endDate" name="end_date" class="form-control" value="{{ request('end_date') }}">
+                        </div>
+                        <div class="form-group col-md-2">
+                            <button type="submit" id="searchButton" class="btn btn-primary btn-block">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-search">
+                                    <circle cx="11" cy="11" r="8"></circle>
+                                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                                </svg> Search
+                            </button>
+                        </div>
+                    </form>
+                    @php
+                    $company = \App\Models\CompanyDetails::select('company_name')->first();
+                    @endphp
+                    <h2>{{ $company->company_name }}</h2>
                 
                     @if (isset(Auth::user()->branch))
                         <h3>{{ Auth::user()->branch->name}} Branch</h3>

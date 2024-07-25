@@ -34,6 +34,7 @@ use App\Http\Controllers\Admin\CashflowController;
 use App\Http\Controllers\Admin\IncomestatementController;
 use App\Http\Controllers\Admin\BalancesheetController;
 use App\Http\Controllers\Admin\EmployeeController;
+use App\Http\Controllers\Admin\CompanyDetailsController;
 
 
 /*------------------------------------------
@@ -272,7 +273,9 @@ Route::group(['prefix' =>'admin/', 'middleware' => ['auth', 'is_admin']], functi
 
     // Daybook
     Route::get('cashbook', [DaybookController::class, 'cashbook'])->name('admin.cashbook');
+    Route::post('cashbook', [DaybookController::class, 'cashbookByDate'])->name('admin.cashbook');
     Route::get('bankbook', [DaybookController::class, 'bankbook'])->name('admin.bankbook');
+    Route::post('bankbook', [DaybookController::class, 'bankbookByDate'])->name('admin.bankbook');
 
     //Financial statistics
     Route::get('cash-flow', [CashflowController::class, 'cashFlow'])->name('admin.cashflow');
@@ -282,4 +285,7 @@ Route::group(['prefix' =>'admin/', 'middleware' => ['auth', 'is_admin']], functi
     Route::get('balance-sheet', [BalancesheetController::class, 'balanceSheet'])->name('admin.balancesheet');
     Route::post('balance-sheet', [BalancesheetController::class, 'balanceSheetByDate'])->name('admin.balancesheet');
 
+    // company information
+    Route::get('/company-details', [CompanyDetailsController::class, 'index'])->name('admin.companyDetail');
+    Route::post('/company-details', [CompanyDetailsController::class, 'update'])->name('admin.companyDetails');
 });
