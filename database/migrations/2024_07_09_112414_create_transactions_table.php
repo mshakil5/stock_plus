@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('date')->nullable();
             $table->unsignedBigInteger('chart_of_account_id')->nullable();
             $table->foreign('chart_of_account_id')->references('id')->on('chart_of_accounts');
+            $table->string('tran_id')->nullable();
             $table->string('table_type')->nullable();
             $table->string('ref')->nullable();
             $table->longText('description')->nullable();

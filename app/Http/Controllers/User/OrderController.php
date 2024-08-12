@@ -19,6 +19,7 @@ use App\Models\OrderDetail;
 use App\Models\StockTransferRequest;
 use Illuminate\Support\Facades\Auth;
 use Yajra\DataTables\Facades\DataTables;
+use App\Models\Transaction;
 
 class OrderController extends Controller
 {
@@ -168,6 +169,27 @@ class OrderController extends Controller
         $order->created_by = Auth::user()->id;
         $order->status = 0;
         if($order->save()){
+
+                $transaction = new Transaction();
+                $transaction->date = $request->orderdate;
+                $transaction->table_type = 'Income';
+                // $transaction->ref = '';
+                // $transaction->description = '';
+                $transaction->amount = $request->grand_total;
+                $transaction->vat_amount = $request->vat_total;
+                $transaction->at_amount = $request->net_total;
+                $transaction->transaction_type = 'Current';
+                if ($request->salestype == "Credit") {
+                    $transaction->payment_type = "Account Receivable";
+                } else {
+                    $transaction->payment_type = $request->salestype;
+                }
+
+                // $transaction->supplier_id = $request->vendor_id;
+                $transaction->branch_id = Auth::user()->branch_id;
+                $transaction->created_by = Auth()->user()->id;
+                $transaction->created_ip = request()->ip();
+                $transaction->save();
 
             foreach($request->input('product_id') as $key => $value)
             {

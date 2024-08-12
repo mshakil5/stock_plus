@@ -15,7 +15,7 @@ class IncomestatementController extends Controller
             ->where('branch_id', auth()->user()->branch_id)
             ->get();
 
-        $expenses = Transaction::where('table_type', 'Expenses')
+        $expenses = Transaction::whereIn('table_type', ['Expenses', 'Cogs'])
             ->whereIn('transaction_type', ['Current', 'Prepaid'])
             ->where('status', 0)
             ->where('branch_id', auth()->user()->branch_id)

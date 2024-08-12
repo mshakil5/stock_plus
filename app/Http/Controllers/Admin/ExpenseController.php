@@ -8,6 +8,7 @@ use App\Models\Transaction;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
 
 class ExpenseController extends Controller
 {
@@ -52,7 +53,7 @@ class ExpenseController extends Controller
         // }
 
         $transaction = new Transaction();
-
+        $transaction->tran_id = strtoupper(Str::random(2)) . date('Y') . str_pad(mt_rand(1, 999999), 6, '0', STR_PAD_LEFT);
         $transaction->date = $request->input('date');
         $transaction->chart_of_account_id = $request->input('chart_of_account_id');
         $transaction->table_type = $request->input('table_type');

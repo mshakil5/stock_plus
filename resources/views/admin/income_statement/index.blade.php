@@ -66,7 +66,7 @@
                         @foreach($incomes as $income)
                             <tr>
                                 <td></td>
-                                <td>{{ $income->chartOfAccount->account_name }}</td>        
+                                <td>{{ $income->chartOfAccount->account_name  ?? 'Sales'}}</td>        
                                 <td>{{ number_format($income->at_amount, 2) }}</td>
                                 <td></td>
                             </tr>
@@ -99,7 +99,7 @@
                         @foreach($expenses as $expense)
                             <tr>
                                 <td></td>
-                                <td>{{ $expense->chartOfAccount->account_name }}</td>        
+                                <td>{{ $expense->chartOfAccount->account_name ?? 'Purchase' }}</td>        
                                 <td>{{ number_format($expense->at_amount, 2) }}</td>
                                 <td></td>
                             </tr>

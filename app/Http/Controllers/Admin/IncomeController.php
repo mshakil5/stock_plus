@@ -8,6 +8,7 @@ use App\Models\Transaction;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
 
 class IncomeController extends Controller
 {
@@ -17,7 +18,7 @@ class IncomeController extends Controller
             $transactions = Transaction::with('chartOfAccount')->where('table_type', 'Income')->latest()->get();
             return DataTables::of($transactions)
                 ->addColumn('chart_of_account', function ($transaction) {
-                    return $transaction->chartOfAccount->account_name;
+                    return $transaction->chartOfAccount ? $transaction->chartOfAccount->account_name : 'NA';
                 })
                 ->make(true);
         }
@@ -48,7 +49,7 @@ class IncomeController extends Controller
         // }
 
         $transaction = new Transaction();
-
+        $transaction->tran_id = strtoupper(Str::random(2)) . date('Y') . str_pad(mt_rand(1, 999999), 6, '0', STR_PAD_LEFT);
         $transaction->date = $request->input('date');
         $transaction->chart_of_account_id = $request->input('chart_of_account_id');
         $transaction->table_type = 'Income';
