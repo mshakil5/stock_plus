@@ -259,64 +259,6 @@
                     </li>
                     @endif
 
-                    @if(Auth::user()->type == '1' && in_array('22', json_decode(Auth::user()->role->permission)) || Auth::user()->type == '0' && in_array('22', json_decode(Auth::user()->role->permission)))
-                    <li class="{{ (request()->is('admin/payment-method')) ? 'active' : '' }}">
-                        <a href="{{ route('view_payment_method')}}">
-                            <i class="fa fa-users"></i>
-                            <span>Payment Method</span>
-                            <span class="pull-right-container"> </span>
-                        </a>
-                    </li>
-                    @endif
-
-                    @if(Auth::user()->type == '1' && in_array('23', json_decode(Auth::user()->role->permission)) || Auth::user()->type == '0' && in_array('23', json_decode(Auth::user()->role->permission)))
-                    <li class="{{ (request()->is('admin/getreport-title')) ? 'active' : '' }}{{ (request()->is('admin/sales-report')) ? 'active' : '' }}{{ (request()->is('admin/sales-return-report')) ? 'active' : '' }}{{ (request()->is('admin/quotation-report')) ? 'active' : '' }}{{ (request()->is('admin/delivery-note-report')) ? 'active' : '' }}{{ (request()->is('admin/purchase-report')) ? 'active' : '' }}{{ (request()->is('admin/purchase-return-report')) ? 'active' : '' }}{{ (request()->is('admin/stock-transfer-report')) ? 'active' : '' }}">
-                        <a href="{{ route('report')}}">
-                            <i class="fa fa-users"></i>
-                            <span>Report</span>
-                            <span class="pull-right-container"> </span>
-                        </a>
-                    </li>
-                    @endif
-
-
-                    @if(Auth::user()->type == '1' && in_array('8', json_decode(Auth::user()->role->permission)) || Auth::user()->type == '0' && in_array('8', json_decode(Auth::user()->role->permission)))
-                    <li class="treeview {{ (request()->is('admin/role*')) ? 'active' : '' }}{{ (request()->is('admin/manage-user')) ? 'active' : '' }}{{ (request()->is('admin/create-user')) ? 'active' : '' }}{{ (request()->is('admin/manage-admin')) ? 'active' : '' }}{{ (request()->is('admin/create-admin')) ? 'active' : '' }}{{ (request()->is('admin/create-employee')) ? 'active' : '' }}{{ (request()->is('admin/manage-employee')) ? 'active' : '' }}">
-                        <a href="#">
-                            <i class="fa fa-users"></i>
-                            <span>System Users</span>
-                            <span class="pull-right-container">
-                            <i class="fa fa-angle-left pull-right"></i></span>
-                        </a>
-                        <ul class="treeview-menu">
-                            <!-- <li class="{{ (request()->is('admin/create-user')) ? 'active' : '' }}"><a href="{{ route('create_user')}}"><i class="fa fa-plus"></i> Add New User</a>
-                            </li> -->
-                            <!-- <li class="{{ (request()->is('admin/manage-user')) ? 'active' : '' }}"><a href="{{ route('manage_user')}}"><i class="fa fa-adjust"></i>Manage User</a>
-                            </li> -->
-                            <li class="{{ (request()->is('admin/create-admin')) ? 'active' : '' }}"><a href="{{ route('create_admin')}}"><i class="fa fa-plus"></i> Add New Admin</a>
-                            
-                            <li class="{{ (request()->is('admin/manage-admin')) ? 'active' : '' }}"><a href="{{ route('manage_admin')}}"><i class="fa fa-adjust"></i>Manage Admin</a>
-                            </li>
-
-                            <li class="{{ (request()->is('admin/create-employee')) ? 'active' : '' }}"><a href="{{ route('create_employee')}}"><i class="fa fa-plus"></i> Add New Employee</a>
-                            </li>
-                            <li class="{{ (request()->is('admin/manage-employee')) ? 'active' : '' }}"><a href="{{ route('manage_employee')}}"><i class="fa fa-adjust"></i>Manage Employee</a>
-                            </li>
-
-                            <li class="{{ (request()->is('admin/role*')) ? 'active' : '' }}"><a href="{{ route('admin.role')}}"><i class="fa fa-adjust"></i>Manage Role</a>
-                            </li>
-                        </ul>
-                    </li>
-                    @endif
-
-                    <li class="{{ (request()->is('admin/switch_branch')) ? 'active' : '' }}">
-                        <a href="{{ route('switch_branch')}}">
-                            <i class="fa fa-users"></i>
-                            <span>Swich Branch</span>
-                            <span class="pull-right-container"> </span>
-                        </a>
-                    </li>
-
                     <li class="{{ (request()->is('admin/chart-of-account')) ? 'active' : '' }}">
                         <a href="{{ route('admin.addchartofaccount')}}">
                             <i class="fa fa-users"></i>
@@ -325,24 +267,12 @@
                         </a>
                     </li>
 
-                    <li class="{{ request()->routeIs('admin.equityholders', 'admin.shareholders-ledger') ? 'active' : '' }}">
-                        <a href="{{ route('admin.equityholders')}}">
+                    <li class="{{ (request()->is('admin/income')) ? 'active' : '' }}">
+                        <a href="{{ route('admin.income')}}">
                             <i class="fa fa-users"></i>
-                            <span>Share Holders</span>
+                            <span>Income</span>
                             <span class="pull-right-container"> </span>
                         </a>
-                    </li>
-
-                    <li class="treeview {{ (request()->is('admin/cash-flow') || request()->is('admin/income-statement') || request()->is('admin/balance-sheet')) ? 'active' : '' }}">
-                        <a href="#">
-                            <i class="fa fa-user"></i> <span>Financial Statement</span><span class="pull-right-container">
-                            <i class="fa fa-angle-left pull-right"></i></span>
-                        </a>
-                        <ul class="treeview-menu">
-                            <li class="{{ (request()->is('admin/cash-flow')) ? 'active' : '' }}"><a href="{{ route('admin.cashflow') }}"><i class="fa fa-adjust"></i> Cash Flow</a></li>
-                            <li class="{{ (request()->is('admin/income-statement')) ? 'active' : '' }}"><a href="{{ route('admin.incomestatement') }}"><i class="fa fa-adjust"></i>Income Statement</a></li>
-                            <li class="{{ (request()->is('admin/balance-sheet')) ? 'active' : '' }}"><a href="{{ route('admin.balancesheet') }}"><i class="fa fa-adjust"></i>Balance Sheet</a></li>
-                        </ul>
                     </li>
 
                     <li class="{{ (request()->is('admin/expense')) ? 'active' : '' }}">
@@ -353,7 +283,6 @@
                         </a>
                     </li>
 
-
                     <li class="{{ (request()->is('admin/asset')) ? 'active' : '' }}">
                         <a href="{{ route('admin.asset')}}">
                             <i class="fa fa-users"></i>
@@ -361,16 +290,6 @@
                             <span class="pull-right-container"> </span>
                         </a>
                     </li>
-
-
-                    <li class="{{ (request()->is('admin/income')) ? 'active' : '' }}">
-                        <a href="{{ route('admin.income')}}">
-                            <i class="fa fa-users"></i>
-                            <span>Income</span>
-                            <span class="pull-right-container"> </span>
-                        </a>
-                    </li>
-
 
                     <li class="{{ (request()->is('admin/liabilities')) ? 'active' : '' }}">
                         <a href="{{ route('admin.liabilities')}}">
@@ -410,6 +329,26 @@
                         </ul>
                     </li>
 
+                    <li class="treeview {{ (request()->is('admin/cash-flow') || request()->is('admin/income-statement') || request()->is('admin/balance-sheet')) ? 'active' : '' }}">
+                        <a href="#">
+                            <i class="fa fa-user"></i> <span>Financial Statement</span><span class="pull-right-container">
+                            <i class="fa fa-angle-left pull-right"></i></span>
+                        </a>
+                        <ul class="treeview-menu">
+                            <li class="{{ (request()->is('admin/cash-flow')) ? 'active' : '' }}"><a href="{{ route('admin.cashflow') }}"><i class="fa fa-adjust"></i> Cash Flow</a></li>
+                            <li class="{{ (request()->is('admin/income-statement')) ? 'active' : '' }}"><a href="{{ route('admin.incomestatement') }}"><i class="fa fa-adjust"></i>Income Statement</a></li>
+                            <li class="{{ (request()->is('admin/balance-sheet')) ? 'active' : '' }}"><a href="{{ route('admin.balancesheet') }}"><i class="fa fa-adjust"></i>Balance Sheet</a></li>
+                        </ul>
+                    </li>
+
+                    <li class="{{ request()->routeIs('admin.equityholders', 'admin.shareholders-ledger') ? 'active' : '' }}">
+                        <a href="{{ route('admin.equityholders')}}">
+                            <i class="fa fa-users"></i>
+                            <span>Share Holders</span>
+                            <span class="pull-right-container"> </span>
+                        </a>
+                    </li>
+
                     <li class="{{ (request()->is('admin/company-details')) ? 'active' : '' }}">
                         <a href="{{ route('admin.companyDetail')}}">
                             <i class="fa fa-users"></i>
@@ -418,6 +357,67 @@
                         </a>
                     </li>
 
+                    @if(Auth::user()->type == '1' && in_array('23', json_decode(Auth::user()->role->permission)) || Auth::user()->type == '0' && in_array('23', json_decode(Auth::user()->role->permission)))
+                        <li class="{{ (request()->is('admin/getreport-title')) ? 'active' : '' }}{{ (request()->is('admin/sales-report')) ? 'active' : '' }}{{ (request()->is('admin/sales-return-report')) ? 'active' : '' }}{{ (request()->is('admin/quotation-report')) ? 'active' : '' }}{{ (request()->is('admin/delivery-note-report')) ? 'active' : '' }}{{ (request()->is('admin/purchase-report')) ? 'active' : '' }}{{ (request()->is('admin/purchase-return-report')) ? 'active' : '' }}{{ (request()->is('admin/stock-transfer-report')) ? 'active' : '' }}">
+                            <a href="{{ route('report')}}">
+                                <i class="fa fa-users"></i>
+                                <span>Report</span>
+                                <span class="pull-right-container"> </span>
+                            </a>
+                        </li>
+                    @endif
+
+                    @if(Auth::user()->type == '1' && in_array('8', json_decode(Auth::user()->role->permission)) || Auth::user()->type == '0' && in_array('8', json_decode(Auth::user()->role->permission)))
+                    <li class="treeview {{ (request()->is('admin/role*')) ? 'active' : '' }}{{ (request()->is('admin/manage-user')) ? 'active' : '' }}{{ (request()->is('admin/create-user')) ? 'active' : '' }}{{ (request()->is('admin/manage-admin')) ? 'active' : '' }}{{ (request()->is('admin/create-admin')) ? 'active' : '' }}{{ (request()->is('admin/create-employee')) ? 'active' : '' }}{{ (request()->is('admin/manage-employee')) ? 'active' : '' }}">
+                        <a href="#">
+                            <i class="fa fa-users"></i>
+                            <span>System Users</span>
+                            <span class="pull-right-container">
+                            <i class="fa fa-angle-left pull-right"></i></span>
+                        </a>
+                        <ul class="treeview-menu">
+                            <!-- <li class="{{ (request()->is('admin/create-user')) ? 'active' : '' }}"><a href="{{ route('create_user')}}"><i class="fa fa-plus"></i> Add New User</a>
+                            </li> -->
+                            <!-- <li class="{{ (request()->is('admin/manage-user')) ? 'active' : '' }}"><a href="{{ route('manage_user')}}"><i class="fa fa-adjust"></i>Manage User</a>
+                            </li> -->
+                            <li class="{{ (request()->is('admin/create-admin')) ? 'active' : '' }}"><a href="{{ route('create_admin')}}"><i class="fa fa-plus"></i> Add New Admin</a>
+                            
+                            <li class="{{ (request()->is('admin/manage-admin')) ? 'active' : '' }}"><a href="{{ route('manage_admin')}}"><i class="fa fa-adjust"></i>Manage Admin</a>
+                            </li>
+
+                            <li class="{{ (request()->is('admin/create-employee')) ? 'active' : '' }}"><a href="{{ route('create_employee')}}"><i class="fa fa-plus"></i> Add New Employee</a>
+                            </li>
+                            <li class="{{ (request()->is('admin/manage-employee')) ? 'active' : '' }}"><a href="{{ route('manage_employee')}}"><i class="fa fa-adjust"></i>Manage Employee</a>
+                            </li>
+
+                            <li class="{{ (request()->is('admin/role*')) ? 'active' : '' }}"><a href="{{ route('admin.role')}}"><i class="fa fa-adjust"></i>Manage Role</a>
+                            </li>
+                        </ul>
+                    </li>
+                    @endif
+
+                    <li class="treeview {{ request()->is('admin/payment-method') || request()->is('admin/switch_branch') ? 'active' : '' }}">
+                        <a href="#">
+                            <i class="fa fa-cog"></i> <span>Settings</span>
+                            <span class="pull-right-container">
+                                <i class="fa fa-angle-left pull-right"></i>
+                            </span>
+                        </a>
+                        <ul class="treeview-menu">
+                            @if((Auth::user()->type == '1' || Auth::user()->type == '0') && in_array('22', json_decode(Auth::user()->role->permission)))
+                            <li class="{{ request()->is('admin/payment-method') ? 'active' : '' }}">
+                                <a href="{{ route('view_payment_method') }}">
+                                    <i class="fa fa-users"></i> Payment Method
+                                </a>
+                            </li>
+                            @endif
+                            <li class="{{ request()->is('admin/switch_branch') ? 'active' : '' }}">
+                                <a href="{{ route('switch_branch') }}">
+                                    <i class="fa fa-users"></i> Switch Branch
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
 
                     {{-- <li>
                         <a href="">
