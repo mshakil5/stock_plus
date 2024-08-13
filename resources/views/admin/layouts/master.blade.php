@@ -349,14 +349,6 @@
                         </a>
                     </li>
 
-                    <li class="{{ (request()->is('admin/company-details')) ? 'active' : '' }}">
-                        <a href="{{ route('admin.companyDetail')}}">
-                            <i class="fa fa-users"></i>
-                            <span>Company Details</span>
-                            <span class="pull-right-container"> </span>
-                        </a>
-                    </li>
-
                     @if(Auth::user()->type == '1' && in_array('23', json_decode(Auth::user()->role->permission)) || Auth::user()->type == '0' && in_array('23', json_decode(Auth::user()->role->permission)))
                         <li class="{{ (request()->is('admin/getreport-title')) ? 'active' : '' }}{{ (request()->is('admin/sales-report')) ? 'active' : '' }}{{ (request()->is('admin/sales-return-report')) ? 'active' : '' }}{{ (request()->is('admin/quotation-report')) ? 'active' : '' }}{{ (request()->is('admin/delivery-note-report')) ? 'active' : '' }}{{ (request()->is('admin/purchase-report')) ? 'active' : '' }}{{ (request()->is('admin/purchase-return-report')) ? 'active' : '' }}{{ (request()->is('admin/stock-transfer-report')) ? 'active' : '' }}">
                             <a href="{{ route('report')}}">
@@ -396,7 +388,7 @@
                     </li>
                     @endif
 
-                    <li class="treeview {{ request()->is('admin/payment-method') || request()->is('admin/switch_branch') ? 'active' : '' }}">
+                    <li class="treeview {{ request()->is('admin/payment-method') || request()->is('admin/switch-branch') || request()->is('admin/company-details') ? 'active' : '' }}">
                         <a href="#">
                             <i class="fa fa-cog"></i> <span>Settings</span>
                             <span class="pull-right-container">
@@ -411,9 +403,14 @@
                                 </a>
                             </li>
                             @endif
-                            <li class="{{ request()->is('admin/switch_branch') ? 'active' : '' }}">
+                            <li class="{{ request()->is('admin/switch-branch') ? 'active' : '' }}">
                                 <a href="{{ route('switch_branch') }}">
                                     <i class="fa fa-users"></i> Switch Branch
+                                </a>
+                            </li>
+                            <li class="{{ request()->is('admin/company-details') ? 'active' : '' }}">
+                                <a href="{{ route('admin.companyDetail') }}">
+                                    <i class="fa fa-users"></i> Company Details
                                 </a>
                             </li>
                         </ul>
