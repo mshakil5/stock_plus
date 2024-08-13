@@ -74,7 +74,7 @@
                                 <tr>
                                     <td> {{ $key + 1 }} </td>
                                     <td>{{ \Carbon\Carbon::parse($cashbook->date)->format('d-m-Y') }}</td>
-                                    <td>{{ $cashbook->chartOfAccount->account_name }}</td>
+                                    <td>{{ $cashbook->chartOfAccount->account_name ?? ''}}</td>
                                     <td>{{ $cashbook->ref }}</td>
                                     @if(in_array($cashbook->transaction_type, ['Current', 'Received', 'Sold', 'Advance']))
                                     <td>{{ $cashbook->at_amount }}</td>
