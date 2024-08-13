@@ -71,6 +71,49 @@
         @endcomponent
     </div>
 </div>
+
+<style>
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        overflow-x: auto;
+    }
+
+    tbody tr {
+        background-color: #f9f9f9;
+        border-bottom: 1px solid #eee;
+    }
+
+    td {
+        padding: 5px;
+        border-radius: 5px;
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        transition: background-color 0.3s ease;
+    }
+
+    td a {
+        color: #333;
+        text-decoration: none;
+        display: block;
+        padding: 8px;
+        border-radius: 3px;
+        background-color: #fff;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    td a:hover {
+        background-color: #f0f0f0;
+    }
+
+    hr {
+        border-top: 1px solid transparent;
+        height: 1px;
+        background-color: transparent;
+        margin: 5px 0;
+    }
+
+</style>
+
 @endsection
 
 @section('script')
