@@ -171,7 +171,6 @@ class OrderController extends Controller
         if($order->save()){
 
                 $transaction = new Transaction();
-                $transaction->tran_id = strtoupper(Str::random(2)) . date('Y') . str_pad(mt_rand(1, 999999), 6, '0', STR_PAD_LEFT);
                 $transaction->date = $request->orderdate;
                 $transaction->table_type = 'Income';
                 // $transaction->ref = '';
@@ -190,6 +189,8 @@ class OrderController extends Controller
                 $transaction->branch_id = Auth::user()->branch_id;
                 $transaction->created_by = Auth()->user()->id;
                 $transaction->created_ip = request()->ip();
+                $transaction->save();
+                $transaction->tran_id = 'SA' . date('Ymd') . str_pad($transaction->id, 6, '0', STR_PAD_LEFT);
                 $transaction->save();
 
             foreach($request->input('product_id') as $key => $value)

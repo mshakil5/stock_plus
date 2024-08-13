@@ -49,7 +49,6 @@ class IncomeController extends Controller
         // }
 
         $transaction = new Transaction();
-        $transaction->tran_id = strtoupper(Str::random(2)) . date('Y') . str_pad(mt_rand(1, 999999), 6, '0', STR_PAD_LEFT);
         $transaction->date = $request->input('date');
         $transaction->chart_of_account_id = $request->input('chart_of_account_id');
         $transaction->table_type = 'Income';
@@ -69,6 +68,8 @@ class IncomeController extends Controller
         $transaction->created_by = Auth()->user()->id;
         $transaction->created_ip = request()->ip();
 
+        $transaction->save();
+        $transaction->tran_id = 'IN' . date('Ymd') . str_pad($transaction->id, 6, '0', STR_PAD_LEFT);
         $transaction->save();
 
         return response()->json(['status' => 200, 'message' => 'Created Successfully']);

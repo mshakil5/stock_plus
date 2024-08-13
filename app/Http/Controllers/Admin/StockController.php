@@ -145,7 +145,6 @@ class StockController extends Controller
             if ($purchase->save()) {
 
                 $transaction = new Transaction();
-                $transaction->tran_id = strtoupper(Str::random(2)) . date('Y') . str_pad(mt_rand(1, 999999), 6, '0', STR_PAD_LEFT);
                 $transaction->purchase_id = $purchase->id;
                 $transaction->date = $request->input('date');
                 $transaction->table_type = 'Cogs';
@@ -165,6 +164,9 @@ class StockController extends Controller
                 $transaction->branch_id = Auth::user()->branch_id;
                 $transaction->created_by = Auth()->user()->id;
                 $transaction->created_ip = request()->ip();
+                $transaction->save();
+
+                $transaction->tran_id = 'PU' . date('Ymd') . str_pad($transaction->id, 6, '0', STR_PAD_LEFT);
                 $transaction->save();
                 
                 foreach($request->input('product_id') as $key => $value)

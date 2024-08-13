@@ -74,6 +74,8 @@ class ExpenseController extends Controller
         $transaction->created_ip = request()->ip();
 
         $transaction->save();
+        $transaction->tran_id = 'EX' . date('Ymd') . str_pad($transaction->id, 6, '0', STR_PAD_LEFT);
+        $transaction->save();
 
         return response()->json(['status' => 200, 'message' => 'Created Successfully']);
 
