@@ -21,6 +21,7 @@ return new class extends Migration
             $table->string('tran_id')->nullable();
             $table->string('table_type')->nullable();
             $table->string('ref')->nullable();
+            $table->string('authoriser')->nullable();
             $table->longText('description')->nullable();
             $table->decimal('amount', 10, 2)->default(0)->nullable();
             $table->decimal('tax_rate', 10, 2)->default(0)->nullable();
