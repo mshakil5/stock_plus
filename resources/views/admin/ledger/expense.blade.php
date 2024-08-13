@@ -41,8 +41,9 @@
                     <table id="assetTransactionsTable" class="table table-striped table-bordered">
                         <thead>
                             <tr>
-                                <th>SL</th>
+                                <th>ID</th>
                                 <th>Date</th>
+                                <th>Transaction Inputter</th>
                                 <th>Description</th>
                                 <th>Payment Type</th>
                                 <th>Ref</th>
@@ -61,6 +62,7 @@
                                 <tr>
                                     <td>{{ $index + 1 }}</td>
                                     <td>{{ \Carbon\Carbon::parse($asset->date)->format('d-m-Y') }}</td>
+                                    <td>{{ $asset->creator->name ?? 'Unknown' }}</td>
                                     <td>{{ $asset->description }}</td>
                                     <td>{{ $asset->payment_type }}</td>
                                     <td>{{ $asset->ref }}</td>

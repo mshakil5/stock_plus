@@ -148,7 +148,7 @@ class StockController extends Controller
                 $transaction->purchase_id = $purchase->id;
                 $transaction->date = $request->input('date');
                 $transaction->table_type = 'Cogs';
-                $transaction->ref = 'Purchase';
+                // $transaction->ref = 'Purchase';
                 $transaction->description = 'Purchase';
                 $transaction->amount = $request->total_amount;
                 $transaction->vat_amount = $request->total_vat_amount;

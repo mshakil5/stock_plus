@@ -18,4 +18,9 @@ class Transaction extends Model
     {
         return $this->belongsTo(EquityHolder::class, 'share_holder_id');
     }
+
+    public function creator()
+    {
+        return $this->belongsTo(User::class, 'created_by');
+    }
 }

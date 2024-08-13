@@ -189,7 +189,7 @@
         },
         deferRender: true,
         columns: [
-            {data: 'id', name: 'id'},
+            {data: 'tran_id', name: 'tran_id'},
             {data: 'date', name: 'date'},
             {data: 'chart_of_account', name: 'chart_of_account'},
             {data: 'ref', name: 'ref'},
