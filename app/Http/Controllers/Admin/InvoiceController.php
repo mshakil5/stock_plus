@@ -56,13 +56,27 @@ class InvoiceController extends Controller
             ->addColumn('action', function ($invoice) {
                 $btn = '<div class="table-actions text-right">';
 
-                    $btn .= '<a href="https://www.greenstock.greentechnology.com.bd/sales-return/'.$invoice->id.'" class="btn btn-info btn-xs ms-1"><i class="fa fa-undo" aria-hidden="true"></i><span title="Return">Return</span></a>';
+                    $btn = '<a href="' . route('sales.return', $invoice->id) . '" class="btn btn-info btn-xs ms-1">
+                                <i class="fa fa-undo" aria-hidden="true"></i><span title="Return">Return</span>
+                            </a>';
 
-                    $btn .= '<a href="https://www.greenstock.greentechnology.com.bd/sales-edit/'.$invoice->id.'" class="btn btn-warning btn-xs ms-1"><i class="fa fa-pencil" aria-hidden="true"></i><span title="Edit">Edit</span></a>';
+                    $btn .= '<a href="' . route('sales.edit', $invoice->id) . '" class="btn btn-warning btn-xs ms-1">
+                        <i class="fa fa-pencil" aria-hidden="true"></i><span title="Edit">Edit</span>
+                    </a>';
 
-                    $btn .= '<a href="https://www.greenstock.greentechnology.com.bd/invoice/print/'.$invoice->id.'" class="btn btn-success btn-xs print-window" target="blank"><span title="Print Invoice">Print</span></a>';
+                    $btn .= '<a href="' . route('customer.invoice.print', $invoice->id) . '" class="btn btn-success btn-xs print-window" target="_blank">
+                        <span title="Print Invoice">Print</span>
+                    </a>';
+
                 
-                    $btn .= '<a href="https://www.greenstock.greentechnology.com.bd/admin/invoice/' . $invoice->id . '" class="btn btn-primary btn-xs"><span title="Download Invoice" ><i class="fa fa-download" aria-hidden="true"></i>Download</span></a><button type="button" class="btn btn-primary btn-xs view-btn" data-toggle="modal" data-target="#product-details" value="'.$invoice->id.'"><i class="fa fa-eye" aria-hidden="true"></i> View</button>';
+                    $btn .= '<a href="' . route('admin.get_invoice', $invoice->id) . '" class="btn btn-primary btn-xs">
+                        <span title="Download Invoice">
+                            <i class="fa fa-download" aria-hidden="true"></i> Download
+                        </span>
+                    </a>
+                    <button type="button" class="btn btn-primary btn-xs view-btn" data-toggle="modal" data-target="#product-details" value="' . $invoice->id . '">
+                        <i class="fa fa-eye" aria-hidden="true"></i> View
+                    </button>';
                 
                 $btn .= '</div>';
                 return $btn;

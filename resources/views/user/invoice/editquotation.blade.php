@@ -827,11 +827,10 @@
                             $(".ermsg").html(d.message);
                             pagetop();
                         }else if(d.status == 300){
-                            console.log(d);
                             $(".ermsg").html(d.message);
                             pagetop();
                             window.setTimeout(function(){location.reload()},2000)
-                            window.open(`https://www.greenstock.greentechnology.com.bd/invoice/print/${d.id}`, '_blank');
+                            window.open(`{{ route('customer.invoice.print', '') }}/${d.id}`, '_blank');
                             
                         }
                     },
@@ -902,7 +901,7 @@
                             $(".ermsg").html(d.message);
                             pagetop();
                             window.setTimeout(function(){location.reload()},2000)
-                            window.open(`https://www.greenstock.greentechnology.com.bd/invoice/print/${d.id}`, '_blank');
+                            window.open(`{{ route('customer.invoice.print', '') }}/${d.id}`, '_blank');
                             
                         }
                     },
@@ -974,7 +973,7 @@
                             $(".ermsg").html(d.message);
                             pagetop();
                             window.setTimeout(function(){location.reload()},2000)
-                            window.open(`https://www.greenstock.greentechnology.com.bd/invoice/print/${d.id}`, '_blank');
+                            window.open(`{{ route('customer.invoice.print', '') }}/${d.id}`, '_blank');
                             
                         }
                     },
