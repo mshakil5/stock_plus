@@ -73,7 +73,25 @@
                             </select>
                         </div>
                     </div>
+
+                    <div class="form-group">
+                        <label for="contingent" class="col-sm-3 control-label">Contingent</label>
+                        <div class="col-sm-9">
+                            <select class="form-control" name="contingent" id="contingent">
+                                <option value="Non-Contingent">Non-Contingent</option>
+                                <option value="Contingent">Contingent</option>
+                            </select>
+                        </div>
+                    </div>
                     
+                    <div class="form-group">
+                        <label for="serial" class="col-sm-3 control-label">Serial</label>
+                        <div class="col-sm-9">
+                            <input type="number" name="serial" class="form-control " id="serial"
+                                placeholder="Ex: 1">
+                        </div>
+                    </div>
+
                     <div class="form-group">
                         <label for="account_name" class="col-sm-3 control-label">Account Name</label>
                         <div class="col-sm-9">
@@ -196,6 +214,8 @@
                         case "Expenses":
                             $("<option>").val("Cost Of Good Sold").text("Cost Of Good Sold").prop('selected', selectedSubHead === "Cost Of Good Sold").appendTo("#sub_account_head");
                             $("<option>").val("Overhead Expense").text("Overhead Expense").prop('selected', selectedSubHead === "Overhead Expense").appendTo("#sub_account_head");
+                            $("<option>").val("Operating").text("Operating").prop('selected', selectedSubHead === "Operating").appendTo("#sub_account_head");
+                            $("<option>").val("Administrative").text("Administrative").prop('selected', selectedSubHead === "Administrative").appendTo("#sub_account_head");
                             break;
                         case "Income":
                             $("<option>").val("Direct Income").text("Direct Income").prop('selected', selectedSubHead === "Direct Income").appendTo("#sub_account_head");
@@ -205,6 +225,7 @@
                             $("<option>").val("Current Liabilities").text("Current Liabilities").prop('selected', selectedSubHead === "Current Liabilities").appendTo("#sub_account_head");
                             $("<option>").val("Long Term Liabilities").text("Long Term Liabilities").prop('selected', selectedSubHead === "Long Term Liabilities").appendTo("#sub_account_head");
                             $("<option>").val("Account Payable").text("Account Payable").prop('selected', selectedSubHead === "Account Payable").appendTo("#sub_account_head");
+                            $("<option>").val("Short Term Liabilities").text("Short Term Liabilities").prop('selected', selectedSubHead === "Short Term Liabilities").appendTo("#sub_account_head");
                             break;
                         case "Equity":
                             $("<option>").val("Equity Capital").text("Equity Capital").prop('selected', selectedSubHead === "Equity Capital").appendTo("#sub_account_head");
@@ -218,6 +239,8 @@
                     modal.find('#account_head').val(response.account_head);
                     modal.find('#account_name').val(response.account_name);
                     modal.find('#description').val(response.description);
+                    modal.find('#contingent').val(response.contingent);
+                    modal.find('#serial').val(response.serial);
                     $('#chartModal .submit-btn').removeClass('save-btn').addClass('update-btn').text('Update').val(response.id);
                 }
             });
@@ -312,7 +335,13 @@
               } else if(val == "Expenses"){
 
                   clearfield();
-                  $("#sub_account_head").html("<option value=''>Please Select</option><option value='Cost Of Good Sold'>Cost Of Good Sold</option><option value='Overhead Expense'>Overhead Expense</option>");
+                  $("#sub_account_head").html(
+                    "<option value=''>Please Select</option>" +
+                    "<option value='Cost Of Good Sold'>Cost Of Good Sold</option>" +
+                    "<option value='Overhead Expense'>Overhead Expense</option>" +
+                    "<option value='Operating'>Operating</option>" +
+                    "<option value='Administrative'>Administrative</option>"
+                );
 
               }else if(val == "Income"){
 
@@ -322,7 +351,14 @@
               }else if(val == "Liabilities"){
 
                   clearfield();
-                  $("#sub_account_head").html("<option value=''>Please Select</option><option value='Current Liabilities'>Current Liabilities</option><option value='Long Term Liabilities'>Long Term Liabilities</option> <option value='Account Payable'>Account Payable</option>");
+                  $("#sub_account_head").html(`
+                    <option value=''>Please Select</option>
+                    <option value='Current Liabilities'>Current Liabilities</option>
+                    <option value='Long Term Liabilities'>Long Term Liabilities</option>
+                    <option value='Account Payable'>Account Payable</option>
+                    <option value='Short Term Liabilities'>Short Term Liabilities</option>
+                `);
+
 
               }else if(val == "Equity"){
 

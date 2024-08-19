@@ -18,6 +18,8 @@ return new class extends Migration
             $table->string('account_head')->nullable();
             $table->string('sub_account_head')->nullable();
             $table->string('date')->nullable();
+            $table->string('contingent')->nullable();
+            $table->string('serial')->nullable();
             $table->string('account_name')->nullable();
             $table->longText('description')->nullable();
             $table->unsignedBigInteger('branch_id')->nullable();
