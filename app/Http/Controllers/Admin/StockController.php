@@ -567,7 +567,8 @@ class StockController extends Controller
                     ->join('products', 'purchase_histories.product_id', '=', 'products.id')
                     ->select('purchase_histories.*', 'products.productname', 'products.unit', 'products.location', 'products.selling_price')
                     ->get();
-        $purchase = Purchase::with('purchasehistory')->orderby('id','DESC')->get();
+        $branchId = Auth::user()->branch_id;
+        $purchase = Purchase::with('purchasehistory')->where('branch_id', $branchId)->orderby('id','DESC')->get();
 
                     // dd($histories);
         return view('admin.stock.purchasehistory', compact('histories','purchase'));
