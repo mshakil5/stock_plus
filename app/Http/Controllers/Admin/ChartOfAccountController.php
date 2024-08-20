@@ -114,6 +114,15 @@ class ChartOfAccountController extends Controller
 
         $chartOfAccount = ChartOfAccount::find($id);
 
+        $existingAccount = ChartOfAccount::where('account_name', $request->account_name)
+                                  ->where('branch_id', Auth::user()->branch_id)
+                                  ->where('id', '!=', $chartOfAccount->id)
+                                  ->first();
+
+        if ($existingAccount) {
+            return response()->json(['status' => 303, 'message' => 'Account Name already exists for this branch..!']);
+        }
+
         $existingAccount = ChartOfAccount::where('account_head', $request->account_head)
             ->where('sub_account_head', $request->sub_account_head)
             ->where('serial', $request->serial)

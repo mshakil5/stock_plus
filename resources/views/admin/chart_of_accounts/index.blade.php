@@ -13,6 +13,10 @@
                             data-purpose="0">+
                         Add New Chart Of Account
                     </button>
+
+                    <button class="btn btn-lg btn-success" onclick="window.location.href='{{ route('admin.balancesheet') }}'">
+                        Format
+                    </button>
             @endslot
             @slot('description')
                 Account description
@@ -23,12 +27,11 @@
                         chartTBL
                     @endslot
                     @slot('head')
-                        <th>ID</th>
-                        <th>Date</th>
                         <th>Account Name</th>
                         <th>Account Head</th>
                         <th>Sub Account Head</th>
                         <th>Branch</th>
+                        <th>Serial</th>
                         <th>Description</th>
                         <th>Status</th>
                         <th><i class=""></i> Action</th>
@@ -129,12 +132,11 @@
         ajax: charturl,
         deferRender: true,
         columns: [
-            {data: 'id', name: 'id'},
-            {data: 'date', name: 'date'},
             {data: 'account_name', name: 'account_name'},
             {data: 'account_head', name: 'account_head'},
             {data: 'sub_account_head', name: 'sub_account_head'},
             { data: 'branch_name', name: 'branch_name' },
+            { data: 'serial', name: 'serial' },
             {data: 'description', name: 'description'},
             {
                 data: 'status', name: 'status', render: function (data, type, row, meta) {
@@ -214,8 +216,8 @@
                         case "Expenses":
                             $("<option>").val("Cost Of Good Sold").text("Cost Of Good Sold").prop('selected', selectedSubHead === "Cost Of Good Sold").appendTo("#sub_account_head");
                             $("<option>").val("Overhead Expense").text("Overhead Expense").prop('selected', selectedSubHead === "Overhead Expense").appendTo("#sub_account_head");
-                            $("<option>").val("Operating").text("Operating").prop('selected', selectedSubHead === "Operating").appendTo("#sub_account_head");
-                            $("<option>").val("Administrative").text("Administrative").prop('selected', selectedSubHead === "Administrative").appendTo("#sub_account_head");
+                            $("<option>").val("Operating Expense").text("Operating Expense").prop('selected', selectedSubHead === "Operating Expense").appendTo("#sub_account_head");
+                            $("<option>").val("Administrative Expense").text("Administrative Expense").prop('selected', selectedSubHead === "Administrative Expense").appendTo("#sub_account_head");
                             break;
                         case "Income":
                             $("<option>").val("Direct Income").text("Direct Income").prop('selected', selectedSubHead === "Direct Income").appendTo("#sub_account_head");
@@ -339,8 +341,8 @@
                     "<option value=''>Please Select</option>" +
                     "<option value='Cost Of Good Sold'>Cost Of Good Sold</option>" +
                     "<option value='Overhead Expense'>Overhead Expense</option>" +
-                    "<option value='Operating'>Operating</option>" +
-                    "<option value='Administrative'>Administrative</option>"
+                    "<option value='Operating Expense'>Operating Expense</option>" +
+                    "<option value='Administrative Expense'>Administrative Expense</option>"
                 );
 
               }else if(val == "Income"){

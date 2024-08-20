@@ -13,13 +13,43 @@ class BalancesheetController extends Controller
     {
         $fixedAssetIds = ChartOfAccount::where('sub_account_head', 'Fixed Asset')
             ->pluck('id');
-        $fixedAssets = Transaction::whereIn('chart_of_account_id', $fixedAssetIds)
+
+        $fixedAsset = Transaction::whereIn('chart_of_account_id', $fixedAssetIds)
             ->where('status', 0)
             ->where('branch_id', auth()->user()->branch_id)
             ->get();
 
+        $fixedAssets = ChartOfAccount::where('sub_account_head', 'Fixed Asset')
+        ->where('branch_id', auth()->user()->branch_id)
+        ->get();
+
+        $currentAssets = ChartOfAccount::where('sub_account_head', 'Current Asset')
+        ->where('branch_id', auth()->user()->branch_id)
+        ->get();
+
+        $shortTermLiabilities = ChartOfAccount::where('sub_account_head', 'Short Term Liabilities')
+        ->where('branch_id', auth()->user()->branch_id)
+        ->get();
+
+        $longTermLiabilities = ChartOfAccount::where('sub_account_head', 'Long Term Liabilities')
+        ->where('branch_id', auth()->user()->branch_id)
+        ->get();
+
+        $currentLiabilities = ChartOfAccount::where('sub_account_head', 'Current Liabilities')
+        ->where('branch_id', auth()->user()->branch_id)
+        ->get();
+
+        $equityCapitals = ChartOfAccount::where('sub_account_head', 'Equity Capital')
+        ->where('branch_id', auth()->user()->branch_id)
+        ->get();
+
+        $retainedEarnings = ChartOfAccount::where('sub_account_head', 'Retained Earnings')
+        ->where('branch_id', auth()->user()->branch_id)
+        ->get();
+
         $currentAssetIds = ChartOfAccount::where('sub_account_head', 'Current Asset')
             ->pluck('id');
+    
         $currentBankAsset = Transaction::whereIn('chart_of_account_id', $currentAssetIds)
             ->where('status', 0)
             ->where('payment_type', 'Bank')
@@ -54,10 +84,10 @@ class BalancesheetController extends Controller
 
         $longTermLiabilityIds = ChartOfAccount::where('sub_account_head', 'Long Term Liabilities')
             ->pluck('id');
-        $longTermLiabilities = Transaction::whereIn('chart_of_account_id', $longTermLiabilityIds)
-            ->where('status', 0)
-            ->where('branch_id', auth()->user()->branch_id)
-            ->get();
+        // $longTermLiabilities = Transaction::whereIn('chart_of_account_id', $longTermLiabilityIds)
+        //     ->where('status', 0)
+        //     ->where('branch_id', auth()->user()->branch_id)
+        //     ->get();
 
         $equityCapitalIds = ChartOfAccount::where('sub_account_head', 'Equity Capital')
             ->pluck('id');
@@ -74,7 +104,7 @@ class BalancesheetController extends Controller
             ->sum('at_amount');
             // dd($equityCapital);
 
-        return view('admin.balance_sheet.index', compact('fixedAssets', 'currentBankAsset', 'currentCashAsset', 'accountReceiveable', 'accountPayable', 'currentLiability', 'longTermLiabilities', 'equityCapital', 'retainedEarning'));
+        return view('admin.balance_sheet.index', compact('currentAssetIds', 'currentBankAsset', 'currentCashAsset', 'accountReceiveable', 'accountPayable', 'currentLiability', 'longTermLiabilities', 'equityCapital', 'retainedEarning','currentAssets', 'fixedAssets', 'fixedAsset', 'shortTermLiabilities', 'currentLiabilities', 'equityCapitals', 'retainedEarnings'));
     }
 
     public function balanceSheetByDate(Request $request)
