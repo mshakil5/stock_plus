@@ -190,7 +190,7 @@ class OrderController extends Controller
                 $transaction->created_by = Auth()->user()->id;
                 $transaction->created_ip = request()->ip();
                 $transaction->save();
-                $transaction->tran_id = 'SA' . date('Ymd') . str_pad($transaction->id, 6, '0', STR_PAD_LEFT);
+                $transaction->tran_id = 'SL' . date('Ymd') . str_pad($transaction->id, 4, '0', STR_PAD_LEFT);
                 $transaction->save();
 
             foreach($request->input('product_id') as $key => $value)

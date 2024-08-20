@@ -166,7 +166,7 @@ class StockController extends Controller
                 $transaction->created_ip = request()->ip();
                 $transaction->save();
 
-                $transaction->tran_id = 'PU' . date('Ymd') . str_pad($transaction->id, 6, '0', STR_PAD_LEFT);
+                $transaction->tran_id = 'PR' . date('Ymd') . str_pad($transaction->id, 4, '0', STR_PAD_LEFT);
                 $transaction->save();
                 
                 foreach($request->input('product_id') as $key => $value)

@@ -64,7 +64,7 @@ class EquityController extends Controller
         $transaction->created_ip = request()->ip();
 
         $transaction->save();
-        $transaction->tran_id = 'EQ' . date('Ymd') . str_pad($transaction->id, 6, '0', STR_PAD_LEFT);
+        $transaction->tran_id = 'EQ' . date('ymd') . str_pad($transaction->id, 4, '0', STR_PAD_LEFT);
         $transaction->save();
 
         $shareHolder = EquityHolder::find($request->input('share_holder_id'));

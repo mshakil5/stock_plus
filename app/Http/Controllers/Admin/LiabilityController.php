@@ -69,7 +69,7 @@ class LiabilityController extends Controller
         $transaction->created_ip = request()->ip();
 
         $transaction->save();
-        $transaction->tran_id = 'LI' . date('Ymd') . str_pad($transaction->id, 6, '0', STR_PAD_LEFT);
+        $transaction->tran_id = 'LI' . date('ymd') . str_pad($transaction->id, 4, '0', STR_PAD_LEFT);
         $transaction->save();
 
         return response()->json(['status' => 200, 'message' => 'Created Successfully']);
