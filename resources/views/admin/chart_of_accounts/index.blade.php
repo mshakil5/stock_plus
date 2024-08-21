@@ -5,6 +5,54 @@
 <div class="row">
     <div class="col-md-12">
         <div id="alert-container"></div>
+
+        <div class="row well">
+            <form class="form-horizontal" role="form" method="POST" action="{{ route('admin.addchartofaccount.filter') }}">
+                {{ csrf_field() }}
+
+                <div class="col-md-3">
+                    <label class="label label-primary">Branch</label>
+                    <select class="form-control select2" name="branch_id">
+                        <option value="">Select Branch..</option>
+                        @foreach ($branches as $branch)
+                            <option value="{{ $branch->id }}" {{ request()->input('branch_id') == $branch->id ? 'selected' : '' }}>
+                                {{ $branch->name }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <div class="col-md-3">
+                    <label class="label label-primary">Account Head</label>
+                    <select class="form-control select2" name="account_head">
+                        <option value="">Select Account Head..</option>
+                        @foreach ($accountHeads as $head)
+                            <option value="{{ $head }}" {{ request()->input('account_head') == $head ? 'selected' : '' }}>
+                                {{ $head }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <div class="col-md-3">
+                    <label class="label label-primary">Sub Account Head</label>
+                    <select class="form-control select2" name="sub_account_head">
+                        <option value="">Select Sub Account Head..</option>
+                        @foreach ($subAccountHeads as $subHead)
+                            <option value="{{ $subHead }}" {{ request()->input('sub_account_head') == $subHead ? 'selected' : '' }}>
+                                {{ $subHead }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <div class="col-md-2">
+                    <br>
+                    <button type="submit" class="btn btn-primary btn-sm">Search</button>
+                </div>
+            </form>
+        </div>
+
         @component('components.widget')
             @slot('title')
                Chart Of Accounts
@@ -41,6 +89,7 @@
         @endcomponent
     </div>
 </div>
+
 
 <div class="modal fade" id="chartModal">
     <div class="modal-dialog">
@@ -124,12 +173,23 @@
 @section('script')
 
 <script>
+
+    $(document).ready(function() {
+        $('.select2').select2();
+    });
     
     var charturl = "{{URL::to('/admin/chart-of-account')}}";
     var customerTBL = $('#chartTBL').DataTable({
         processing: true,
         serverSide: true,
-        ajax: charturl,
+        ajax: {
+            url: charturl,
+            data: function (d) {
+                d.branch_id = $('select[name=branch_id]').val();
+                d.account_head = $('select[name=account_head]').val();
+                d.sub_account_head = $('select[name=sub_account_head]').val();
+            }
+        },
         deferRender: true,
         columns: [
             {data: 'account_name', name: 'account_name'},
@@ -164,6 +224,11 @@
                 }
             },
         ]
+    });
+
+    $('form').on('submit', function(e) {
+        e.preventDefault();
+        customerTBL.ajax.reload();
     });
 
     $(document).on('click', '.status-btn', function () {

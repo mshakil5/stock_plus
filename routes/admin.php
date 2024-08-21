@@ -148,6 +148,7 @@ Route::group(['prefix' =>'admin/', 'middleware' => ['auth', 'is_admin']], functi
     Route::get('stock-re-entry-old-purchase-get/{id}', [StockController::class, 'getOldPurchase']);
     Route::get('filter-stock-all', [StockController::class, 'filter_product'])->name('stock.filterall');
     Route::get('manage-stock', [StockController::class, 'managestock'])->name('admin.managestock');
+    Route::post('manage-stock', [StockController::class, 'managestock'])->name('managestock.search');
     Route::get('stock-return-history', [StockController::class, 'stockReturnHistory'])->name('admin.stockReturnHistory');
 
     // stock history 
@@ -218,6 +219,7 @@ Route::group(['prefix' =>'admin/', 'middleware' => ['auth', 'is_admin']], functi
 
     //Chart of account
     Route::get('chart-of-account', [ChartOfAccountController::class, 'index'])->name('admin.addchartofaccount');
+    Route::post('chart-of-accounts', [ChartOfAccountController::class, 'index'])->name('admin.addchartofaccount.filter');
     Route::post('chart-of-account', [ChartOfAccountController::class, 'store']);
     Route::get('chart-of-account/{id}', [ChartOfAccountController::class, 'edit']);
     Route::put('chart-of-account/{id}', [ChartOfAccountController::class, 'update']);

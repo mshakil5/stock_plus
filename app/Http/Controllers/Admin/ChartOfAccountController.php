@@ -9,21 +9,42 @@ use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Facades\Auth;
 use App\Models\ChartOfAccount;
 use Illuminate\Support\Carbon;
+use App\Models\Branch;
 
 
 class ChartOfAccountController extends Controller
 {
     public function index(Request $request)
     {
-        if($request->ajax()){
-            $chartOfAccounts = ChartOfAccount::with('branch')->orderBy('id', 'desc')->get();
+        if ($request->ajax()) {
+            $query = ChartOfAccount::with('branch');
+
+            if ($branchId = $request->input('branch_id')) {
+                $query->where('branch_id', $branchId);
+            }
+
+            if ($accountHead = $request->input('account_head')) {
+                $query->where('account_head', $accountHead);
+            }
+
+            if ($subAccountHead = $request->input('sub_account_head')) {
+                $query->where('sub_account_head', $subAccountHead);
+            }
+
+            $chartOfAccounts = $query->orderBy('id', 'desc')->get();
+
             return DataTables::of($chartOfAccounts)
-                ->addColumn('branch_name', function($account) {
+                ->addColumn('branch_name', function ($account) {
                     return $account->branch ? $account->branch->name : 'N/A';
                 })
                 ->make(true);
         }
-        return view('admin.chart_of_accounts.index');
+
+        $branches = Branch::where('status', '1')->get();
+        $accountHeads = ChartOfAccount::distinct()->pluck('account_head');
+        $subAccountHeads = ChartOfAccount::distinct()->pluck('sub_account_head');
+
+        return view('admin.chart_of_accounts.index', compact('branches', 'accountHeads', 'subAccountHeads'));
     }
 
     public function store(Request $request)

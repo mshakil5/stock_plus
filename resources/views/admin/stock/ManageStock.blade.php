@@ -78,6 +78,29 @@ echo Session::put('info', '');
     </div>
 </div>
 </div>
+
+<div class="row well">
+    <form class="form-horizontal" role="form" method="POST" action="{{ route('managestock.search') }}">
+        {{ csrf_field() }}
+
+        <div class="col-md-4">
+            <label class="label label-primary">Branch</label>
+            <select class="form-control select2" name="branch_id">
+                @foreach ($branches as $branch)
+                    <option value="{{ $branch->id }}" {{ request()->input('branch_id') == $branch->id ? 'selected' : '' }}>
+                        {{ $branch->name }}
+                    </option>
+                @endforeach
+            </select>
+        </div>
+
+        <div class="col-md-2">
+            <br>
+            <button type="submit" class="btn btn-primary btn-sm">Search</button>
+        </div>
+    </form>
+</div>
+
 <div class="row">
 <div class="col-md-12">
     <div class="box box-widget">

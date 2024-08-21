@@ -103,15 +103,6 @@
                                     </select>
                                 </div>
 
-                                <div class="form-group col-md-4">
-                                    <label for="branch_id">Branch</label>
-                                    <select name="branch_id" id="branch_id" class="form-control select2">
-                                    <option value="">Select</option>
-                                        @foreach (\App\Models\Branch::where('status','1')->get() as $branch)
-                                        <option value="{{ $branch->id }}" @if ($purchase->branch_id == $branch->id) selected @endif>{{ $branch->name }}</option>
-                                        @endforeach
-                                    </select>
-                                </div>
 
                                 
 
@@ -561,7 +552,7 @@
                 var vendor_id = $("#supplier_id").val();
                 var ref = $("#ref").val();
                 var purchase_type = $("#type").val();
-                var branch_id = $("#branch_id").val();
+                // var branch_id = $("#branch_id").val();
                 var vat_reg = $("#vat_reg").val();
                 var remarks = $("#remarks").val();
                 var total_currency = $("#total_currency").val();
@@ -591,7 +582,7 @@
                 $.ajax({
                     url: purchaseupurl,
                     method: "POST",
-                    data: {purchase_id,date,invoiceno,vendor_id,ref,purchase_type,branch_id,vat_reg,remarks,total_amount,discount,total_vat_amount,net_amount,paid_amount,due_amount,product_id,purchase_his_id,vat_percent,quantity,unit_price},
+                    data: {purchase_id,date,invoiceno,vendor_id,ref,purchase_type,vat_reg,remarks,total_amount,discount,total_vat_amount,net_amount,paid_amount,due_amount,product_id,purchase_his_id,vat_percent,quantity,unit_price},
 
                     success: function (d) {
                         if (d.status == 303) {
@@ -604,8 +595,8 @@
                             
                         }
                     },
-                    error: function (d) {
-                        console.log(d);
+                    error: function(xhr, status, error) {
+                        console.error(xhr.responseText);
                     }
                 });
 

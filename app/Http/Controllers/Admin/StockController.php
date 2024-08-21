@@ -54,18 +54,18 @@ class StockController extends Controller
     }
 
 
-    public function managestock(){
-
-    //    $stocks = DB::table('stocks')
-    //                 ->join('products', 'stocks.product_id', '=', 'products.id')
-    //                 ->select('stocks.*', 'products.productname','products.selling_price','products.unit','products.location')
-    //                 ->get();
+    public function managestock(Request $request)
+    {
+        $defaultBranchId = auth()->user()->branch_id;
+        $branchId = $request->input('branch_id', $defaultBranchId);
 
         $stocks = DB::table('stocks')
                     ->join('products', 'stocks.product_id', '=', 'products.id')
-                    ->select('stocks.id','stocks.branch_id','stocks.product_id','stocks.quantity', 'products.productname','products.selling_price','products.unit','products.location')
+                    ->select('stocks.id', 'stocks.branch_id', 'stocks.product_id', 'stocks.quantity', 'products.productname', 'products.selling_price', 'products.unit', 'products.location')
+                    ->where('stocks.branch_id', $branchId)
                     ->get();
-       $branches = Branch::where('status', '=', 1)->get();
+
+        $branches = Branch::where('status', '=', 1)->get();
         return view('admin.stock.ManageStock', compact('stocks', 'branches'));
     }
 
@@ -90,11 +90,11 @@ class StockController extends Controller
             exit();
         }
 
-        if(empty($request->branch_id)){
-            $message ="<div class='alert alert-warning'><a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a><b>Please fill \"Branch\" field..!</b></div>";
-            return response()->json(['status'=> 303,'message'=>$message]);
-            exit();
-        }
+        // if(empty(Auth::user()->branch_id)){
+        //     $message ="<div class='alert alert-warning'><a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a><b>Please fill \"Branch\" field..!</b></div>";
+        //     return response()->json(['status'=> 303,'message'=>$message]);
+        //     exit();
+        // }
 
         if(empty($request->purchase_type)){
             $message ="<div class='alert alert-warning'><a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a><b>Please fill \"Transaction Type\" field..!</b></div>";
@@ -131,7 +131,7 @@ class StockController extends Controller
                 $purchase->date = $request->date;
                 $purchase->ref = $request->ref;
                 $purchase->vat_reg = $request->vat_reg;
-                $purchase->branch_id = $request->branch_id;
+                $purchase->branch_id = Auth::user()->branch_id;
                 $purchase->vendor_id = $request->vendor_id;
                 $purchase->purchase_type = $request->purchase_type;
                 $purchase->remarks = $request->remarks;
@@ -179,7 +179,7 @@ class StockController extends Controller
                         $total_amount_with_vat = ($request->get('unit_price')[$key] * $qty) + $total_vat;
 
                         $purchasehistry = new PurchaseHistory();
-                        $purchasehistry->branch_id = $request->branch_id;
+                        $purchasehistry->branch_id = Auth::user()->branch_id;
                         $purchasehistry->purchase_id = $purchase->id;
                         $purchasehistry->product_id = $pid;
                         $purchasehistry->quantity = $qty;
@@ -199,18 +199,20 @@ class StockController extends Controller
                         $pselprice->save();
                         // selling price update end
 
-                        $stockcount = Stock::where('product_id','=', $pid)->where('branch_id','=', $request->branch_id)->count();
+                        $stockcount = Stock::where('product_id','=', $pid)->where('branch_id','=', Auth::user()->branch_id)->count();
                         if ($stockcount == 1) {
-                            $stock = Stock::where('product_id','=', $pid)->where('branch_id','=', $request->branch_id)->first();
+                            $stock = Stock::where('product_id','=', $pid)->where('branch_id','=', Auth::user()->branch_id)->first();
                             $upstock = Stock::find($stock->id);
+                            $upstock->purchase_price = $request->get('unit_price')[$key];
                             $upstock->quantity = $upstock->quantity + $qty;
                             $upstock->save();
                             
                         } else {
                             $newstock = new Stock();
-                            $newstock->branch_id = $request->branch_id;
+                            $newstock->branch_id = Auth::user()->branch_id;
                             $newstock->product_id = $pid;
                             $newstock->quantity = $qty;
+                            $newstock->purchase_price = $request->get('unit_price')[$key];
                             $newstock->exp_date = $request->exp_date;
                             $newstock->created_by = Auth::user()->id;
                             $newstock->save();
@@ -255,11 +257,11 @@ class StockController extends Controller
             exit();
         }
 
-        if(empty($request->branch_id)){
-            $message ="<div class='alert alert-warning'><a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a><b>Please fill \"Branch\" field..!</b></div>";
-            return response()->json(['status'=> 303,'message'=>$message]);
-            exit();
-        }
+        // if(empty(Auth::user()->branch_id)){
+        //     $message ="<div class='alert alert-warning'><a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a><b>Please fill \"Branch\" field..!</b></div>";
+        //     return response()->json(['status'=> 303,'message'=>$message]);
+        //     exit();
+        // }
 
         if(empty($request->purchase_type)){
             $message ="<div class='alert alert-warning'><a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a><b>Please fill \"Transaction Type\" field..!</b></div>";
@@ -279,13 +281,12 @@ class StockController extends Controller
             exit();
         }
 
-            try{
+
                 $purchase = Purchase::find($request->purchase_id);
                 $purchase->invoiceno = $request->invoiceno;
                 $purchase->date = $request->date;
                 $purchase->ref = $request->ref;
                 $purchase->vat_reg = $request->vat_reg;
-                $purchase->branch_id = $request->branch_id;
                 $purchase->vendor_id = $request->vendor_id;
                 $purchase->purchase_type = $request->purchase_type;
                 $purchase->remarks = $request->remarks;
@@ -330,14 +331,14 @@ class StockController extends Controller
                             $purchasehistry = PurchaseHistory::findOrFail($pruchasehisIDs[$key]);
 
                                 // stock update
-                                $stock = Stock::where('product_id','=', $pid)->where('branch_id','=', $request->branch_id)->first();
+                                $stock = Stock::where('product_id','=', $pid)->where('branch_id','=', Auth::user()->branch_id)->first();
                                 $upstock = Stock::find($stock->id);
                                 $upstock->quantity = $upstock->quantity + $qty - $purchasehistry->quantity;
                                 $upstock->updated_by = Auth::user()->id;
                                 $upstock->save();
                                 // stock update end
 
-                            $purchasehistry->branch_id = $request->branch_id;
+                            $purchasehistry->branch_id = Auth::user()->branch_id;
                             $purchasehistry->purchase_id = $purchase->id;
                             $purchasehistry->product_id = $pid;
                             $purchasehistry->quantity = $qty;
@@ -353,7 +354,7 @@ class StockController extends Controller
                         } else {
                             
                             $purchasehistry = new PurchaseHistory();
-                            $purchasehistry->branch_id = $request->branch_id;
+                            $purchasehistry->branch_id = Auth::user()->branch_id;
                             $purchasehistry->purchase_id = $purchase->id;
                             $purchasehistry->product_id = $pid;
                             $purchasehistry->quantity = $qty;
@@ -367,9 +368,9 @@ class StockController extends Controller
                             $purchasehistry->save();
 
                             // stock update
-                            $stockcount = Stock::where('product_id','=', $pid)->where('branch_id','=', $request->branch_id)->count();
+                            $stockcount = Stock::where('product_id','=', $pid)->where('branch_id','=', Auth::user()->branch_id)->count();
                             if ($stockcount == 1) {
-                                $stock = Stock::where('product_id','=', $pid)->where('branch_id','=', $request->branch_id)->first();
+                                $stock = Stock::where('product_id','=', $pid)->where('branch_id','=', Auth::user()->branch_id)->first();
                                 $upstock = Stock::find($stock->id);
                                 $upstock->quantity = $upstock->quantity + $qty;
                                 $upstock->updated_by = Auth::user()->id;
@@ -377,8 +378,9 @@ class StockController extends Controller
                                 
                             } else {
                                 $newstock = new Stock();
-                                $newstock->branch_id = $request->branch_id;
+                                $newstock->branch_id = Auth::user()->branch_id;
                                 $newstock->product_id = $pid;
+                                $newstock->purchase_price = $request->get('unit_price')[$key];
                                 $newstock->quantity = $qty;
                                 $newstock->created_by = Auth::user()->id;
                                 $newstock->save();
@@ -399,10 +401,6 @@ class StockController extends Controller
                 return response()->json(['status'=> 300,'message'=>$message]);
             }
 
-            }catch (\Exception $e){
-                return response()->json(['status'=> 303,'message'=>'Server Error!!']);
-
-            }
 
     }
 
@@ -437,7 +435,7 @@ class StockController extends Controller
                         $purchasereturn = new PurchaseReturn;
                         $purchasereturn->date = $request->date;
                         $purchasereturn->product_id = $pid;
-                        $purchasereturn->branch_id = $request->branch_id;
+                        $purchasereturn->branch_id = Auth::user()->branch_id;
                         $purchasereturn->vendor_id = $request->vendor_id;
                         $purchasereturn->returnqty = $qty;
                         $purchasereturn->reason = $request->reason;
@@ -446,7 +444,7 @@ class StockController extends Controller
                         $purchasereturn->save();
 
                         // stock update
-                        $stock = Stock::where('product_id','=', $pid)->where('branch_id','=', $request->branch_id)->first();
+                        $stock = Stock::where('product_id','=', $pid)->where('branch_id','=', Auth::user()->branch_id)->first();
                         $upstock = Stock::find($stock->id);
                         $upstock->quantity = $upstock->quantity - $qty;
                         $upstock->updated_by = Auth::user()->id;
@@ -503,7 +501,7 @@ class StockController extends Controller
 
             try{
                 $purchasehistry = new PurchaseHistory();
-                $purchasehistry->branch_id = $request->branch;
+                $purchasehistry->branch_id = Auth::user()->branch_id;
                 $purchasehistry->product_id = $request->product_id;
                 $purchasehistry->type = $request->type;
                 $purchasehistry->quantity = $request->quantity;
@@ -527,8 +525,9 @@ class StockController extends Controller
                     
                 } else {
                     $newstock = new Stock();
-                    $newstock->branch_id = $request->branch;
+                    $newstock->branch_id = Auth::user()->branch_id;
                     $newstock->product_id = $request->product_id;
+                    $newstock->purchase_price = $request->get('unit_price')[$key];
                     $newstock->quantity = $request->quantity;
                     $newstock->exp_date = $request->exp_date;
                     $newstock->created_by = Auth::user()->id;
@@ -623,7 +622,7 @@ class StockController extends Controller
             try{
                 $stock = PurchaseHistory::find($request->history_id);
                 $oldstockhistry = $stock->quantity;
-                $stock->branch_id = $request->branch;
+                $stock->branch_id = Auth::user()->branch_id;
                 $stock->product_id = $request->product_id;
                 // $stock->barcode = $request->name;
                 $stock->quantity = $request->quantity;
@@ -689,7 +688,7 @@ class StockController extends Controller
     public function stockReturnHistory()
     {
         
-        $histories = PurchaseReturn::orderby('id','DESC')->get();
+        $histories = PurchaseReturn::where('branch_id', Auth::user()->branch_id)->orderby('id','DESC')->get();
 
                     // dd($histories);
         return view('admin.stock.stockreturnhistory', compact('histories'));
