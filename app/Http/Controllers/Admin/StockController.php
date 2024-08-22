@@ -190,6 +190,11 @@ class StockController extends Controller
                         $purchasehistry->total_amount_per_unit = $request->get('unit_price')[$key] * $qty;
                         $purchasehistry->total_amount_with_vat = $request->get('unit_price')[$key] * $qty +  $total_vat;
                         $purchasehistry->created_by = Auth::user()->id;
+                        $sl_start = 1000 + $pid;
+                        $sl_end = $sl_start + $qty - 1;
+
+                        $purchasehistry->sl_start = $sl_start;
+                        $purchasehistry->sl_end = $sl_end;
                         $purchasehistry->save();
 
                         // selling price update

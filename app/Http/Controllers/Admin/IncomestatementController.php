@@ -5,23 +5,98 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Transaction;
+use App\Models\ChartOfAccount;
+use App\Models\SalesReturn;
+use App\Models\Order;
+use Illuminate\Support\Facades\DB;
+use App\Models\Stock;
+use Illuminate\Support\Carbon;
 
 class IncomestatementController extends Controller
 {
     public function incomeStatement(Request $request)
     {
-        $incomes = Transaction::where('table_type', 'Income')
+        $purchaseSum = Transaction::where('table_type', 'Cogs')
+            ->where('status', 0)
+            ->where('description', 'Purchase')
+            ->where('branch_id', auth()->user()->branch_id)
+            ->whereNull('chart_of_account_id')
+            ->sum('amount');
+
+        $salesSum = Transaction::where('table_type', 'Income')
+            ->where('status', 0)
+            ->whereNull('chart_of_account_id')
+            ->where('branch_id', auth()->user()->branch_id)
+            ->whereNull('chart_of_account_id')
+            ->sum('amount');
+
+        $operatingExpenseId = ChartOfAccount::where('sub_account_head', 'Operating Expense')->pluck('id');
+
+        $operatingExpenses = Transaction::select('chart_of_account_id', DB::raw('SUM(amount) as total_amount'))
+            ->with('chartOfAccount')
+            ->whereIn('chart_of_account_id', $operatingExpenseId)
             ->where('status', 0)
             ->where('branch_id', auth()->user()->branch_id)
+            ->groupBy('chart_of_account_id')
             ->get();
 
-        $expenses = Transaction::whereIn('table_type', ['Expenses', 'Cogs'])
-            ->whereIn('transaction_type', ['Current', 'Prepaid'])
+        $operatingExpenseSum = Transaction::with('chartOfAccount')->whereIn('chart_of_account_id', $operatingExpenseId)
             ->where('status', 0)
             ->where('branch_id', auth()->user()->branch_id)
+            ->sum('amount');
+
+        $administrativeExpenseId = ChartOfAccount::where('sub_account_head', 'Administrative Expense')->pluck('id');
+
+        $administrativeExpenses = Transaction::with('chartOfAccount')
+            ->select('chart_of_account_id', DB::raw('SUM(amount) as total_amount'))
+            ->whereIn('chart_of_account_id', $administrativeExpenseId)
+            ->where('status', 0)
+            ->where('branch_id', auth()->user()->branch_id)
+            ->groupBy('chart_of_account_id')
             ->get();
 
-        return view('admin.income_statement.index', compact('incomes', 'expenses'));
+        $administrativeExpenseSum = Transaction::with('chartOfAccount')->whereIn('chart_of_account_id', $administrativeExpenseId)
+            ->where('status', 0)
+            ->where('branch_id', auth()->user()->branch_id)
+            ->sum('amount');
+
+        $salesReturn = SalesReturn::where('branch_id', auth()->user()->branch_id)->sum('net_total');
+        $salesDiscount = Order::where('branch_id', auth()->user()->branch_id)->sum('discount_amount');
+
+        $openingStocks = Stock::select('product_id', DB::raw('SUM(purchase_price * quantity) as opening_stock'))
+            ->groupBy('product_id')
+            ->get();
+
+        $totalOpeningStock = $openingStocks->sum('opening_stock');
+
+        $totalClosingStock = $totalOpeningStock + $purchaseSum - ($salesSum - $salesReturn);
+
+        $purchaseVatSum = Transaction::where('table_type', 'Cogs')
+            ->where('status', 0)
+            ->where('description', 'Purchase')
+            ->where('branch_id', auth()->user()->branch_id)
+            ->whereNull('chart_of_account_id')
+            ->sum('vat_amount');
+
+        $SalesVatSum = Transaction::where('table_type', 'Income')
+            ->where('status', 0)
+            ->where('branch_id', auth()->user()->branch_id)
+            ->whereNull('chart_of_account_id')
+            ->sum('vat_amount');
+
+        $operatingExpenseVatSum = Transaction::with('chartOfAccount')->whereIn('chart_of_account_id', $operatingExpenseId)
+            ->where('status', 0)
+            ->where('branch_id', auth()->user()->branch_id)
+            ->sum('vat_amount');
+
+        $administrativeExpenseVatSum = Transaction::with('chartOfAccount')->whereIn('chart_of_account_id', $administrativeExpenseId)
+            ->where('status', 0)
+            ->where('branch_id', auth()->user()->branch_id)
+            ->sum('amount');
+
+        $taxAndVat = $purchaseVatSum + $SalesVatSum + $operatingExpenseVatSum + $administrativeExpenseVatSum;
+
+        return view('admin.income_statement.index', compact('purchaseSum', 'salesSum', 'operatingExpenses', 'administrativeExpenses', 'salesReturn', 'salesDiscount', 'operatingExpenseSum', 'administrativeExpenseSum', 'totalOpeningStock', 'totalClosingStock', 'taxAndVat'));
     }
 
     public function incomeStatementByDate(Request $request)
@@ -30,32 +105,103 @@ class IncomestatementController extends Controller
         $endDate = $request->input('end_date');
         $branchId = auth()->user()->branch_id;
 
-        $incomes = Transaction::where('table_type', 'Income')
+        $purchaseSum = Transaction::where('table_type', 'Cogs')
+            ->where('status', 0)
+            ->where('description', 'Purchase')
+            ->where('branch_id', $branchId)
+            ->whereNull('chart_of_account_id')
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->sum('amount');
+
+        $salesSum = Transaction::where('table_type', 'Income')
+            ->where('status', 0)
+            ->whereNull('chart_of_account_id')
+            ->where('branch_id', $branchId)
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->sum('amount');
+
+        $operatingExpenseId = ChartOfAccount::where('sub_account_head', 'Operating Expense')->pluck('id');
+        $operatingExpenses = Transaction::select('chart_of_account_id', DB::raw('SUM(amount) as total_amount'))
+            ->with('chartOfAccount')
+            ->whereIn('chart_of_account_id', $operatingExpenseId)
             ->where('status', 0)
             ->where('branch_id', $branchId)
-            ->when($startDate, function($query, $startDate) {
-                return $query->whereDate('date', '>=', $startDate);
-            })
-            ->when($endDate, function($query, $endDate) {
-                return $query->whereDate('date', '<=', $endDate);
-            })
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->groupBy('chart_of_account_id')
             ->get();
+        $operatingExpenseSum = $operatingExpenses->sum('total_amount');
 
-        $expenses = Transaction::where('table_type', 'Expenses')
-            ->whereIn('transaction_type', ['Current', 'Prepaid'])
+        $administrativeExpenseId = ChartOfAccount::where('sub_account_head', 'Administrative Expense')->pluck('id');
+        $administrativeExpenses = Transaction::select('chart_of_account_id', DB::raw('SUM(amount) as total_amount'))
+            ->with('chartOfAccount')
+            ->whereIn('chart_of_account_id', $administrativeExpenseId)
             ->where('status', 0)
             ->where('branch_id', $branchId)
-            ->when($startDate, function($query, $startDate) {
-                return $query->whereDate('date', '>=', $startDate);
-            })
-            ->when($endDate, function($query, $endDate) {
-                return $query->whereDate('date', '<=', $endDate);
-            })
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->groupBy('chart_of_account_id')
             ->get();
+        $administrativeExpenseSum = $administrativeExpenses->sum('total_amount');
 
-        return view('admin.income_statement.index', compact('incomes', 'expenses'))
-            ->with('start_date', $startDate)
-            ->with('end_date', $endDate);
+        $salesReturn = SalesReturn::where('branch_id', $branchId)
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->sum('net_total');
+
+        $salesDiscount = Order::where('branch_id', $branchId)
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->sum('discount_amount');
+
+        $adjustedEndDate = Carbon::parse($endDate)->subDay();
+
+        $openingStocks = Stock::select('product_id', DB::raw('SUM(purchase_price * quantity) as opening_stock'))
+            ->whereBetween('created_at', [$startDate, $adjustedEndDate])
+            ->groupBy('product_id')
+            ->get();
+        $totalOpeningStock = $openingStocks->sum('opening_stock');
+
+        $totalClosingStock = $totalOpeningStock + $purchaseSum - ($salesSum - $salesReturn);
+
+        $purchaseVatSum = Transaction::where('table_type', 'Cogs')
+            ->where('status', 0)
+            ->where('description', 'Purchase')
+            ->where('branch_id', $branchId)
+            ->whereNull('chart_of_account_id')
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->sum('vat_amount');
+
+        $salesVatSum = Transaction::where('table_type', 'Income')
+            ->where('status', 0)
+            ->where('branch_id', $branchId)
+            ->whereNull('chart_of_account_id')
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->sum('vat_amount');
+
+        $operatingExpenseVatSum = Transaction::whereIn('chart_of_account_id', $operatingExpenseId)
+            ->where('status', 0)
+            ->where('branch_id', $branchId)
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->sum('vat_amount');
+
+        $administrativeExpenseVatSum = Transaction::whereIn('chart_of_account_id', $administrativeExpenseId)
+            ->where('status', 0)
+            ->where('branch_id', $branchId)
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->sum('vat_amount');
+
+        $taxAndVat = $purchaseVatSum + $salesVatSum + $operatingExpenseVatSum + $administrativeExpenseVatSum;
+
+        return view('admin.income_statement.index', compact(
+            'purchaseSum', 
+            'salesSum', 
+            'operatingExpenses', 
+            'administrativeExpenses', 
+            'salesReturn', 
+            'salesDiscount', 
+            'operatingExpenseSum', 
+            'administrativeExpenseSum', 
+            'totalOpeningStock', 
+            'totalClosingStock', 
+            'taxAndVat'
+        ))->with('start_date', $startDate)->with('end_date', $endDate);
     }
 
 }

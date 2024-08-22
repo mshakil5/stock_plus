@@ -51,92 +51,258 @@
                 <table id="cashIncomingTable" class="table table-striped table-bordered">
                     <thead>
                         <tr>
+                            <th></th>
                             <th>Particulars</th>
                             <th>Account Name</th>
                             <th>Amount</th>
-                            <th>Total Amount</th>
+                            <th>Amount</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
-                            <td colspan="4">
-                                <strong>Turn Over Sales</strong>
+                            <td>
+                                <strong>A</strong>
+                            </td>
+                            <td>
+                                <strong>Sales Revenue</strong>
+                            </td>
+                            <td colspan="3"></td>
+                        </tr>
+                        
+                        <tr>
+                            <td colspan="5"></td>
+                        </tr>
+
+                        <tr>
+                            <td colspan="2"></td>
+                            <td>Sales</td>
+                            <td>{{ number_format($salesSum, 2) }}</td>
+                            <td></td>
+                        </tr>  
+
+                        <tr>
+                            <td colspan="2"></td>
+                            <td>Sales Return</td>
+                            <td>{{ number_format($salesReturn, 2) }}</td>
+                            <td></td>
+                        </tr>  
+
+                        <tr>
+                            <td colspan="2"></td>
+                            <td>Discount</td>
+                            <td>{{ number_format($salesDiscount, 2) }}</td>
+                            <td></td>
+                        </tr>
+                        
+                        <tr>
+                            <td></td>
+                            <td><strong>Net Sales</strong></td>
+                            <td colspan="2"></td>
+                            <td>
+                                @php
+                                    $netSales = $salesSum - $salesReturn - $salesDiscount;
+                                @endphp
+                                {{ number_format($netSales, 2) }}
                             </td>
                         </tr>
-                        @foreach($incomes as $income)
-                            <tr>
-                                <td></td>
-                                <td>{{ $income->chartOfAccount->account_name  ?? 'Sales'}}</td>        
-                                <td>{{ number_format($income->at_amount, 2) }}</td>
-                                <td></td>
-                            </tr>
-                        @endforeach
+
                         <tr>
-                            <td colspan="4"></td>
+                            <td colspan="5"></td>
                         </tr>
+
                         <tr>
-                            @php
-                                $income = $incomes->sum('at_amount');
-                            @endphp
-                            <td colspan="3"><strong>Total Income</strong></td>
-                            <td><strong>{{ number_format($income, 2) }}</strong></td>
+                            <td>
+                                <strong>B</strong>
+                            </td>
+                            <td>
+                                <strong>Cost of Goods Sold</strong>
+                            </td>
+                            <td colspan="3"></td>
                         </tr>
+
                         <tr>
-                            @php
-                                $income = $incomes->sum('at_amount');
-                            @endphp
-                            <td colspan="3"><strong>Gross Profit</strong></td>
-                            <td><strong>{{ number_format($income, 2) }}</strong></td>
+                            <td colspan="2"></td>
+                            <td>Opening Stock</td>
+                            <td>
+                                @if(request('end_date'))
+                                    {{ number_format($totalOpeningStock, 2) }}
+                                @else
+                                    0.00
+                                @endif
+                            </td>
+                            <td></td>
                         </tr>
+                        
                         <tr>
-                            <td colspan="4"></td>
+                            <td colspan="2"></td>
+                            <td>Purchase</td>
+                            <td>{{ number_format($purchaseSum, 2) }}</td>
+                            <td></td>
                         </tr>
+
                         <tr>
-                            <td colspan="4">
-                                <strong>Expenditure</strong>
+                            <td colspan="2"></td>
+                            <td>Closing Stock</td>
+                            <td>{{ number_format($totalClosingStock, 2) }}</td>
+                            <td></td>
+                        </tr>
+
+                        <tr>
+                            <td>
+                                <strong>AB</strong>
+                            </td>
+                            <td>
+                                <strong>Gross Profit</strong>
+                            </td>
+                            <td>
+                                A - B
+                            </td>
+                            <td></td>
+                            <td>
+                                @php
+                                  $grossProfit =  $netSales - $purchaseSum
+                                @endphp
+                                {{ number_format($grossProfit, 2) }}
                             </td>
                         </tr>
-                        @foreach($expenses as $expense)
-                            <tr>
-                                <td></td>
-                                <td>{{ $expense->chartOfAccount->account_name ?? 'Purchase' }}</td>        
-                                <td>{{ number_format($expense->at_amount, 2) }}</td>
-                                <td></td>
-                            </tr>
+
+                        <tr>
+                            <td colspan="5"></td>
+                        </tr>
+
+                        <tr>
+                            <td>
+                                <strong>C</strong>
+                            </td>
+                            <td>
+                                <strong>Operating Expenses</strong>
+                            </td>
+                            <td colspan="3"></td>
+                        </tr>
+
+                        @foreach($operatingExpenses as $operatingExpense)
+                        <tr>
+                            <td colspan="2"></td>
+                            <td>{{ $operatingExpense->chartOfAccount->account_name }}</td>                           
+                            <td>{{ number_format($operatingExpense->total_amount, 2) }}</td>
+                            <td></td>
+                        </tr>
                         @endforeach
+
                         <tr>
-                            <td colspan="4"></td>
+                            <td colspan="5"></td>
                         </tr>
+
                         <tr>
-                            @php
-                                $expense = $expenses->sum('at_amount');
-                            @endphp
-                            <td colspan="3"><strong>Total Expenses</strong></td>
-                            <td><strong>{{ number_format($expense, 2) }}</strong></td>
+                            <td>
+                                <strong>D</strong>
+                            </td>
+                            <td>
+                                <strong>Administrative Expenses</strong>
+                            </td>
+                            <td colspan="3"></td>
                         </tr>
+
+                        @foreach($administrativeExpenses as $administrativeExpense)
                         <tr>
-                            @php
-                                $profitLossBeforeVat = $incomes->sum('amount') - $expenses->sum('amount');
-                            @endphp
-                            <td colspan="3"><strong>Profit/Lose before vat</strong></td>
-                            <td><strong>{{ number_format($profitLossBeforeVat, 2) }}</strong></td>
+                            <td colspan="2"></td>
+                            <td>{{ $administrativeExpense->chartOfAccount->account_name }}</td>                      
+                            <td>{{ number_format($administrativeExpense->total_amount, 2) }}</td>
+                            <td></td>
                         </tr>
+                        @endforeach
+
                         <tr>
-                            @php
-                                $taxProvision = $incomes->sum('tax_amount') - $expenses->sum('tax_amount');
-                            @endphp
-                            <td colspan="3"><strong>Tax Provision</strong></td>
-                            <td><strong>{{ number_format($taxProvision, 2) }}</strong></td>
+                            <td colspan="5"></td>
                         </tr>
+
                         <tr>
-                            <td colspan="4"></td>
+                            <td>
+                                <strong>E</strong>
+                            </td>
+                            <td>
+                                <strong>Profit before tax</strong>
+                            </td>
+                            <td>AB - C -D</td>
+                            <td></td>
+                            <td>
+                                @php
+                                  $totalOperatingExpenses = $operatingExpenses->sum('total_amount');
+                                  $totalAdministrativeExpenses = $administrativeExpenses->sum('total_amount');
+                                  $profitBeforeTax =  $grossProfit - $totalOperatingExpenses - $totalAdministrativeExpenses
+                                @endphp
+                                {{ number_format($profitBeforeTax, 2) }}
+                            </td>
                         </tr>
+
                         <tr>
-                            @php
-                                $netProfit = $profitLossBeforeVat - $taxProvision;
-                            @endphp
-                            <td colspan="3"><strong>Net Profit</strong></td>
-                            <td><strong>{{ number_format($netProfit, 2) }}</strong></td>
+                            <td colspan="5"></td>
+                        </tr>
+
+                        <tr>
+                            <td>
+                                <strong>F</strong>
+                            </td>
+                            <td>
+                                <strong>Tax and VAT</strong>
+                            </td>
+                            <td colspan="2"></td>
+                            <td>
+                                {{ number_format($taxAndVat, 2) }}
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td colspan="5"></td>
+                        </tr>
+
+                        <tr>
+                            <td>
+                                <strong>G</strong>
+                            </td>
+                            <td>
+                                <strong>Net Profit</strong>
+                            </td>
+                            <td>E - F</td>
+                            <td></td>
+                            <td>
+                                @php
+                                  $netProfit =  $profitBeforeTax - $taxAndVat
+                                @endphp
+                                {{ number_format($netProfit, 2) }}
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td colspan="5"></td>
+                        </tr>
+
+                        <tr>
+                            <td>
+                                <strong>H</strong>
+                            </td>
+                            <td>
+                                <strong>Dvidend</strong>
+                            </td>
+                            <td colspan="3"></td>
+                        </tr>
+
+                        <tr>
+                            <td colspan="5"></td>
+                        </tr>
+
+                        <tr>
+                            <td>
+                                <strong>I</strong>
+                            </td>
+                            <td>
+                                <!-- <strong>Net Profit transferred to BS as Retained Earnings</strong> -->
+                                <strong>Net Profit</strong>
+                            </td>
+                            <td>
+                                G - H
+                            </td>
+                            <td colspan="2"></td>
                         </tr>
 
                     </tbody>

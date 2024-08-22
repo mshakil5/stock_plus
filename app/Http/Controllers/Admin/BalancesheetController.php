@@ -19,33 +19,179 @@ class BalancesheetController extends Controller
             ->where('branch_id', auth()->user()->branch_id)
             ->get();
 
-        $fixedAssets = ChartOfAccount::where('sub_account_head', 'Fixed Asset')
-        ->where('branch_id', auth()->user()->branch_id)
-        ->get();
+        $yesterday = now()->subDay()->endOfDay();
+        $today = now()->startOfDay();
+        $todayStart = now()->startOfDay();
+        $todayEnd = now()->endOfDay(); 
+        $branchId = auth()->user()->branch_id;
 
         $currentAssets = ChartOfAccount::where('sub_account_head', 'Current Asset')
-        ->where('branch_id', auth()->user()->branch_id)
-        ->get();
+            ->where('branch_id', auth()->user()->branch_id)
+            ->withSum(['transactions' => function ($query) use ($yesterday) {
+                $query->where('branch_id', auth()->user()->branch_id)
+                    ->whereDate('created_at', '<=', $yesterday);
+            }], 'at_amount')
+            ->get();
+
+        $currentAssets->each(function ($asset) use ($todayStart, $todayEnd) {
+            $asset->total_debit_today = $asset->transactions()
+                ->where('branch_id', auth()->user()->branch_id)
+                ->where('transaction_type', 'Purchase')
+                ->whereBetween('created_at', [$todayStart, $todayEnd])
+                ->sum('at_amount');
+        });
+
+        $currentAssets->each(function ($asset) use ($todayStart, $todayEnd) {
+            $asset->total_credit_today = $asset->transactions()
+                ->where('branch_id', auth()->user()->branch_id)
+                ->whereIn('transaction_type', ['Sold', 'Depreciation'])
+                ->whereBetween('created_at', [$todayStart, $todayEnd])
+                ->sum('at_amount');
+        });           
+
+        $fixedAssets = ChartOfAccount::where('sub_account_head', 'Fixed Asset')
+            ->where('branch_id', auth()->user()->branch_id)
+            ->withSum(['transactions' => function ($query) use ($yesterday) {
+                $query->where('branch_id', auth()->user()->branch_id)
+                    ->whereDate('created_at', '<=', $yesterday);
+            }], 'at_amount')
+            ->get();
+
+        $fixedAssets->each(function ($asset) use ($todayStart, $todayEnd) {
+            $asset->total_debit_today = $asset->transactions()
+                ->where('branch_id', auth()->user()->branch_id)
+                ->where('transaction_type', 'Purchase')
+                ->whereBetween('created_at', [$todayStart, $todayEnd])
+                ->sum('at_amount');
+        });
+
+        $fixedAssets->each(function ($asset) use ($todayStart, $todayEnd) {
+            $asset->total_credit_today = $asset->transactions()
+                ->where('branch_id', auth()->user()->branch_id)
+                ->whereIn('transaction_type', ['Sold', 'Depreciation'])
+                ->whereBetween('created_at', [$todayStart, $todayEnd])
+                ->sum('at_amount');
+        });
 
         $shortTermLiabilities = ChartOfAccount::where('sub_account_head', 'Short Term Liabilities')
-        ->where('branch_id', auth()->user()->branch_id)
-        ->get();
+            ->where('branch_id', auth()->user()->branch_id)
+            ->withSum(['transactions' => function ($query) use ($yesterday) {
+                $query->where('branch_id', auth()->user()->branch_id)
+                    ->whereDate('created_at', '<=', $yesterday);
+            }], 'at_amount')
+            ->get();
+
+        $shortTermLiabilities->each(function ($liability) use ($todayStart, $todayEnd) {
+            $liability->total_debit_today = $liability->transactions()
+                ->where('branch_id', auth()->user()->branch_id)
+                ->where('transaction_type', 'Received')
+                ->whereBetween('created_at', [$todayStart, $todayEnd])
+                ->sum('at_amount');
+        });
+
+        $shortTermLiabilities->each(function ($liability) use ($todayStart, $todayEnd) {
+            $liability->total_credit_today = $liability->transactions()
+                ->where('branch_id', auth()->user()->branch_id)
+                ->where('transaction_type', 'Payment')
+                ->whereBetween('created_at', [$todayStart, $todayEnd])
+                ->sum('at_amount');
+        });
 
         $longTermLiabilities = ChartOfAccount::where('sub_account_head', 'Long Term Liabilities')
-        ->where('branch_id', auth()->user()->branch_id)
-        ->get();
+            ->where('branch_id', auth()->user()->branch_id)
+            ->withSum(['transactions' => function ($query) use ($yesterday) {
+                $query->where('branch_id', auth()->user()->branch_id)
+                    ->whereDate('created_at', '<=', $yesterday);
+            }], 'at_amount')
+            ->get();
+
+        $longTermLiabilities->each(function ($liability) use ($todayStart, $todayEnd) {
+            $liability->total_debit_today = $liability->transactions()
+                ->where('branch_id', auth()->user()->branch_id)
+                ->where('transaction_type', 'Received')
+                ->whereBetween('created_at', [$todayStart, $todayEnd])
+                ->sum('at_amount');
+        });
+
+        $longTermLiabilities->each(function ($liability) use ($todayStart, $todayEnd) {
+            $liability->total_credit_today = $liability->transactions()
+                ->where('branch_id', auth()->user()->branch_id)
+                ->where('transaction_type', 'Payment')
+                ->whereBetween('created_at', [$todayStart, $todayEnd])
+                ->sum('at_amount');
+        });
 
         $currentLiabilities = ChartOfAccount::where('sub_account_head', 'Current Liabilities')
-        ->where('branch_id', auth()->user()->branch_id)
-        ->get();
+            ->where('branch_id', auth()->user()->branch_id)
+            ->withSum(['transactions' => function ($query) use ($yesterday) {
+                $query->where('branch_id', auth()->user()->branch_id)
+                    ->whereDate('created_at', '<=', $yesterday);
+            }], 'at_amount')
+            ->get();
+
+        $currentLiabilities->each(function ($liability) use ($todayStart, $todayEnd) {
+            $liability->total_debit_today = $liability->transactions()
+                ->where('branch_id', auth()->user()->branch_id)
+                ->where('transaction_type', 'Received')
+                ->whereBetween('created_at', [$todayStart, $todayEnd])
+                ->sum('at_amount');
+        });
+
+        $currentLiabilities->each(function ($liability) use ($todayStart, $todayEnd) {
+            $liability->total_credit_today = $liability->transactions()
+                ->where('branch_id', auth()->user()->branch_id)
+                ->where('transaction_type', 'Payment')
+                ->whereBetween('created_at', [$todayStart, $todayEnd])
+                ->sum('at_amount');
+        });
 
         $equityCapitals = ChartOfAccount::where('sub_account_head', 'Equity Capital')
-        ->where('branch_id', auth()->user()->branch_id)
-        ->get();
+            ->where('branch_id', $branchId)
+            ->withSum(['transactions' => function ($query) use ($branchId, $yesterday) {
+                $query->where('branch_id', $branchId)
+                    ->whereDate('created_at', '<=', $yesterday);
+            }], 'at_amount')
+            ->get();
+
+        $equityCapitals->each(function ($equity) use ($branchId, $todayStart, $todayEnd) {
+            $equity->total_debit_today = $equity->transactions()
+                ->where('branch_id', $branchId)
+                ->where('transaction_type', 'Received')
+                ->whereBetween('created_at', [$todayStart, $todayEnd])
+                ->sum('at_amount');
+        });
+
+        $equityCapitals->each(function ($equity) use ($branchId, $todayStart, $todayEnd) {
+            $equity->total_credit_today = $equity->transactions()
+                ->where('branch_id', $branchId)
+                ->where('transaction_type', 'Payment')
+                ->whereBetween('created_at', [$todayStart, $todayEnd])
+                ->sum('at_amount');
+        });
 
         $retainedEarnings = ChartOfAccount::where('sub_account_head', 'Retained Earnings')
-        ->where('branch_id', auth()->user()->branch_id)
-        ->get();
+            ->where('branch_id', auth()->user()->branch_id)
+            ->withSum(['transactions' => function ($query) use ($yesterday) {
+                $query->where('branch_id', auth()->user()->branch_id)
+                    ->whereDate('created_at', '<=', $yesterday);
+            }], 'at_amount')
+            ->get();
+
+        $retainedEarnings->each(function ($liability) use ($todayStart, $todayEnd) {
+            $liability->total_debit_today = $liability->transactions()
+                ->where('branch_id', auth()->user()->branch_id)
+                ->where('transaction_type', 'Received')
+                ->whereBetween('created_at', [$todayStart, $todayEnd])
+                ->sum('at_amount');
+        });
+
+        $retainedEarnings->each(function ($liability) use ($todayStart, $todayEnd) {
+            $liability->total_credit_today = $liability->transactions()
+                ->where('branch_id', auth()->user()->branch_id)
+                ->where('transaction_type', 'Payment')
+                ->whereBetween('created_at', [$todayStart, $todayEnd])
+                ->sum('at_amount');
+        });
 
         $currentAssetIds = ChartOfAccount::where('sub_account_head', 'Current Asset')
             ->pluck('id');

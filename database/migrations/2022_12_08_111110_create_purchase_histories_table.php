@@ -29,6 +29,8 @@ return new class extends Migration
             $table->double('total_amount_per_unit',10,2)->nullable();
             $table->double('total_amount_with_vat',10,2)->nullable();
             $table->string('exp_date')->nullable();
+            $table->string('sl_start')->nullable();
+            $table->string('sl_end')->nullable();
             $table->boolean('status')->default(1);
             $table->string('updated_by')->nullable();
             $table->string('created_by')->nullable();
