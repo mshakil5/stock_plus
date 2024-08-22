@@ -9,20 +9,41 @@ use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
+use App\Models\ChartOfAccount;
 
 class LiabilityController extends Controller
 {
     public function index(Request $request)
     {
         if($request->ajax()){
-            $transactions = Transaction::with('chartOfAccount')->where('table_type', 'Liabilities')->latest()->get();
+            $transactions = Transaction::with('chartOfAccount')
+                ->where('table_type', 'Liabilities')
+                ->where('branch_id', auth()->user()->branch_id);
+
+            if ($request->filled('start_date')) {
+                $endDate = $request->filled('end_date') ? $request->input('end_date') : now()->endOfDay();
+                $transactions->whereBetween('date', [
+                    $request->input('start_date'),
+                    $endDate
+                ]);
+            }
+
+            if ($request->filled('account_name')) {
+                $transactions->whereHas('chartOfAccount', function ($query) use ($request) {
+                    $query->where('account_name', $request->input('account_name'));
+                });
+            }
+
+            $transactions = $transactions->latest()->get();
+
             return DataTables::of($transactions)
                 ->addColumn('chart_of_account', function ($transaction) {
-                    return $transaction->chartOfAccount->account_name;
+                    return $transaction->chartOfAccount ? $transaction->chartOfAccount->account_name : 'NA';
                 })
                 ->make(true);
         }
-        return view('admin.transactions.liabilities');
+        $accounts = ChartOfAccount::where('account_head', 'Liabilities')->get();
+        return view('admin.transactions.liabilities', compact('accounts'));
     }
 
     public function store(Request $request)

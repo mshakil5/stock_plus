@@ -5,6 +5,38 @@
 <div class="row">
     <div class="col-md-12">
         <div id="alert-container"></div>
+
+                <div class="row well">
+            <form class="form-horizontal" role="form" method="POST" action="{{ route('admin.asset.filter') }}">
+                {{ csrf_field() }}
+
+                <div class="col-md-3">
+                    <label class="label label-primary">Start Date</label>
+                    <input type="date" class="form-control" name="start_date" value="{{ request()->input('start_date') }}">
+                </div>
+                <div class="col-md-3">
+                    <label class="label label-primary">End Date</label>
+                    <input type="date" class="form-control" name="end_date" value="{{ request()->input('end_date') }}">
+                </div>
+                <div class="col-md-3">
+                    <label class="label label-primary">Account</label>
+                    <select class="form-control select2" name="account_name">
+                        <option value="">Select Account..</option>
+                        @foreach ($accounts as $account)
+                            <option value="{{ $account->account_name }}" {{ request()->input('account_name') == $account->account_name ? 'selected' : '' }}>
+                                {{ $account->account_name }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <div class="col-md-2">
+                    <br>
+                    <button type="submit" class="btn btn-primary btn-sm">Search</button>
+                </div>
+            </form>
+        </div>
+
         @component('components.widget')
             @slot('title')
                Assets
@@ -250,6 +282,9 @@
 
 <!-- Main script -->
 <script>
+    $(document).ready(function() {
+        $('.select2').select2();
+    });
 
     var charturl = "{{URL::to('/admin/asset')}}";
     var customerTBL = $('#expenseTBL').DataTable({
@@ -258,6 +293,11 @@
         ajax: {
         url: charturl,
         type: 'GET',
+        data: function (d) {
+            d.start_date = $('input[name="start_date"]').val();
+            d.end_date = $('input[name="end_date"]').val();
+            d.account_name = $('select[name="account_name"]').val();
+        },
         error: function (xhr, error, thrown) {
             console.log(xhr.responseText);
         }
@@ -288,6 +328,11 @@
                 }
             },
         ]
+    });
+
+    $('form').on('submit', function(e) {
+        e.preventDefault();
+        customerTBL.ajax.reload();
     });
 
     // modal

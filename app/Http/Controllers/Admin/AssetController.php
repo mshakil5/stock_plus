@@ -9,20 +9,41 @@ use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
+use App\Models\ChartOfAccount;
 
 class AssetController extends Controller
 {
     public function index(Request $request)
     {
         if($request->ajax()){
-            $transactions = Transaction::with('chartOfAccount')->where('table_type', 'Assets')->latest()->get();
+            $transactions = Transaction::with('chartOfAccount')
+                ->where('table_type', 'Assets')
+                ->where('branch_id', auth()->user()->branch_id);
+
+            if ($request->filled('start_date')) {
+                $endDate = $request->filled('end_date') ? $request->input('end_date') : now()->endOfDay();
+                $transactions->whereBetween('date', [
+                    $request->input('start_date'),
+                    $endDate
+                ]);
+            }
+
+            if ($request->filled('account_name')) {
+                $transactions->whereHas('chartOfAccount', function ($query) use ($request) {
+                    $query->where('account_name', $request->input('account_name'));
+                });
+            }
+
+            $transactions = $transactions->latest()->get();
+
             return DataTables::of($transactions)
                 ->addColumn('chart_of_account', function ($transaction) {
                     return $transaction->chartOfAccount->account_name;
                 })
                 ->make(true);
         }
-        return view('admin.transactions.assets');
+        $accounts = ChartOfAccount::where('account_head', 'Assets')->get();
+        return view('admin.transactions.assets', compact('accounts'));
     }
 
     public function store(Request $request)

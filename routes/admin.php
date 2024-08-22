@@ -237,30 +237,35 @@ Route::group(['prefix' =>'admin/', 'middleware' => ['auth', 'is_admin']], functi
 
     //Expense
     Route::get('expense', [ExpenseController::class, 'index'])->name('admin.expense');
+    Route::post('expenses', [ExpenseController::class, 'index'])->name('admin.expense.filter');
     Route::post('expense', [ExpenseController::class, 'store']);
     Route::get('expense/{id}', [ExpenseController::class, 'edit']);
     Route::put('expense/{id}', [ExpenseController::class, 'update']); 
 
     //Asset
     Route::get('asset', [AssetController::class, 'index'])->name('admin.asset');
+    Route::post('assets', [AssetController::class, 'index'])->name('admin.asset.filter');
     Route::post('asset', [AssetController::class, 'store']);
     Route::get('asset/{id}', [AssetController::class, 'edit']);
     Route::put('asset/{id}', [AssetController::class, 'update']); 
 
     //Income
     Route::get('income', [IncomeController::class, 'index'])->name('admin.income');
+    Route::post('incomes', [IncomeController::class, 'index'])->name('admin.income.filter');
     Route::post('income', [IncomeController::class, 'store']);
     Route::get('income/{id}', [IncomeController::class, 'edit']);
     Route::put('income/{id}', [IncomeController::class, 'update']); 
 
-    //Income
+    //Liability
     Route::get('liabilities', [LiabilityController::class, 'index'])->name('admin.liabilities');
+    Route::post('liability', [LiabilityController::class, 'index'])->name('admin.liability.filter');
     Route::post('liabilities', [LiabilityController::class, 'store']);
     Route::get('liabilities/{id}', [LiabilityController::class, 'edit']);
     Route::put('liabilities/{id}', [LiabilityController::class, 'update']); 
 
     //Equity
     Route::get('equity', [EquityController::class, 'index'])->name('admin.equity');
+    Route::post('equities', [EquityController::class, 'index'])->name('admin.equity.filter');
     Route::post('equity', [EquityController::class, 'store']);
     Route::get('equity/{id}', [EquityController::class, 'edit']);
     Route::put('equity/{id}', [EquityController::class, 'update']); 
