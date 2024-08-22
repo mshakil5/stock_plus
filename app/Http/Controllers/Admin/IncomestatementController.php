@@ -11,6 +11,7 @@ use App\Models\Order;
 use Illuminate\Support\Facades\DB;
 use App\Models\Stock;
 use Illuminate\Support\Carbon;
+use App\Models\DailyStockLog;
 
 class IncomestatementController extends Controller
 {
@@ -150,13 +151,20 @@ class IncomestatementController extends Controller
             ->whereBetween('created_at', [$startDate, $endDate])
             ->sum('discount_amount');
 
-        $adjustedEndDate = Carbon::parse($endDate)->subDay();
+        $stocks = Stock::select('product_id', 'purchase_price')->get();
 
-        $openingStocks = Stock::select('product_id', DB::raw('SUM(purchase_price * quantity) as opening_stock'))
-            ->whereBetween('created_at', [$startDate, $adjustedEndDate])
-            ->groupBy('product_id')
-            ->get();
-        $totalOpeningStock = $openingStocks->sum('opening_stock');
+        $totalOpeningStock = 0;
+        $updatedStartDate = Carbon::parse($startDate)->format('Y-m-d');
+        $updatedEndDate = Carbon::parse($endDate)->format('Y-m-d');
+
+        foreach ($stocks as $stock) {
+            $totalQuantity = DailyStockLog::where('product_id', $stock->product_id)
+                ->whereBetween('log_date', [$updatedStartDate, $updatedEndDate])
+                ->sum('quantity');
+            $purchasePrice = $stock->purchase_price;
+            $productTotalValue = $totalQuantity * $purchasePrice;
+            $totalOpeningStock += $productTotalValue;
+        }
 
         $totalClosingStock = $totalOpeningStock + $purchaseSum - ($salesSum - $salesReturn);
 
