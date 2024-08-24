@@ -20,7 +20,9 @@ class CustomerController extends Controller
     public function index(Request $request)
     {
         if($request->ajax()){
-            $customers = Customer::all();
+            $customers = Customer::where('branch_id', auth()->user()->branch_id)
+               ->orderBy('id', 'desc')
+               ->get();
             return Datatables::of($customers)->make(true);
         }
         return view('admin.customer.index');
@@ -42,6 +44,7 @@ class CustomerController extends Controller
         ]);
         $customer = new Customer();
         $customer->name = $request->name;
+        $customer->branch_id = auth()->user()->branch_id;
         $customer->email = $request->email;
         $customer->phone = $request->phone;
         $customer->address = $request->address;

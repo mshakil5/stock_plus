@@ -52,7 +52,7 @@
                             </thead>
                             <tbody>
 
-                                @foreach (\App\Models\Vendor::all() as $data)
+                                @foreach (\App\Models\Vendor::where('branch_id', auth()->user()->branch_id)->get() as $data)
                                     <tr>
                                         <td>{{ $data->code}}</td>
                                         <td>{{ $data->name}}</td>

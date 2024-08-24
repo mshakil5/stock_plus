@@ -214,7 +214,7 @@
                     </li>
 
                     @if(Auth::user()->type == '1' && in_array('14', json_decode(Auth::user()->role->permission)) || Auth::user()->type == '0' && in_array('14', json_decode(Auth::user()->role->permission)))
-                    <li class="{{ (request()->is('admin/vendor/add')) ? 'active' : '' }}">
+                    <li class="{{ (request()->is('admin/suppliers')) ? 'active' : '' }}">
                         <a href="{{ route('admin.addvendor')}}">
                             <i class="fa fa-users"></i>
                             <span>Supplier</span>

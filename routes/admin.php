@@ -121,11 +121,11 @@ Route::group(['prefix' =>'admin/', 'middleware' => ['auth', 'is_admin']], functi
     Route::post('/edit-size/{id}', [SizeController::class, 'edit_size']);
     
     //Vendor
-    Route::get('vendor/add', [VendorController::class, 'add_vendor'])->name('admin.addvendor');
-    Route::post('vendor/save', [VendorController::class, 'save_vendor'])->name('admin.savevendor');
-    Route::post('vendor/update', [VendorController::class, 'update_vendor'])->name('admin.updatevendor');
-    Route::get('vendor/type', [VendorController::class, 'vendor_type'])->name('admin.addtype');
-    Route::post('vendor/type', [VendorController::class, 'save_type']);
+    Route::get('suppliers', [VendorController::class, 'add_vendor'])->name('admin.addvendor');
+    Route::post('supplier/save', [VendorController::class, 'save_vendor'])->name('admin.savevendor');
+    Route::post('supplier/update', [VendorController::class, 'update_vendor'])->name('admin.updatevendor');
+    Route::get('supplier/type', [VendorController::class, 'vendor_type'])->name('admin.addtype');
+    Route::post('supplier/type', [VendorController::class, 'save_type']);
 
     // Customer
     Route::get('customers', [CustomerController::class, 'index'])->name('admin.addcustomer');

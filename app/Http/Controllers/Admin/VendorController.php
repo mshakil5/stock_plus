@@ -33,6 +33,7 @@ class VendorController extends Controller
         ]);
         $data = new Vendor;
         $data['code'] = $request->code;
+        $data['branch_id '] = Auth::user()->branch_id;
         $data['name'] = $request->name;
         $data['email'] = $request->email;
         $data['phone'] = $request->phone;
