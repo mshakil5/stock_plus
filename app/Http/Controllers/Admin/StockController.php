@@ -90,12 +90,6 @@ class StockController extends Controller
             exit();
         }
 
-        // if(empty(Auth::user()->branch_id)){
-        //     $message ="<div class='alert alert-warning'><a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a><b>Please fill \"Branch\" field..!</b></div>";
-        //     return response()->json(['status'=> 303,'message'=>$message]);
-        //     exit();
-        // }
-
         if(empty($request->purchase_type)){
             $message ="<div class='alert alert-warning'><a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a><b>Please fill \"Transaction Type\" field..!</b></div>";
             return response()->json(['status'=> 303,'message'=>$message]);
@@ -148,7 +142,6 @@ class StockController extends Controller
                 $transaction->purchase_id = $purchase->id;
                 $transaction->date = $request->input('date');
                 $transaction->table_type = 'Cogs';
-                // $transaction->ref = 'Purchase';
                 $transaction->description = 'Purchase';
                 $transaction->amount = $request->total_amount;
                 $transaction->vat_amount = $request->total_vat_amount;
@@ -183,6 +176,7 @@ class StockController extends Controller
                         $purchasehistry->purchase_id = $purchase->id;
                         $purchasehistry->product_id = $pid;
                         $purchasehistry->quantity = $qty;
+                        $purchasehistry->available_stock = $qty;
                         $purchasehistry->purchase_price = $request->get('unit_price')[$key];
                         $purchasehistry->vat_percent = $request->get('vat_percent')[$key];
                         $purchasehistry->vat_amount_per_unit = $request->get('unit_price')[$key] * $request->get('vat_percent')[$key]/100;
@@ -231,10 +225,13 @@ class StockController extends Controller
                 return response()->json(['status'=> 300,'message'=>$message]);
             }
 
-            }catch (\Exception $e){
-                return response()->json(['status'=> 303,'message'=>'Server Error!!']);
-
-            }
+            }catch (\Exception $e) {
+            return response()->json([
+                'status' => 500, 
+                'message' => 'Server Error!!',
+                'error' => $e->getMessage() 
+            ], 500);
+        }
 
     }
 
@@ -347,6 +344,7 @@ class StockController extends Controller
                             $purchasehistry->purchase_id = $purchase->id;
                             $purchasehistry->product_id = $pid;
                             $purchasehistry->quantity = $qty;
+                            $purchasehistry->available_stock = $qty;               
                             $purchasehistry->purchase_price = $request->get('unit_price')[$key];
                             $purchasehistry->vat_percent = $request->get('vat_percent')[$key];
                             $purchasehistry->vat_amount_per_unit = $request->get('unit_price')[$key] * $request->get('vat_percent')[$key]/100;
@@ -363,6 +361,7 @@ class StockController extends Controller
                             $purchasehistry->purchase_id = $purchase->id;
                             $purchasehistry->product_id = $pid;
                             $purchasehistry->quantity = $qty;
+                            $purchasehistry->available_stock = $qty;
                             $purchasehistry->purchase_price = $request->get('unit_price')[$key];
                             $purchasehistry->vat_percent = $request->get('vat_percent')[$key];
                             $purchasehistry->vat_amount_per_unit = $request->get('unit_price')[$key] * $request->get('vat_percent')[$key]/100;

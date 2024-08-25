@@ -823,8 +823,8 @@
                             window.open(`{{ route('customer.invoice.print', '') }}/${d.id}`, '_blank');
                         }
                     },
-                    error: function (d) {
-                        console.log(d);
+                    error: function(xhr, status, error) {
+                        console.error(xhr.responseText);
                     }
                 });
         });

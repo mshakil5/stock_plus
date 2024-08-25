@@ -42,7 +42,7 @@
                             <div class="form-row">
                                 <div class="form-group col-md-4">
                                   <label for="date">Entry Date</label>
-                                  <input type="date" class="form-control" id="date" name="date" value="{{date('Y-d-m')}}">
+                                  <input type="date" class="form-control" id="date" name="date" value="{{ date('Y-m-d') }}">
                                 </div>
                                 <div class="form-group col-md-3">
                                     <label for="supplier_id">Supplier</label>
@@ -576,8 +576,8 @@
                             
                         }
                     },
-                    error: function (d) {
-                        console.log(d);
+                    error: function(xhr, status, error) {
+                        console.error(xhr.responseText);
                     }
                 });
 
