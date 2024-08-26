@@ -182,11 +182,7 @@
                         <div class="box">
                             <table class="table table-striped table-hover" style="width: 100%">                       
                                 <tbody> 
-                                    <tr class="d-none">
-                                        <td colspan="4" style="width: 50%"></td>
-                                        <td colspan="2" style="text-align: left">Total Return Amount</td>
-                                        <td colspan="2" style="text-align: right"><input type="number" id="net_total" name="net_total" class="form-control" readonly></td>
-                                    </tr>
+                                    
                                     <tr>
                                         <td colspan="4" style="width: 50%"></td>
                                         <td colspan="2" style="text-align: left"></td>
@@ -223,7 +219,7 @@
 
         function removeRow(event) {
             event.target.parentElement.parentElement.remove();
-            net_total();  
+            updateTotals();
         }
 
     $(document).ready(function() {
@@ -233,7 +229,7 @@
 
         
         var salesproducturl = "{{URL::to('/get-product-details')}}";
-        $("#productsTBL").on('click','#returnThisProduct', function(){
+            $("#productsTBL").on('click','#returnThisProduct', function(){
                     event.preventDefault();
                     orderdetailid = $(this).attr('ordid');
                     var product = $(this).attr('product_id');
@@ -255,10 +251,10 @@
 
                         }else if(d.status == 300){
                             console.log(d);
-                                var markup = '<tr class="item-row pdetails" style="position:realative;"><td><input name="productname[]" type="text" value="'+d.productname+'" class="form-control" readonly></td><td><input type="number" class="form-control quantity" name="quantity[]" min="1" value="1" placeholder="Type quantity"><input type="hidden" class="form-control oldquantity" name="oldquantity[]" min="1" value="'+d.quantity+'"> <input type="hidden" class="form-control" name="purchase_history_id[]" value="'+d.purchase_history_id+'"> </td><td><input name="sellingprice[]" type="text" value="'+d.selling_price_with_vat+'" class="form-control uamount" readonly><input type="hidden" name="product_id[]" value="'+d.product_id+'"></td><td><input name="total[]" type="text" value="'+d.selling_price_with_vat+'" class="form-control total" readonly></td><td width="30px"><div style="color: white;  user-select:none;  padding: 5px;    background: red;    width: 25px;    display: flex;    align-items: center; margin-right:2px;   justify-content: center;    border-radius: 4px;   left: 4px;    top: 81px;" onclick="removeRow(event)" >X</div></td></tr>';
+                                var markup = '<tr class="item-row pdetails" style="position:realative;"><td><input name="productname[]" type="text" value="'+d.productname+'" class="form-control" readonly></td><td><input type="number" class="form-control quantity" name="quantity[]" min="1" value="1" placeholder="Type quantity"><input type="hidden" class="form-control oldquantity" name="oldquantity[]" min="1" value="'+d.quantity+'"> <input type="hidden" class="form-control" name="purchase_history_id[]" value="'+d.purchase_history_id+'"> </td><td><input name="sellingprice[]" type="text" value="'+d.selling_price_with_vat+'" class="form-control uamount" readonly><input type="hidden" name="product_id[]" value="'+d.product_id+'"></td><td><input name="total[]" id="total" type="text" value="'+d.selling_price_with_vat+'" class="form-control total" readonly></td><td width="30px"><div style="color: white;  user-select:none;  padding: 5px;    background: red;    width: 25px;    display: flex;    align-items: center; margin-right:2px;   justify-content: center;    border-radius: 4px;   left: 4px;    top: 81px;" onclick="removeRow(event)" >X</div></td></tr>';
                                 $("table #returninner ").append(markup);
 
-                                net_total();
+                                updateTotals();
                         }
                     },
                     error: function (d) {
@@ -268,7 +264,7 @@
                 
             }); 
             
-        $("#productsTBL").on('click','#returnToDamage', function(){
+            $("#productsTBL").on('click','#returnToDamage', function(){
                     event.preventDefault();
                     orderdetailid = $(this).attr('ordid');
                     var product = $(this).attr('product_id');
@@ -292,8 +288,6 @@
                             console.log(d);
                                 var markup = '<tr class="item-row pdetails" style="position:realative;"><td><input name="productname[]" type="text" value="'+d.productname+'" class="form-control" readonly></td><td><input type="number" class="form-control quantity" name="quantity[]" min="1" value="1" placeholder="Type quantity"><input type="hidden" class="form-control oldquantity" name="oldquantity[]" min="1" value="'+d.quantity+'"></td><td><input name="sellingprice[]" type="text" value="'+d.selling_price_with_vat+'" class="form-control uamount" readonly><input type="hidden" name="product_id[]" value="'+d.product_id+'"></td><td><input name="total[]" type="text" value="'+d.selling_price_with_vat+'" class="form-control total" readonly></td><td width="30px"><div style="color: white;  user-select:none;  padding: 5px;    background: red;    width: 25px;    display: flex;    align-items: center; margin-right:2px;   justify-content: center;    border-radius: 4px;   left: 4px;    top: 81px;" onclick="removeRow(event)" >X</div></td></tr>';
                                 $("table #returninner ").append(markup);
-
-                                net_total();
                         }
                     },
                     error: function (d) {
@@ -341,7 +335,7 @@
                 var grand_total = 0;
                 var vat_total = 0;
 
-                $('.total').each(function() {
+                $('#total').each(function() {
                     grand_total += parseFloat($(this).val()) || 0;
                 });
 
@@ -350,7 +344,6 @@
                 });
 
                 $('#net_vat_amount').val(vat_total.toFixed(2));
-                $('#grand_total').val(grand_total.toFixed(2));
                 $('#net_total').val(grand_total.toFixed(2));
             }
 

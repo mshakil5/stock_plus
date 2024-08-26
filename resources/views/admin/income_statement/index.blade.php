@@ -317,11 +317,5 @@
 @endsection
 
 @section('script')
-<script>
-    $(document).ready(function() {
-        $('#cashIncomingTable').DataTable({
-            pageLength: 25,
-        });
-    });
-</script>
+
 @endsection
