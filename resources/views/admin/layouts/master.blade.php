@@ -180,7 +180,7 @@
                     </li>
 
 
-                    <li class="treeview {{ (request()->is('admin/add-stock')) ? 'active' : '' }} {{ (request()->is('admin/manage-stock')) ? 'active' : '' }} {{ (request()->is('admin/product-purchase-history')) ? 'active' : '' }} {{ (request()->is('admin/stock-transfer-request')) ? 'active' : '' }} {{ (request()->is('admin/stock-transfer-history')) ? 'active' : '' }} {{ (request()->is('admin/stock-return-history')) ? 'active' : '' }}">
+                    <li class="treeview {{ (request()->is('admin/add-stock')) ? 'active' : '' }} {{ (request()->is('admin/manage-stock')) ? 'active' : '' }} {{ (request()->is('admin/product-purchase-history')) ? 'active' : '' }} {{ (request()->is('admin/stock-transfer-request')) ? 'active' : '' }} {{ (request()->is('admin/stock-transfer-history')) ? 'active' : '' }} {{ (request()->is('admin/stock-return-history')) ? 'active' : '' }} {{ (request()->is('admin/damaged-products')) ? 'active' : '' }}">
                         <a href="#">
                             <i class="fa fa-clipboard"></i>
                             <span>Stocks</span>
@@ -210,6 +210,8 @@
                             @if(Auth::user()->type == '1' && in_array('19', json_decode(Auth::user()->role->permission)) || Auth::user()->type == '0' && in_array('19', json_decode(Auth::user()->role->permission)))
                             <li class="{{ (request()->is('admin/stock-return-history')) ? 'active' : '' }}"><a href="{{ route('admin.stockReturnHistory')}}"><i class="fa fa-undo"></i>Returned History</a></li>
                             @endif
+
+                            <li class="{{ (request()->is('admin/damaged-products')) ? 'active' : '' }}"><a href="{{ route('admin.damagedProducts')}}"><i class="fa fa-undo"></i>Damaged Products</a></li>
                         </ul>
                     </li>
 

@@ -20,6 +20,8 @@ use App\Models\StockTransferRequest;
 use Illuminate\Support\Facades\Auth;
 use Yajra\DataTables\Facades\DataTables;
 use App\Models\Transaction;
+use App\Models\PurchaseHistory;
+use App\Models\DamagedProduct;
 
 class OrderController extends Controller
 {
@@ -204,6 +206,28 @@ class OrderController extends Controller
                 $orderDtl->total_amount = $request->get('quantity')[$key] * $request->get('sellingprice')[$key];
                 $orderDtl->created_by = Auth::user()->id;
                 $orderDtl->save();
+
+                $purchaseHistory = PurchaseHistory::where('product_id', $orderDtl->product_id)
+                                  ->where('branch_id', Auth::user()->branch_id)
+                                  ->where('available_stock', '>', 0)
+                                  ->orderBy('id', 'asc')
+                                  ->first();
+               
+                if ($purchaseHistory) {
+
+                    $orderDtl->purchase_history_id = $purchaseHistory->id;
+                    $orderDtl->save();  
+
+                    $newSold = $purchaseHistory->sold + $orderDtl->quantity;
+                    $newAvailableStock = $purchaseHistory->available_stock - $orderDtl->quantity;
+
+                    $purchaseHistory->sold = $newSold;
+                    $purchaseHistory->available_stock = $newAvailableStock;
+                    $purchaseHistory->updated_by = Auth::user()->id;
+                    $purchaseHistory->save();
+                    
+                }
+
                 $stockid = Stock::where('product_id','=',$request->get('product_id')[$key])->where('branch_id','=', Auth::user()->branch_id)->first();
                 if($request->delivery_note_id == ""){
                     if (isset($stockid->id)) {
@@ -639,6 +663,20 @@ class OrderController extends Controller
                 if (isset($orderdtlIDs[$key])) {
 
                     $orderDtl = OrderDetail::findOrFail($orderdtlIDs[$key]);
+
+                    $purchaseHistory = PurchaseHistory::where('id', $orderDtl->purchase_history_id)
+                                  ->where('branch_id', Auth::user()->branch_id)
+                                  ->first();                    
+                                  
+                    if ($purchaseHistory) {
+                        $newSold = $purchaseHistory->sold - $orderDtl->quantity + $qty;
+                        $newAvailableStock = $purchaseHistory->available_stock + $orderDtl->quantity - $qty;
+
+                        $purchaseHistory->sold = $newSold;
+                        $purchaseHistory->available_stock = $newAvailableStock;
+                        $purchaseHistory->updated_by = Auth::user()->id;
+                        $purchaseHistory->save();
+                    }
 
                         // stock update
                         $stock = Stock::where('product_id','=', $pid)->where('branch_id','=', Auth::user()->branch_id)->first();
@@ -1173,7 +1211,10 @@ class OrderController extends Controller
             if(empty($orderDtl)){
                 return response()->json(['status'=> 303,'message'=>"No data found"]);
             }else{
-                return response()->json(['status'=> 300,'productname'=>$orderDtl->product->productname,'product_id'=>$orderDtl->product_id,'order_detail_id'=>$orderDtl->id, 'selling_price_with_vat'=>$orderDtl->sellingprice, 'part_no'=>$orderDtl->product->part_no, 'quantity'=>$orderDtl->quantity, 'vat_amount'=>$orderDtl->vat_amount, 'total_vat'=>$orderDtl->total_vat, 'order_id'=>$orderDtl->order_id ]);
+                return response()->json(['status'=> 300,'productname'=>$orderDtl->product->productname,'product_id'=>$orderDtl->product_id,'order_detail_id'=>$orderDtl->id, 'selling_price_with_vat'=>$orderDtl->sellingprice, 'part_no'=>$orderDtl->product->part_no, 'quantity'=>$orderDtl->quantity, 'vat_amount'=>$orderDtl->vat_amount, 
+                'total_vat'=>$orderDtl->total_vat,
+                 'order_id'=>$orderDtl->order_id,
+                 'purchase_history_id'=>$orderDtl->purchase_history_id, ]);
             }
 
         }
@@ -1221,12 +1262,51 @@ class OrderController extends Controller
                     $orderDtl->total_amount = $request->get('total')[$key];
                     $orderDtl->created_by = Auth::user()->id;
                     $orderDtl->save();
+
+                    $purchaseHistory = PurchaseHistory::where('id', $request->get('purchase_history_id')[$key])->first();
+
+                if ($purchaseHistory) {
+                    $newSold = $purchaseHistory->sold - $orderDtl->quantity;
+                    $newAvailableStock = $purchaseHistory->available_stock + $orderDtl->quantity;
+
+                    $purchaseHistory->sold = $newSold;
+                    $purchaseHistory->available_stock = $newAvailableStock;
+                    $purchaseHistory->updated_by = Auth::user()->id;
+                    $purchaseHistory->save();
+                }
+
                 }
                 $message ="<div class='alert alert-success'><a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a><b>Product return successfully.</b></div>";
                 return response()->json(['status'=> 300,'message'=>$message]);
             }
     
         }
+
+    public function damageReturnStore(Request $request)
+    {
+        if (empty($request->customer_id)) {
+            $message = "<div class='alert alert-warning'><a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a><b>Please select a \"Customer\" field..!</b></div>";
+            return response()->json(['status' => 303, 'message' => $message]);
+        }
+
+        if (empty($request->input('product_id'))) {
+            $message = "<div class='alert alert-warning'><a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a><b>Please select a \"Product\" field..!</b></div>";
+            return response()->json(['status' => 303, 'message' => $message]);
+        }
+
+        foreach ($request->input('product_id') as $key => $productId) {
+            $damagedProduct = new DamagedProduct();
+            $damagedProduct->product_id = $productId;
+            $damagedProduct->customer_id = $request->customer_id;
+            $damagedProduct->branch_id = Auth::user()->branch_id;
+            $damagedProduct->quantity = $request->get('quantity')[$key];
+            $damagedProduct->created_by = Auth::user()->id;
+            $damagedProduct->save();
+        }
+
+        $message = "<div class='alert alert-success'><a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a><b>Product returned to damaged successfully.</b></div>";
+        return response()->json(['status' => 300, 'message' => $message]);
+    }
 
     public function getAllReturnInvoice()
         {

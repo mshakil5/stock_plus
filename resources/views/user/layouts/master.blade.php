@@ -103,6 +103,10 @@
                                 <a href="#" class="nav-link" data-bs-toggle="modal" data-bs-target="#addProductModal">Add Product</a>
                             </li>
                             @endif
+
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ route('user.stockrequest')}}">Returned Products</a>
+                            </li>
                             
                             <li class="nav-item">
                                 <a class="nav-link" href="{{ route('logout') }}" onclick="event.preventDefault();

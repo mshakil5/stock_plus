@@ -150,6 +150,7 @@ Route::group(['prefix' =>'admin/', 'middleware' => ['auth', 'is_admin']], functi
     Route::get('manage-stock', [StockController::class, 'managestock'])->name('admin.managestock');
     Route::post('manage-stock', [StockController::class, 'managestock'])->name('managestock.search');
     Route::get('stock-return-history', [StockController::class, 'stockReturnHistory'])->name('admin.stockReturnHistory');
+    Route::get('damaged-products', [StockController::class, 'damagedProducts'])->name('admin.damagedProducts');
 
     // stock history 
     Route::get('product-purchase-history', [StockController::class, 'productPurchaseHistory'])->name('admin.product.purchasehistory');
@@ -288,7 +289,7 @@ Route::group(['prefix' =>'admin/', 'middleware' => ['auth', 'is_admin']], functi
     Route::get('cash-flow', [CashflowController::class, 'cashFlow'])->name('admin.cashflow');
     Route::post('cash-flow', [CashflowController::class, 'cashFlowByDate'])->name('admin.cashflow');
     Route::get('income-statement', [IncomestatementController::class, 'incomeStatement'])->name('admin.incomestatement');
-    Route::post('income-statement', [IncomestatementController::class, 'incomeStatementByDate'])->name('admin.incomestatement');
+    Route::post('income-statement', [IncomestatementController::class, 'incomeStatement'])->name('admin.incomestatement');
     Route::get('balance-sheet', [BalancesheetController::class, 'balanceSheet'])->name('admin.balancesheet');
     Route::post('balance-sheet', [BalancesheetController::class, 'balanceSheetByDate'])->name('admin.balancesheet');
 

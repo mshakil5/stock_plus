@@ -34,6 +34,7 @@ return new class extends Migration
             $table->string('sold')->nullable();
             $table->string('available_stock')->nullable();
             $table->boolean('status')->default(1);
+            $table->string('date')->nullable();
             $table->string('updated_by')->nullable();
             $table->string('created_by')->nullable();
             $table->timestamps();

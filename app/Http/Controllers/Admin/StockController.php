@@ -19,6 +19,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
 use Yajra\DataTables\Facades\DataTables;
 use App\Models\Transaction;
+use App\Models\DamagedProduct;
 
 class StockController extends Controller
 {
@@ -174,6 +175,7 @@ class StockController extends Controller
                         $purchasehistry = new PurchaseHistory();
                         $purchasehistry->branch_id = Auth::user()->branch_id;
                         $purchasehistry->purchase_id = $purchase->id;
+                        $purchasehistry->date = now()->format('Y-m-d');
                         $purchasehistry->product_id = $pid;
                         $purchasehistry->quantity = $qty;
                         $purchasehistry->available_stock = $qty;
@@ -696,6 +698,12 @@ class StockController extends Controller
 
                     // dd($histories);
         return view('admin.stock.stockreturnhistory', compact('histories'));
+    }
+
+    public function damagedProducts()
+    {
+        $damagedProducts = DamagedProduct::where('branch_id', Auth::user()->branch_id)->orderby('id','DESC')->get();
+        return view('admin.stock.damagedproducts', compact('damagedProducts'));
     }
 
 

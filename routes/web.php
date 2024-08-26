@@ -125,6 +125,8 @@ Route::group(['middleware' => ['auth']], function(){
     Route::get('all-sales-return', [OrderController::class, 'getAllReturnInvoice'])->name('user.allreturninvoices');
     Route::get('sales-return-detail/{id}', [OrderController::class, 'salesReturnDetails'])->name('user.salesreturndetails');
 
+    Route::post('damage-return', [OrderController::class, 'damageReturnStore'])->name('damageReturn.store');
+
     // partno status 
     Route::get('/published-partno/{id}', [OrderController::class, 'published_partno']);
     Route::get('/unpublished-partno/{id}', [OrderController::class, 'unpublished_partno']);
