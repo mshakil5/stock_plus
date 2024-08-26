@@ -28,14 +28,18 @@ class IncomestatementController extends Controller
             ->where('description', 'Purchase')
             ->where('branch_id', $branchId)
             ->whereNull('chart_of_account_id')
-            ->whereBetween('created_at', [$startDate, $endDate])
+            ->when($request->has('start_date') && $request->has('end_date'), function ($query) use ($request) {
+                $query->whereBetween('created_at', [$request->input('start_date'), $request->input('end_date')]);
+            })
             ->sum('amount');
 
         $salesSum = Transaction::where('table_type', 'Income')
             ->where('status', 0)
             ->whereNull('chart_of_account_id')
             ->where('branch_id', $branchId)
-            ->whereBetween('created_at', [$startDate, $endDate])
+            ->when($request->has('start_date') && $request->has('end_date'), function ($query) use ($request) {
+                $query->whereBetween('created_at', [$request->input('start_date'), $request->input('end_date')]);
+            })
             ->sum('amount');
 
         $operatingExpenseId = ChartOfAccount::where('sub_account_head', 'Operating Expense')->pluck('id');
@@ -44,7 +48,9 @@ class IncomestatementController extends Controller
             ->whereIn('chart_of_account_id', $operatingExpenseId)
             ->where('status', 0)
             ->where('branch_id', $branchId)
-            ->whereBetween('created_at', [$startDate, $endDate])
+            ->when($request->has('start_date') && $request->has('end_date'), function ($query) use ($request) {
+                $query->whereBetween('created_at', [$request->input('start_date'), $request->input('end_date')]);
+            })
             ->groupBy('chart_of_account_id')
             ->get();
         $operatingExpenseSum = $operatingExpenses->sum('total_amount');
@@ -55,24 +61,32 @@ class IncomestatementController extends Controller
             ->whereIn('chart_of_account_id', $administrativeExpenseId)
             ->where('status', 0)
             ->where('branch_id', $branchId)
-            ->whereBetween('created_at', [$startDate, $endDate])
+            ->when($request->has('start_date') && $request->has('end_date'), function ($query) use ($request) {
+                $query->whereBetween('created_at', [$request->input('start_date'), $request->input('end_date')]);
+            })
             ->groupBy('chart_of_account_id')
             ->get();
         $administrativeExpenseSum = $administrativeExpenses->sum('total_amount');
 
         $salesReturn = SalesReturn::where('branch_id', $branchId)
-            ->whereBetween('created_at', [$startDate, $endDate])
+            ->when($request->has('start_date') && $request->has('end_date'), function ($query) use ($request) {
+                $query->whereBetween('created_at', [$request->input('start_date'), $request->input('end_date')]);
+            })
             ->sum('net_total');
 
         $salesDiscount = Order::where('branch_id', $branchId)
-            ->whereBetween('created_at', [$startDate, $endDate])
+            ->when($request->has('start_date') && $request->has('end_date'), function ($query) use ($request) {
+                $query->whereBetween('created_at', [$request->input('start_date'), $request->input('end_date')]);
+            })
             ->sum('discount_amount');
 
         $updatedStartDate = Carbon::parse($startDate)->format('Y-m-d');
         $updatedEndDate = Carbon::parse($endDate)->subDay()->format('Y-m-d');
 
-        $totalOpeningStock = PurchaseHistoryLog::whereBetween('log_date', [$updatedStartDate, $updatedEndDate])
-            ->sum('total_amount');
+        $totalOpeningStock = PurchaseHistoryLog::when($request->has('start_date') && $request->has('end_date'), function ($query) use ($request) {
+            $query->whereBetween('log_date', [$request->input('start_date'), $request->input('end_date')]);
+        })
+        ->sum('total_amount');
 
         $closingBalances = PurchaseHistory::where('available_stock', '>', 0)
         ->get()
@@ -90,26 +104,34 @@ class IncomestatementController extends Controller
             ->where('description', 'Purchase')
             ->where('branch_id', $branchId)
             ->whereNull('chart_of_account_id')
-            ->whereBetween('created_at', [$startDate, $endDate])
+            ->when($request->has('start_date') && $request->has('end_date'), function ($query) use ($request) {
+                $query->whereBetween('created_at', [$request->input('start_date'), $request->input('end_date')]);
+            })
             ->sum('vat_amount');
 
         $salesVatSum = Transaction::where('table_type', 'Income')
             ->where('status', 0)
             ->where('branch_id', $branchId)
             ->whereNull('chart_of_account_id')
-            ->whereBetween('created_at', [$startDate, $endDate])
+            ->when($request->has('start_date') && $request->has('end_date'), function ($query) use ($request) {
+                $query->whereBetween('created_at', [$request->input('start_date'), $request->input('end_date')]);
+            })
             ->sum('vat_amount');
 
         $operatingExpenseVatSum = Transaction::whereIn('chart_of_account_id', $operatingExpenseId)
             ->where('status', 0)
             ->where('branch_id', $branchId)
-            ->whereBetween('created_at', [$startDate, $endDate])
+            ->when($request->has('start_date') && $request->has('end_date'), function ($query) use ($request) {
+                $query->whereBetween('created_at', [$request->input('start_date'), $request->input('end_date')]);
+            })
             ->sum('vat_amount');
 
         $administrativeExpenseVatSum = Transaction::whereIn('chart_of_account_id', $administrativeExpenseId)
             ->where('status', 0)
             ->where('branch_id', $branchId)
-            ->whereBetween('created_at', [$startDate, $endDate])
+            ->when($request->has('start_date') && $request->has('end_date'), function ($query) use ($request) {
+                $query->whereBetween('created_at', [$request->input('start_date'), $request->input('end_date')]);
+            })
             ->sum('vat_amount');
 
         $taxAndVat = $purchaseVatSum + $salesVatSum + $operatingExpenseVatSum + $administrativeExpenseVatSum;
