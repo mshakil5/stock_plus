@@ -11,7 +11,7 @@ class CashflowController extends Controller
     public function cashFlow(Request $request)
     {
         $incomings = Transaction::where(function ($query) {
-            $query->where('table_type', 'Asset')
+            $query->where('table_type', 'Assets')
                   ->where('transaction_type', 'Sold');
         })->orWhere(function ($query) {
             $query->where('table_type', 'Income')

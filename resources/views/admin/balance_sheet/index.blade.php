@@ -22,11 +22,11 @@
                     @csrf
                     <div class="form-group col-md-5 d-flex align-items-center">
                         <label for="startDate" class="mr-2 mb-0">Start Date</label>
-                        <input type="date" id="startDate" name="start_date" class="form-control" value="{{ request('start_date') }}">
+                        <input type="date" id="startDate" name="startDate" class="form-control" value="{{ request('startDate') }}" required>
                     </div>
                     <div class="form-group col-md-5 d-flex align-items-center">
                         <label for="endDate" class="mr-2 mb-0">End Date</label>
-                        <input type="date" id="endDate" name="end_date" class="form-control" value="{{ request('end_date') }}">
+                        <input type="date" id="endDate" name="endDate" class="form-control" value="{{ request('endDate') }}" required>
                     </div>
                     <div class="form-group col-md-2">
                         <button type="submit" id="searchButton" class="btn btn-primary btn-block">
@@ -86,37 +86,37 @@
                         <tr>
                             <td colspan="2"></td>
                             <td>Cash In Hand</td>
-                            <td</td>
-                            <td</td>
-                            <td</td>
-                            <td</td>
+                            <td>0.00</td>
+                            <td></td>
+                            <td></td>
+                            <td>{{ number_format($cashInHand, 2) }}</td>
                         </tr>
 
                          <tr>
                             <td colspan="2"></td>
                             <td>Cash at Bank</td>
-                            <td</td>
-                            <td</td>
-                            <td</td>
-                            <td</td>
+                            <td>0.00</td>
+                            <td></td>
+                            <td></td>
+                            <td>{{ number_format($cashInBank, 2) }}</td>
                         </tr>
 
                         <tr>
                             <td colspan="2"></td>
                             <td>Account Receivable</td>
-                            <td</td>
-                            <td</td>
-                            <td</td>
-                            <td</td>
+                            <td>0.00</td>
+                            <td></td>
+                            <td></td>
+                            <td>{{ number_format($accountReceiveable, 2) }}</td>
                         </tr>
 
                         <tr>
                             <td colspan="2"></td>
                             <td>Inventory</td>
-                            <td</td>
-                            <td</td>
-                            <td</td>
-                            <td</td>
+                            <td>0.00</td>
+                            <td></td>
+                            <td></td>
+                            <td>{{ number_format($inventory, 2) }}</td>
                         </tr>
 
                         @foreach($currentAssets as $currentAsset)
@@ -330,6 +330,17 @@
                             <td colspan="5"></td>
                         </tr>
 
+                        <tr>
+                            <td colspan="2"></td>
+                            <td>Net Profit</td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td>
+                                {{ number_format($netProfit, 2) }}
+                            </td>
+                        </tr>
+
                         <!-- Retained Earnings  -->
                         @foreach($retainedEarnings as $retainedEarning)
                         <tr>
@@ -397,11 +408,5 @@
 @endsection
 
 @section('script')
-<script>
-    $(document).ready(function() {
-        $('#cashIncomingTable').DataTable({
-            pageLength: 25,
-        });
-    });
-</script>
+
 @endsection

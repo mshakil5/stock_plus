@@ -177,7 +177,7 @@
                     <div class="col-md-12">
                         <div class="bs-example bs-example-tabs" data-example-id="togglable-tabs">
                             <h5 class="btn btn-success btn-sm center-block px-2">
-                                {{ \App\Models\Transaction::where('table_type', 'Liability')
+                                {{ \App\Models\Transaction::where('table_type', 'Liabilities')
                                     ->whereDate('created_at', \Carbon\Carbon::today())
                                     ->sum('at_amount') }}
                             </h5>
