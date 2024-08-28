@@ -86,7 +86,11 @@
                         <tr>
                             <td colspan="2"></td>
                             <td>Cash In Hand</td>
-                            <td>0.00</td>
+                            <td>
+                                @if(request()->has('startDate') && request()->has('endDate'))
+                                    {{ number_format($yesCashInHand, 2) }}
+                                @endif
+                            </td>
                             <td></td>
                             <td></td>
                             <td>{{ number_format($cashInHand, 2) }}</td>
@@ -95,7 +99,11 @@
                          <tr>
                             <td colspan="2"></td>
                             <td>Cash at Bank</td>
-                            <td>0.00</td>
+                            <td>
+                                @if(request()->has('startDate') && request()->has('endDate'))
+                                    {{ number_format($yesBankInHand, 2) }}
+                                @endif
+                            </td>
                             <td></td>
                             <td></td>
                             <td>{{ number_format($cashInBank, 2) }}</td>
@@ -104,7 +112,11 @@
                         <tr>
                             <td colspan="2"></td>
                             <td>Account Receivable</td>
-                            <td>0.00</td>
+                            <td>
+                                @if(request()->has('startDate') && request()->has('endDate'))
+                                    {{ number_format($yesAccountReceiveable, 2) }}
+                                @endif
+                            </td>
                             <td></td>
                             <td></td>
                             <td>{{ number_format($accountReceiveable, 2) }}</td>
@@ -113,7 +125,11 @@
                         <tr>
                             <td colspan="2"></td>
                             <td>Inventory</td>
-                            <td>0.00</td>
+                            <td>
+                                @if(request()->has('startDate') && request()->has('endDate'))
+                                    {{ number_format($yesInventory, 2) }}
+                                @endif
+                            </td>
                             <td></td>
                             <td></td>
                             <td>{{ number_format($inventory, 2) }}</td>
@@ -123,17 +139,21 @@
                         <tr>
                             <td colspan="2"></td>
                             <td>{{ $currentAsset->account_name }}</td>
-                            <td>{{ number_format($currentAsset->transactions_sum_at_amount, 2) }}</td>
-                            <td> - {{ number_format($currentAsset->total_debit_today, 2) }}</td>
-                            <td>{{ number_format($currentAsset->total_credit_today, 2) }}</td>
-                            <td>
-                                {{ number_format(
-                                    $currentAsset->transactions_sum_at_amount - 
-                                    $currentAsset->total_debit_today + 
-                                    $currentAsset->total_credit_today, 
-                                    2
-                                ) }}
-                            </td>
+                            @if ($currentAsset->transactions_sum_at_amount !== null)
+                                <td>{{ number_format($currentAsset->transactions_sum_at_amount, 2) }}</td>
+                                <td> - {{ number_format($currentAsset->total_debit_today, 2) }}</td>
+                                <td>{{ number_format($currentAsset->total_credit_today, 2) }}</td>
+                                <td>
+                                    {{ number_format(
+                                        $currentAsset->transactions_sum_at_amount - 
+                                        $currentAsset->total_debit_today + 
+                                        $currentAsset->total_credit_today, 
+                                        2
+                                    ) }}
+                                </td>
+                            @else
+                                <td colspan="4"></td>
+                            @endif
                         </tr>
                         @endforeach
 
@@ -147,7 +167,7 @@
                         @foreach($fixedAssets as $fixedAsset)
                         <tr>
                             <td colspan="2"></td>
-                            <td>{{ $fixedAsset->account_name }}</td>
+                            <td>{{ $fixedAsset->account_name }}</td>                            
                             <td>{{ number_format($fixedAsset->transactions_sum_at_amount, 2) }}</td>
                             <td> - {{ number_format($fixedAsset->total_debit_today, 2) }}</td>
                             <td>{{ number_format($fixedAsset->total_credit_today, 2) }}</td>
@@ -158,7 +178,7 @@
                                     $fixedAsset->total_credit_today, 
                                     2
                                 ) }}
-                            </td>
+                            </td>                           
                         </tr>
                         @endforeach
     
@@ -214,7 +234,7 @@
                                     $shortTermLiability->total_credit_today, 
                                     2
                                 ) }}
-                            </td>                  
+                            </td>
                         </tr>
                         @endforeach
         
@@ -333,9 +353,17 @@
                         <tr>
                             <td colspan="2"></td>
                             <td>Net Profit</td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
+                            <td>
+                                @if(request()->has('startDate') && request()->has('endDate'))
+                                    {{ number_format($netProfitTillYesterday, 2) }}
+                                @endif
+                            </td>                           
+                            <td>
+                               - {{ number_format($todayLoss, 2) }}
+                            </td>
+                            <td>
+                                 {{ number_format($todayProfit, 2) }}
+                            </td>
                             <td>
                                 {{ number_format($netProfit, 2) }}
                             </td>

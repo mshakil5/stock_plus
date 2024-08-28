@@ -29,7 +29,7 @@ class IncomestatementController extends Controller
             ->where('branch_id', $branchId)
             ->whereNull('chart_of_account_id')
             ->when($request->has('start_date') && $request->has('end_date'), function ($query) use ($request) {
-                $query->whereBetween('created_at', [$request->input('start_date'), $request->input('end_date')]);
+                $query->whereBetween('date', [$request->input('start_date'), $request->input('end_date')]);
             })
             ->sum('amount');
 
@@ -38,7 +38,7 @@ class IncomestatementController extends Controller
             ->whereNull('chart_of_account_id')
             ->where('branch_id', $branchId)
             ->when($request->has('start_date') && $request->has('end_date'), function ($query) use ($request) {
-                $query->whereBetween('created_at', [$request->input('start_date'), $request->input('end_date')]);
+                $query->whereBetween('date', [$request->input('start_date'), $request->input('end_date')]);
             })
             ->sum('amount');
 
@@ -49,7 +49,7 @@ class IncomestatementController extends Controller
             ->where('status', 0)
             ->where('branch_id', $branchId)
             ->when($request->has('start_date') && $request->has('end_date'), function ($query) use ($request) {
-                $query->whereBetween('created_at', [$request->input('start_date'), $request->input('end_date')]);
+                $query->whereBetween('date', [$request->input('start_date'), $request->input('end_date')]);
             })
             ->groupBy('chart_of_account_id')
             ->get();
@@ -62,7 +62,7 @@ class IncomestatementController extends Controller
             ->where('status', 0)
             ->where('branch_id', $branchId)
             ->when($request->has('start_date') && $request->has('end_date'), function ($query) use ($request) {
-                $query->whereBetween('created_at', [$request->input('start_date'), $request->input('end_date')]);
+                $query->whereBetween('date', [$request->input('start_date'), $request->input('end_date')]);
             })
             ->groupBy('chart_of_account_id')
             ->get();
@@ -70,13 +70,13 @@ class IncomestatementController extends Controller
 
         $salesReturn = SalesReturn::where('branch_id', $branchId)
             ->when($request->has('start_date') && $request->has('end_date'), function ($query) use ($request) {
-                $query->whereBetween('created_at', [$request->input('start_date'), $request->input('end_date')]);
+                $query->whereBetween('date', [$request->input('start_date'), $request->input('end_date')]);
             })
             ->sum('net_total');
 
         $salesDiscount = Order::where('branch_id', $branchId)
             ->when($request->has('start_date') && $request->has('end_date'), function ($query) use ($request) {
-                $query->whereBetween('created_at', [$request->input('start_date'), $request->input('end_date')]);
+                $query->whereBetween('date', [$request->input('start_date'), $request->input('end_date')]);
             })
             ->sum('discount_amount');
 
@@ -105,7 +105,7 @@ class IncomestatementController extends Controller
             ->where('branch_id', $branchId)
             ->whereNull('chart_of_account_id')
             ->when($request->has('start_date') && $request->has('end_date'), function ($query) use ($request) {
-                $query->whereBetween('created_at', [$request->input('start_date'), $request->input('end_date')]);
+                $query->whereBetween('date', [$request->input('start_date'), $request->input('end_date')]);
             })
             ->sum('vat_amount');
 
@@ -114,7 +114,7 @@ class IncomestatementController extends Controller
             ->where('branch_id', $branchId)
             ->whereNull('chart_of_account_id')
             ->when($request->has('start_date') && $request->has('end_date'), function ($query) use ($request) {
-                $query->whereBetween('created_at', [$request->input('start_date'), $request->input('end_date')]);
+                $query->whereBetween('date', [$request->input('start_date'), $request->input('end_date')]);
             })
             ->sum('vat_amount');
 
@@ -122,7 +122,7 @@ class IncomestatementController extends Controller
             ->where('status', 0)
             ->where('branch_id', $branchId)
             ->when($request->has('start_date') && $request->has('end_date'), function ($query) use ($request) {
-                $query->whereBetween('created_at', [$request->input('start_date'), $request->input('end_date')]);
+                $query->whereBetween('date', [$request->input('start_date'), $request->input('end_date')]);
             })
             ->sum('vat_amount');
 
@@ -130,7 +130,7 @@ class IncomestatementController extends Controller
             ->where('status', 0)
             ->where('branch_id', $branchId)
             ->when($request->has('start_date') && $request->has('end_date'), function ($query) use ($request) {
-                $query->whereBetween('created_at', [$request->input('start_date'), $request->input('end_date')]);
+                $query->whereBetween('date', [$request->input('start_date'), $request->input('end_date')]);
             })
             ->sum('vat_amount');
 

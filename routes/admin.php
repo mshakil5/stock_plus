@@ -35,6 +35,7 @@ use App\Http\Controllers\Admin\IncomestatementController;
 use App\Http\Controllers\Admin\BalancesheetController;
 use App\Http\Controllers\Admin\EmployeeController;
 use App\Http\Controllers\Admin\CompanyDetailsController;
+use App\Http\Controllers\Admin\FinancialStatementController;
 
 
 /*------------------------------------------
@@ -285,13 +286,13 @@ Route::group(['prefix' =>'admin/', 'middleware' => ['auth', 'is_admin']], functi
     Route::get('bankbook', [DaybookController::class, 'bankbook'])->name('admin.bankbook');
     Route::post('bankbook', [DaybookController::class, 'bankbookByDate'])->name('admin.bankbook');
 
-    //Financial statistics
+    //Financial Statement
     Route::get('cash-flow', [CashflowController::class, 'cashFlow'])->name('admin.cashflow');
     Route::post('cash-flow', [CashflowController::class, 'cashFlowByDate'])->name('admin.cashflow');
     Route::get('income-statement', [IncomestatementController::class, 'incomeStatement'])->name('admin.incomestatement');
     Route::post('income-statement', [IncomestatementController::class, 'incomeStatement'])->name('admin.incomestatement');
-    Route::get('balance-sheet', [BalancesheetController::class, 'balanceSheet'])->name('admin.balancesheet');
-    Route::post('balance-sheet', [BalancesheetController::class, 'balanceSheetByDate'])->name('admin.balancesheet');
+    Route::get('balance-sheet', [FinancialStatementController::class, 'balanceSheet'])->name('admin.balancesheet');
+    Route::post('balance-sheet', [FinancialStatementController::class, 'balanceSheet'])->name('admin.balancesheet');
 
     // company information
     Route::get('/company-details', [CompanyDetailsController::class, 'index'])->name('admin.companyDetail');
