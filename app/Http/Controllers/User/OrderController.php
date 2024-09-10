@@ -1257,6 +1257,7 @@ class OrderController extends Controller
                 {
                     $orderDtl = new SalesReturnDetail();
                     $orderDtl->sales_return_id = $data->id;
+                    $orderDtl->order_id = $request->order_id;
                     $orderDtl->branch_id = Auth::user()->branch_id;
                     $orderDtl->product_id = $request->get('product_id')[$key];
                     $orderDtl->quantity = $request->get('quantity')[$key];
