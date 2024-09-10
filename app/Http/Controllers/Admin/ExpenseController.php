@@ -17,8 +17,9 @@ class ExpenseController extends Controller
     {
         if($request->ajax()){
             $transactions = Transaction::with('chartOfAccount')
-                ->where('table_type', 'Expenses')
-                ->where('branch_id', auth()->user()->branch_id);
+                ->whereIn('table_type', ['Expenses', 'Cogs'])
+                ->where('branch_id', auth()->user()->branch_id)
+                ->where('status', 0);
 
         if ($request->filled('start_date')) {
                 $endDate = $request->filled('end_date') ? $request->input('end_date') : now()->endOfDay();
@@ -39,7 +40,7 @@ class ExpenseController extends Controller
                 
             return DataTables::of($transactions)
                 ->addColumn('chart_of_account', function ($transaction) {
-                    return $transaction->chartOfAccount->account_name;
+                    return $transaction->chartOfAccount ? $transaction->chartOfAccount->account_name : $transaction->description;
                 })
                 ->make(true);
         }

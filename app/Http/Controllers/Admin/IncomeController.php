@@ -38,7 +38,7 @@ class IncomeController extends Controller
 
             return DataTables::of($transactions)
                 ->addColumn('chart_of_account', function ($transaction) {
-                    return $transaction->chartOfAccount ? $transaction->chartOfAccount->account_name : 'NA';
+                    return $transaction->chartOfAccount ? $transaction->chartOfAccount->account_name : $transaction->description;
                 })
                 ->make(true);
         }
