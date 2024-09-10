@@ -176,7 +176,7 @@ class OrderController extends Controller
                 $transaction->date = $request->orderdate;
                 $transaction->table_type = 'Income';
                 // $transaction->ref = '';
-                // $transaction->description = '';
+                $transaction->description = 'Sales';
                 $transaction->amount = $request->grand_total;
                 $transaction->vat_amount = $request->vat_total;
                 $transaction->at_amount = $request->net_total;
@@ -191,6 +191,7 @@ class OrderController extends Controller
                 $transaction->branch_id = Auth::user()->branch_id;
                 $transaction->created_by = Auth()->user()->id;
                 $transaction->created_ip = request()->ip();
+                $transaction->order_id = $order->id;
                 $transaction->save();
                 $transaction->tran_id = 'SL' . date('Ymd') . str_pad($transaction->id, 4, '0', STR_PAD_LEFT);
                 $transaction->save();
