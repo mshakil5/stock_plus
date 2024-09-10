@@ -89,10 +89,13 @@
                                                 </span> -->
                                                 <br>
                                                 <span 
-                                                    class="btn btn-danger btn-sm" 
+                                                    class="btn btn-danger btn-sm returnToDamage" 
                                                     id="returnToDamage" 
                                                     ordid="{{$salesdetail->id}}" 
                                                     product_id="{{$salesdetail->product_id}}" 
+                                                    product_name="{{$salesdetail->product->productname}}" 
+                                                    unit_price="{{$salesdetail->sellingprice}}" 
+                                                    total_price="{{$salesdetail->sellingprice}}" 
                                                     style="display: inline-block;">
                                                     <i class="bi bi-x-circle"></i> Return to Damage
                                                 </span>
@@ -171,7 +174,7 @@
                                             <td>Action</td>
                                         </tr>
                                     </thead>                                   
-                                    <tbody id="returninner">  
+                                    <tbody id="damageinner">  
                                     </tbody>
                                 </table>
                             </div>
@@ -264,36 +267,49 @@
                 
         //     }); 
             
-            $("#productsTBL").on('click','#returnToDamage', function(){
+            $("#productsTBL").on('click','.returnToDamage', function(){
                     event.preventDefault();
                     orderdetailid = $(this).attr('ordid');
                     var product = $(this).attr('product_id');
+                    var product_name = $(this).attr('product_name');
+                    var unit_price = $(this).attr('unit_price');
+                    var total_price = $(this).attr('total_price');
+
                     var product_id = $("input[name='damage_product_id[]']")
                         .map(function(){return $(this).val();}).get();
                     product_id.push(product);
                     seen = product_id.filter((s => v => s.has(v) || !s.add(v))(new Set));
 
+                    
                     if (Array.isArray(seen) && seen.length) {
                         return;
                     }
-                    $.ajax({
-                    url: salesproducturl,
-                    method: "POST",
-                    data: {orderdetailid:orderdetailid},
 
-                    success: function (d) {
-                        if (d.status == 303) {
+                    var markup = '<tr class="item-row pdetails" style="position:realative;"><td><input name="productname[]" type="text" value="'+product_name+'" class="form-control" readonly></td><td><input type="number" class="form-control quantity" name="quantity[]" min="1" value="1" placeholder="Type quantity"><input type="hidden" class="form-control oldquantity" name="oldquantity[]" min="1" value="1"></td><td><input name="sellingprice[]" type="text" value="'+unit_price+'" class="form-control uamount" readonly><input type="hidden" name="damage_product_id[]" value="'+product+'"></td><td><input name="total[]" type="text" value="'+total_price+'" class="form-control total" readonly></td><td width="30px"><div style="color: white;  user-select:none;  padding: 5px;    background: red;    width: 25px;    display: flex;    align-items: center; margin-right:2px;   justify-content: center;    border-radius: 4px;   left: 4px;    top: 81px;" onclick="removeRow(event)" >X</div></td></tr>';
+                    $("table #damageinner").append(markup);
 
-                        }else if(d.status == 300){
-                            console.log(d);
-                                var markup = '<tr class="item-row pdetails" style="position:realative;"><td><input name="productname[]" type="text" value="'+d.productname+'" class="form-control" readonly></td><td><input type="number" class="form-control quantity" name="quantity[]" min="1" value="1" placeholder="Type quantity"><input type="hidden" class="form-control oldquantity" name="oldquantity[]" min="1" value="'+d.quantity+'"></td><td><input name="sellingprice[]" type="text" value="'+d.selling_price_with_vat+'" class="form-control uamount" readonly><input type="hidden" name="damage_product_id[]" value="'+d.product_id+'"></td><td><input name="total[]" type="text" value="'+d.selling_price_with_vat+'" class="form-control total" readonly></td><td width="30px"><div style="color: white;  user-select:none;  padding: 5px;    background: red;    width: 25px;    display: flex;    align-items: center; margin-right:2px;   justify-content: center;    border-radius: 4px;   left: 4px;    top: 81px;" onclick="removeRow(event)" >X</div></td></tr>';
-                                $("table #returninner ").append(markup);
-                        }
-                    },
-                    error: function (d) {
-                        console.log(d);
-                    }
-                });
+
+
+
+
+
+                //     $.ajax({
+                //     url: salesproducturl,
+                //     method: "POST",
+                //     data: {orderdetailid:orderdetailid},
+
+                //     success: function (d) {
+                //         if (d.status == 303) {
+
+                //         }else if(d.status == 300){
+                //             console.log(d);
+                                
+                //         }
+                //     },
+                //     error: function (d) {
+                //         console.log(d);
+                //     }
+                // });
                 
             }); 
             
