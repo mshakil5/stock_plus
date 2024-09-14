@@ -18,7 +18,7 @@
             @endslot
             @slot('body')
             <div class="text-center mb-4 company-name-container">
-                <form class="col-md-12" method="POST" action="{{ route('admin.balancesheet') }}">
+                {{-- <form class="col-md-12" method="POST" action="{{ route('admin.balancesheet') }}">
                     @csrf
                     <div class="form-group col-md-5 d-flex align-items-center">
                         <label for="startDate" class="mr-2 mb-0">Start Date</label>
@@ -36,7 +36,7 @@
                             </svg> Search
                         </button>
                     </div>
-                </form>
+                </form> --}}
                 @php
                 $company = \App\Models\CompanyDetails::select('company_name')->first();
                 @endphp
@@ -87,9 +87,7 @@
                             <td colspan="2"></td>
                             <td>Cash In Hand</td>
                             <td>
-                                @if(request()->has('startDate') && request()->has('endDate'))
-                                    {{ number_format($yesCashInHand, 2) }}
-                                @endif
+                                {{ number_format($yesCashInHand, 2) }}
                             </td>
                             <td></td>
                             <td></td>
@@ -168,15 +166,12 @@
                         <tr>
                             <td colspan="2"></td>
                             <td>{{ $fixedAsset->account_name }}</td>                            
-                            <td>{{ number_format($fixedAsset->transactions_sum_at_amount, 2) }}</td>
-                            <td> - {{ number_format($fixedAsset->total_debit_today, 2) }}</td>
+                            <td>{{ number_format($fixedAsset->total_debit_yesterday - $fixedAsset->total_credit_yesterday, 2) }}</td>
+                            <td>{{ number_format($fixedAsset->total_debit_today, 2) }}</td>
                             <td>{{ number_format($fixedAsset->total_credit_today, 2) }}</td>
                             <td>
                                 {{ number_format(
-                                    $fixedAsset->transactions_sum_at_amount - 
-                                    $fixedAsset->total_debit_today + 
-                                    $fixedAsset->total_credit_today, 
-                                    2
+                                    $fixedAsset->total_debit_yesterday - $fixedAsset->total_credit_yesterday + $fixedAsset->total_debit_today - $fixedAsset->total_credit_today, 2
                                 ) }}
                             </td>                           
                         </tr>
@@ -188,15 +183,17 @@
                             </td>
                             <td colspan="2"></td>
                             @php
-                                $totalAssetSum = collect($fixedAssets)->sum('transactions_sum_at_amount') +
+                                $totalAssetSum = collect($fixedAssets)->sum('total_debit_yesterday') -
+                                                        collect($fixedAssets)->sum('total_credit_yesterday') +
                                                         collect($currentAssets)->sum('transactions_sum_at_amount');
+                                                        
                                 $totalAssetDebitToday = collect($fixedAssets)->sum('total_debit_today') +
                                                         collect($currentAssets)->sum('total_debit_today');
                                 $totalAssetCreditToday = collect($fixedAssets)->sum('total_credit_today') +
                                                         collect($currentAssets)->sum('total_credit_today');
-                                 $closingAssetBalance = $totalAssetSum - $totalAssetDebitToday + $totalAssetCreditToday;                                             
+                                 $closingAssetBalance = $totalAssetSum + $yesCashInHand - $totalAssetDebitToday + $totalAssetCreditToday;                                             
                             @endphp
-                            <td>{{ number_format($totalAssetSum, 2) }}</td>
+                            <td>{{ number_format($totalAssetSum + $yesCashInHand, 2) }}</td>
                             <td> - {{ number_format($totalAssetDebitToday, 2) }}</td>
                             <td>{{ number_format($totalAssetCreditToday, 2) }}</td>
                             <td>
@@ -335,11 +332,11 @@
                         <tr>
                             <td colspan="2"></td>
                             <td>{{ $equityCapital->account_name }}</td>
-                            <td>{{ number_format($equityCapital->transactions_sum_at_amount, 2) }}</td>
-                            <td> - {{ number_format($equityCapital->total_debit_today, 2) }}</td>
+                            <td>{{ number_format($equityCapital->total_previous_receive - $equityCapital->total_previous_payment, 2) }}</td>
+                            <td>{{ number_format($equityCapital->total_debit_today, 2) }}</td>
                             <td>{{ number_format($equityCapital->total_credit_today, 2) }}</td>
                             <td>
-                                {{ number_format($equityCapital->transactions_sum_at_amount - $equityCapital->total_debit_today + $equityCapital->total_credit_today, 2) }}
+                                {{ number_format($equityCapital->total_previous_receive - $equityCapital->total_previous_payment + $equityCapital->total_debit_today - $equityCapital->total_credit_today, 2) }}
                             </td>
                         </tr>
                         @endforeach
@@ -413,10 +410,17 @@
                             <td><strong>Total Liability and Equity</strong></td> 
                             <td colspan="2"></td>
                             @php
+
+                            
+                                $totalCapitalClosingBalanceSum = collect($equityCapitals)->sum('total_previous_receive') - collect($equityCapitals)->sum('total_previous_payment') + collect($equityCapitals)->sum('total_debit_today') - collect($equityCapitals)->sum('total_credit_today');
+
+
                                 $totalLiabilityEquitySum = $totalLiabilitySum + $totalEquitySum;
                                 $toalLiabilityEquityDebitSum = $totalLiabilityDebitToday + $totalEquityDebitToday;
                                 $totalLiabilityEquityCreditSum = $totalLiabilityCreditToday + $totalEquityCreditToday;
-                                $totalLiabilityEquityClosingSum = $closingLiabilityBalance + $closingEquityBalance;
+                                $totalLiabilityEquityClosingSum = $closingLiabilityBalance + $closingEquityBalance + $netProfit + $totalCapitalClosingBalanceSum;
+
+
                             @endphp
                             <td>{{ number_format($totalLiabilityEquitySum, 2) }}</td>
                             <td>- {{ number_format($toalLiabilityEquityDebitSum, 2) }}</td>

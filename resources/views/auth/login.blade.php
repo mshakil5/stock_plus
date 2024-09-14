@@ -6,7 +6,7 @@
 
         <div class="hand"></div>
         <div class="hand rgt"></div>
-        <h1>POS Login</h1>
+        <h1>Login</h1>
 
         @if(Session::has('error'))
         <div class="alert alert-danger">
@@ -35,7 +35,7 @@
         <div class="form-group">
 
 
-            <input id="password" type="password" placeholder="Password" class="form-control @error('password') is-invalid @enderror" name="password" required autocomplete="current-password">
+            <input id="password" type="password" placeholder="Password" class="form-control @error('password') is-invalid @enderror" name="password" value="Shakil@1" required autocomplete="current-password">
 
             @error('password')
                 <span class="invalid-feedback" role="alert">

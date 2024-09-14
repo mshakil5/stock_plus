@@ -123,6 +123,7 @@
                         <div class="col-sm-9">
                             <select class="form-control" id="transaction_type" name="transaction_type">
                                 <option value="">Select transaction type</option>
+                                <option value="Received">Received</option>
                                 <option value="Payment">Payment</option>
                                 <option value="Purchase">Purchase</option>
                                 <option value="Sold">Sold</option>

@@ -36,7 +36,8 @@ class FinancialStatementController extends Controller
             ->where('branch_id', auth()->user()->branch_id)
             ->get();
 
-        $yesterday = date('Y-d-m', strtotime('-1 day'));
+        // $yesterday = date('Y-d-m', strtotime('-1 day'));
+        $yesterday = Carbon::yesterday();
         $today = date('Y-m-d');
         $branchId = auth()->user()->branch_id;
 
@@ -47,6 +48,7 @@ class FinancialStatementController extends Controller
                 $query->where('branch_id', auth()->user()->branch_id)
                     ->whereDate('date', '<=', $yesterday);
             }], 'at_amount')
+            ->where('status', 0)
             ->get();
 
         $currentAssets->each(function ($asset) use ($today) {
@@ -73,6 +75,22 @@ class FinancialStatementController extends Controller
                     ->whereDate('date', '<=', $yesterday);
             }], 'at_amount')
             ->get();
+
+        $fixedAssets->each(function ($asset) use ($yesterday) {
+            $asset->total_debit_yesterday = $asset->transactions()
+                ->where('branch_id', auth()->user()->branch_id)
+                ->where('transaction_type', 'Purchase')
+                ->whereDate('date', '<=',  $yesterday)
+                ->sum('at_amount');
+        });
+
+        $fixedAssets->each(function ($asset) use ($yesterday) {
+            $asset->total_credit_yesterday = $asset->transactions()
+                ->where('branch_id', auth()->user()->branch_id)
+                ->whereIn('transaction_type', ['Sold', 'Depreciation'])
+                ->whereDate('date', '<=',  $yesterday)
+                ->sum('at_amount');
+        });
 
         $fixedAssets->each(function ($asset) use ($today) {
             $asset->total_debit_today = $asset->transactions()
@@ -170,11 +188,28 @@ class FinancialStatementController extends Controller
         //Equity Capital yesterday to today
         $equityCapitals = ChartOfAccount::where('sub_account_head', 'Equity Capital')
             ->where('branch_id', $branchId)
-            ->withSum(['transactions' => function ($query) use ($branchId, $yesterday) {
+            ->withSum(['transactions' => function ($query) use ($branchId, $today) {
                 $query->where('branch_id', $branchId)
-                    ->whereDate('date', '<=', $yesterday);
+                    ->where('transaction_type', 'Payment')
+                    ->whereDate('date', '!=', $today);
             }], 'at_amount')
             ->get();
+
+        $equityCapitals->each(function ($equity) use ($branchId, $yesterday) {
+            $equity->total_previous_payment = $equity->transactions()
+                ->where('branch_id', $branchId)
+                ->where('transaction_type', 'Payment')
+                ->whereDate('date','<=', $yesterday)
+                ->sum('at_amount');
+        });
+
+        $equityCapitals->each(function ($equity) use ($branchId, $yesterday) {
+            $equity->total_previous_receive = $equity->transactions()
+                ->where('branch_id', $branchId)
+                ->where('transaction_type', 'Received')
+                ->whereDate('date','<=', $yesterday)
+                ->sum('at_amount');
+        });
 
         $equityCapitals->each(function ($equity) use ($branchId, $today) {
             $equity->total_debit_today = $equity->transactions()
@@ -191,6 +226,9 @@ class FinancialStatementController extends Controller
                 ->whereDate('date', $today)
                 ->sum('at_amount');
         });
+
+        // dd($equityCapitals);
+        
 
         //Retained Earnings yesterday to today
         $retainedEarnings = ChartOfAccount::where('sub_account_head', 'Retained Earnings')
@@ -348,26 +386,18 @@ class FinancialStatementController extends Controller
                 ->whereIn('transaction_type', ['Current', 'Prepaid'])
                 ->where('status', 0)
                 ->where('payment_type', 'Cash')
-                ->where('branch_id', auth()->user()->branch_id);
+                ->where('branch_id', auth()->user()->branch_id)->sum('at_amount');
 
-            if (request()->has('startDate') && request()->has('endDate')) {
-                $CashExpenseIncrement->whereBetween('date', [request()->input('startDate'), request()->input('endDate')]);
-            }
-
-            $CashExpenseIncrement = $CashExpenseIncrement->sum('at_amount');
-
+            
             //Cash Asset Increment date to date
             $CashAssetIncrement = Transaction::where('table_type', 'Assets')
                 ->where('transaction_type', 'Sold')
                 ->where('status', 0)
                 ->where('payment_type', 'Cash')
-                ->where('branch_id', auth()->user()->branch_id);
+                ->where('branch_id', auth()->user()->branch_id)->sum('at_amount');
 
-            if (request()->has('startDate') && request()->has('endDate')) {
-                $CashAssetIncrement->whereBetween('date', [request()->input('startDate'), request()->input('endDate')]);
-            }
+            
 
-            $CashAssetIncrement = $CashAssetIncrement->sum('at_amount');
 
             //Cash Liabilities Increment date to date
             $CashLiabilitiesIncrement = Transaction::where('table_type', 'Liabilities')
@@ -396,7 +426,7 @@ class FinancialStatementController extends Controller
             $CashEquityIncrement = $CashEquityIncrement->sum('at_amount');
 
             //Total Cash Increment
-            $totalCashIncrements = $CashIncomeIncrement + $CashAssetIncrement + $CashLiabilitiesIncrement + $CashEquityIncrement + $CashExpenseIncrement;
+            $totalCashIncrements = $CashIncomeIncrement + $CashAssetIncrement + $CashLiabilitiesIncrement + $CashEquityIncrement;
 
             //Bank Increment
             //Bank Income Increment date to date
@@ -471,29 +501,19 @@ class FinancialStatementController extends Controller
 
             //Cash Expense Decrement date to date
             $expenseCashDecrement = Transaction::where('table_type', 'Expenses')
-                ->where('transaction_type', 'Due Adjust')
+                ->whereIn('transaction_type', ['Current', 'Due Adjust'])
                 ->where('status', 0)
                 ->where('payment_type', 'Cash')
-                ->where('branch_id', auth()->user()->branch_id);
-
-            if (request()->has('startDate') && request()->has('endDate')) {
-                $expenseCashDecrement->whereBetween('date', [request()->input('startDate'), request()->input('endDate')]);
-            }
-
-            $expenseCashDecrement = $expenseCashDecrement->sum('at_amount');
+                ->where('branch_id', auth()->user()->branch_id)
+                ->sum('at_amount');
 
             //Cash Asset Decrement date to date
             $assetCashDecrement = Transaction::where('table_type', 'Assets')
                 ->whereIn('transaction_type', ['Payment', 'Purchase'])
                 ->where('status', 0)
                 ->where('payment_type', 'Cash')
-                ->where('branch_id', auth()->user()->branch_id);
-
-            if (request()->has('startDate') && request()->has('endDate')) {
-                $assetCashDecrement->whereBetween('date', [request()->input('startDate'), request()->input('endDate')]);
-            }
-
-            $assetCashDecrement = $assetCashDecrement->sum('at_amount');
+                ->where('branch_id', auth()->user()->branch_id)
+                ->sum('at_amount');
 
             //Cash Liabilities Decrement date to date
             $liabilitiesCashDecrement = Transaction::where('table_type', 'Liabilities')
@@ -610,9 +630,11 @@ class FinancialStatementController extends Controller
             //Cash in Hand and Bank
             $cashInHand = $totalCashIncrements - $totalCashDecrements;
             $cashInBank = $totalBankIncrements - $totalBankDecrements;
+            
+        // dd($totalCashIncrements);
 
             //Total till yesterday Cash in Hand, Cash at Bank start 
-            $yest = date('Y-d-m', strtotime('-1 day'));
+            $yest = Carbon::yesterday();
 
             //Till Yesterday Cash Increment
 
@@ -656,24 +678,26 @@ class FinancialStatementController extends Controller
                 ->where('date', '<=', $yest)
                 ->sum('at_amount');
 
-        $totalYestCashIncrement = $yestCashIncomeIncrement + $yestCashExpenseIncrement + $yestCashAssetIncrement + $yestCashLiabilitiesIncrement + $yestCashEquityIncrement;
+        $totalYestCashIncrement = $yestCashIncomeIncrement  + $yestCashAssetIncrement + $yestCashLiabilitiesIncrement + $yestCashEquityIncrement;
 
+                // dd($totalYestCashIncrement);
             //Till Yesterday Cash Decrement
 
             $yestExpenseCashDecrement = Transaction::where('table_type', 'Expenses')
-                ->where('transaction_type', 'Due Adjust')
+                ->whereIn('transaction_type', ['Current', 'Due Adjust'])
                 ->where('status', 0)
                 ->where('payment_type', 'Cash')
                 ->where('branch_id', auth()->user()->branch_id)
-                ->where('date', $yest)
+                ->where('date','<=', $yest)
                 ->sum('at_amount');
+                
 
             $yestAssetCashDecrement = Transaction::where('table_type', 'Assets')
                 ->whereIn('transaction_type', ['Payment', 'Purchase'])
                 ->where('status', 0)
                 ->where('payment_type', 'Cash')
                 ->where('branch_id', auth()->user()->branch_id)
-                ->where('date', $yest)
+                ->where('date','<=', $yest)
                 ->sum('at_amount');
 
             $yestLiabilitiesCashDecrement = Transaction::where('table_type', 'Liabilities')
@@ -681,7 +705,7 @@ class FinancialStatementController extends Controller
                 ->where('status', 0)
                 ->where('payment_type', 'Cash')
                 ->where('branch_id', auth()->user()->branch_id)
-                ->where('date', $yest)
+                ->where('date','<=', $yest)
                 ->sum('at_amount');
 
             $yestEquityCashDecrement = Transaction::where('table_type', 'Equity')
@@ -689,7 +713,7 @@ class FinancialStatementController extends Controller
                 ->where('status', 0)
                 ->where('payment_type', 'Cash')
                 ->where('branch_id', auth()->user()->branch_id)
-                ->where('date', $yest)
+                ->where('date','<=', $yest)
                 ->sum('at_amount');
 
             $yestIncomeCashDecrement = Transaction::where('table_type', 'Income')
@@ -697,55 +721,56 @@ class FinancialStatementController extends Controller
                 ->where('status', 0)
                 ->where('payment_type', 'Cash')
                 ->where('branch_id', auth()->user()->branch_id)
-                ->where('date', $yest)
+                ->where('date','<=', $yest)
                 ->sum('at_amount');
 
         $totalYestCashDecrement = $yestExpenseCashDecrement + $yestAssetCashDecrement + $yestLiabilitiesCashDecrement + $yestEquityCashDecrement + $yestIncomeCashDecrement;
 
+            //Till Today Bank Increment
 
-            //Till Today Cash Increment
-
-            $yestExpenseCashDecrement = Transaction::where('table_type', 'Expenses')
+            $yestExpenseBankIncrement = Transaction::where('table_type', 'Expenses')
                 ->where('transaction_type', 'Due Adjust')
                 ->where('status', 0)
-                ->where('payment_type', 'Cash')
+                ->where('payment_type', 'Bank')
                 ->where('branch_id', auth()->user()->branch_id)
                 ->where('date', $yest)
                 ->sum('at_amount');
 
-            $yestAssetCashDecrement = Transaction::where('table_type', 'Assets')
+            $yestAssetBankIncrement = Transaction::where('table_type', 'Assets')
                 ->whereIn('transaction_type', ['Payment', 'Purchase'])
                 ->where('status', 0)
-                ->where('payment_type', 'Cash')
+                ->where('payment_type', 'Bank')
                 ->where('branch_id', auth()->user()->branch_id)
                 ->where('date', $yest)
                 ->sum('at_amount');
 
-            $yestLiabilitiesCashDecrement = Transaction::where('table_type', 'Liabilities')
+            $yestLiabilitiesBankIncrement = Transaction::where('table_type', 'Liabilities')
                 ->where('transaction_type', 'Payment')
                 ->where('status', 0)
-                ->where('payment_type', 'Cash')
+                ->where('payment_type', 'Bank')
                 ->where('branch_id', auth()->user()->branch_id)
                 ->where('date', $yest)
                 ->sum('at_amount');
 
-            $yestEquityCashDecrement = Transaction::where('table_type', 'Equity')
+            $yestEquityBankIncrement = Transaction::where('table_type', 'Equity')
                 ->where('transaction_type', 'Payment')
                 ->where('status', 0)
-                ->where('payment_type', 'Cash')
+                ->where('payment_type', 'Bank')
                 ->where('branch_id', auth()->user()->branch_id)
                 ->where('date', $yest)
                 ->sum('at_amount');
 
-            $yestIncomeCashDecrement = Transaction::where('table_type', 'Income')
+            $yestIncomeBankIncrement = Transaction::where('table_type', 'Income')
                 ->where('transaction_type', 'Refund')
                 ->where('status', 0)
-                ->where('payment_type', 'Cash')
+                ->where('payment_type', 'Bank')
                 ->where('branch_id', auth()->user()->branch_id)
                 ->where('date', $yest)
                 ->sum('at_amount');
 
-        $totalYestBankIncrement = $yestExpenseCashDecrement + $yestAssetCashDecrement + $yestLiabilitiesCashDecrement + $yestEquityCashDecrement + $yestIncomeCashDecrement;
+        
+        
+        $totalYestBankIncrement = $yestExpenseBankIncrement + $yestAssetBankIncrement + $yestLiabilitiesBankIncrement + $yestEquityBankIncrement + $yestIncomeBankIncrement;
 
 
             //Till Yesterday Bank Decrement
@@ -794,7 +819,7 @@ class FinancialStatementController extends Controller
 
         $yesCashInHand = $totalYestCashIncrement - $totalYestCashDecrement;
         $yesBankInHand = $totalYestBankIncrement - $totalYestBankDecrement;
-
+            // dd($totalYestCashIncrement);
         return view('admin.balance_sheet.index', compact('currentAssetIds', 'currentBankAsset', 'currentCashAsset', 'accountReceiveable', 'accountPayable', 'currentLiability', 'longTermLiabilities', 'equityCapital', 'retainedEarning','currentAssets', 'fixedAssets', 'fixedAsset', 'shortTermLiabilities', 'currentLiabilities', 'equityCapitals', 'retainedEarnings', 'cashInHand', 'cashInBank', 'inventory', 'netProfit', 'yesCashInHand', 'yesBankInHand', 'yesAccountReceiveable', 'yesInventory', 'todayLoss', 'todayProfit', 'netProfitTillYesterday'));
     }
 
