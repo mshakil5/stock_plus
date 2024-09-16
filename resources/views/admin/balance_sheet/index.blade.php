@@ -89,9 +89,9 @@
                             <td>
                                 {{ number_format($yesCashInHand, 2) }}
                             </td>
-                            <td></td>
-                            <td></td>
-                            <td>{{ number_format($cashInHand, 2) }}</td>
+                            <td>{{ number_format($totalTodayCashIncrements, 2) }}</td>
+                            <td>{{ number_format($totalTodayCashDecrements, 2) }}</td>
+                            <td>{{ number_format($yesCashInHand + $cashInHand, 2) }}</td>
                         </tr>
 
                          <tr>
@@ -188,13 +188,13 @@
                                                         collect($currentAssets)->sum('transactions_sum_at_amount');
                                                         
                                 $totalAssetDebitToday = collect($fixedAssets)->sum('total_debit_today') +
-                                                        collect($currentAssets)->sum('total_debit_today');
+                                                        collect($currentAssets)->sum('total_debit_today') + $totalTodayCashIncrements;
                                 $totalAssetCreditToday = collect($fixedAssets)->sum('total_credit_today') +
-                                                        collect($currentAssets)->sum('total_credit_today');
-                                 $closingAssetBalance = $totalAssetSum + $yesCashInHand - $totalAssetDebitToday + $totalAssetCreditToday;                                             
+                                                        collect($currentAssets)->sum('total_credit_today') + $totalTodayCashDecrements;
+                                 $closingAssetBalance = $totalAssetSum + $yesCashInHand + $totalAssetDebitToday - $totalAssetCreditToday;                                             
                             @endphp
                             <td>{{ number_format($totalAssetSum + $yesCashInHand, 2) }}</td>
-                            <td> - {{ number_format($totalAssetDebitToday, 2) }}</td>
+                            <td>{{ number_format($totalAssetDebitToday, 2) }}</td>
                             <td>{{ number_format($totalAssetCreditToday, 2) }}</td>
                             <td>
                                 {{ number_format($closingAssetBalance, 2) }}
@@ -351,18 +351,16 @@
                             <td colspan="2"></td>
                             <td>Net Profit</td>
                             <td>
-                                @if(request()->has('startDate') && request()->has('endDate'))
-                                    {{ number_format($netProfitTillYesterday, 2) }}
-                                @endif
+                                {{ number_format($netProfitTillYesterday, 2) }}
                             </td>                           
                             <td>
-                               - {{ number_format($todayLoss, 2) }}
+                                {{-- {{ number_format($todayLoss, 2) }} --}}
                             </td>
                             <td>
-                                 {{ number_format($todayProfit, 2) }}
+                                 {{-- {{ number_format($todayProfit, 2) }} --}}
                             </td>
                             <td>
-                                {{ number_format($netProfit, 2) }}
+                                {{ number_format($netProfit + $netProfitTillYesterday, 2) }}
                             </td>
                         </tr>
 
@@ -418,7 +416,7 @@
                                 $totalLiabilityEquitySum = $totalLiabilitySum + $totalEquitySum;
                                 $toalLiabilityEquityDebitSum = $totalLiabilityDebitToday + $totalEquityDebitToday;
                                 $totalLiabilityEquityCreditSum = $totalLiabilityCreditToday + $totalEquityCreditToday;
-                                $totalLiabilityEquityClosingSum = $closingLiabilityBalance + $closingEquityBalance + $netProfit + $totalCapitalClosingBalanceSum;
+                                $totalLiabilityEquityClosingSum = $closingLiabilityBalance + $closingEquityBalance + $netProfit + $netProfitTillYesterday + $totalCapitalClosingBalanceSum;
 
 
                             @endphp
