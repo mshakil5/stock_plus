@@ -97,36 +97,36 @@
                          <tr>
                             <td colspan="2"></td>
                             <td>Cash at Bank</td>
-                            <td>
-                                @if(request()->has('startDate') && request()->has('endDate'))
+                            <td> 
                                     {{ number_format($yesBankInHand, 2) }}
-                                @endif
                             </td>
-                            <td></td>
-                            <td></td>
-                            <td>{{ number_format($cashInBank, 2) }}</td>
+                            <td>                
+                                    {{ number_format($totalTodayBankIncrements, 2) }}
+                            </td>
+                            <td>
+                                    {{ number_format($totalTodayBankDecrements, 2) }}
+                            </td>
+                            <td>{{ number_format($cashInBank + $yesBankInHand, 2) }}</td>
                         </tr>
 
                         <tr>
                             <td colspan="2"></td>
                             <td>Account Receivable</td>
-                            <td>
-                                @if(request()->has('startDate') && request()->has('endDate'))
-                                    {{ number_format($yesAccountReceiveable, 2) }}
-                                @endif
+                            <td>         
+                                {{ number_format($yesAccountReceiveable, 2) }}
                             </td>
-                            <td></td>
-                            <td></td>
-                            <td>{{ number_format($accountReceiveable, 2) }}</td>
+                            <td>{{ number_format($todaysAccountReceivableDebit, 2) }}</td></td>
+                            <td>{{ number_format($todaysAccountReceivableCredit, 2) }}</td></td>
+                            <td>{{ number_format($yesAccountReceiveable + $todaysAccountReceivableCredit - $todaysAccountReceivableDebit , 2) }}</td>
                         </tr>
 
                         <tr>
                             <td colspan="2"></td>
                             <td>Inventory</td>
                             <td>
-                                @if(request()->has('startDate') && request()->has('endDate'))
+                                
                                     {{ number_format($yesInventory, 2) }}
-                                @endif
+                                
                             </td>
                             <td></td>
                             <td></td>
@@ -162,6 +162,25 @@
                         </tr>
 
                         <!-- fixed assets  -->
+
+                        @php
+                            // Sum of yesterday's balance
+                            $fixedAssetTotalYesterdayBalance = $fixedAssets->sum(function($asset) {
+                                return $asset->total_debit_yesterday - $asset->total_credit_yesterday;
+                            });
+
+                            // Sum of today's debits
+                            $fixedAssetTotalDebitToday = $fixedAssets->sum('total_debit_today');
+
+                            // Sum of today's credits
+                            $fixedAssetTotalCreditToday = $fixedAssets->sum('total_credit_today');
+
+                            // Sum of the final balance calculation
+                            $fixedAssetTotalFinalBalance = $fixedAssets->sum(function($asset) {
+                                return ($asset->total_debit_yesterday - $asset->total_credit_yesterday) + ($asset->total_debit_today - $asset->total_credit_today);
+                            });
+                        @endphp
+
                         @foreach($fixedAssets as $fixedAsset)
                         <tr>
                             <td colspan="2"></td>
@@ -183,19 +202,11 @@
                             </td>
                             <td colspan="2"></td>
                             @php
-                                $totalAssetSum = collect($fixedAssets)->sum('total_debit_yesterday') -
-                                                        collect($fixedAssets)->sum('total_credit_yesterday') +
-                                                        collect($currentAssets)->sum('transactions_sum_at_amount');
-                                                        
-                                $totalAssetDebitToday = collect($fixedAssets)->sum('total_debit_today') +
-                                                        collect($currentAssets)->sum('total_debit_today') + $totalTodayCashIncrements;
-                                $totalAssetCreditToday = collect($fixedAssets)->sum('total_credit_today') +
-                                                        collect($currentAssets)->sum('total_credit_today') + $totalTodayCashDecrements;
-                                 $closingAssetBalance = $totalAssetSum + $yesCashInHand + $totalAssetDebitToday - $totalAssetCreditToday;                                             
+                            $closingAssetBalance = $yesCashInHand + $cashInHand + $cashInBank + $yesBankInHand + $fixedAssetTotalFinalBalance                                       
                             @endphp
-                            <td>{{ number_format($totalAssetSum + $yesCashInHand, 2) }}</td>
-                            <td>{{ number_format($totalAssetDebitToday, 2) }}</td>
-                            <td>{{ number_format($totalAssetCreditToday, 2) }}</td>
+                            <td>{{ number_format($yesBankInHand + $yesCashInHand + $fixedAssetTotalYesterdayBalance, 2) }}</td>
+                            <td>{{ number_format($totalTodayBankIncrements + $totalTodayCashIncrements + $fixedAssetTotalDebitToday, 2) }}</td>
+                            <td>{{ number_format($totalTodayBankDecrements + $totalTodayCashDecrements + $fixedAssetTotalCreditToday, 2) }}</td>
                             <td>
                                 {{ number_format($closingAssetBalance, 2) }}
                             </td>

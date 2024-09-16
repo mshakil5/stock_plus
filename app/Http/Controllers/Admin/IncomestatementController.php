@@ -35,7 +35,7 @@ class IncomestatementController extends Controller
 
         $salesSum = Transaction::where('table_type', 'Income')
             ->where('status', 0)
-            ->whereNull('chart_of_account_id')
+            // ->whereNull('chart_of_account_id')
             ->where('branch_id', $branchId)
             ->when($request->has('start_date') && $request->has('end_date'), function ($query) use ($request) {
                 $query->whereBetween('date', [$request->input('start_date'), $request->input('end_date')]);
