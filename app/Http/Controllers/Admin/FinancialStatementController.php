@@ -124,14 +124,14 @@ class FinancialStatementController extends Controller
         $todaysAccountReceivableCredit = Transaction::whereIn('chart_of_account_id', $accountReceiveableIds)
                     ->where('status', 0)
                     ->where('branch_id', auth()->user()->branch_id)
-                    ->whereIn('transaction_type', ['Sold', 'Depreciation'])
+                    ->whereIn('transaction_type', ['Received'])
                     ->whereDate('date', $today)
                     ->sum('at_amount');
 
         $todaysAccountReceivableDebit = Transaction::whereIn('chart_of_account_id', $accountReceiveableIds)
                     ->where('status', 0)
                     ->where('branch_id', auth()->user()->branch_id)
-                    ->where('transaction_type', 'Purchase')
+                    ->whereIn('transaction_type', ['Purchase', 'Payment'])
                     ->whereDate('date', $today)
                     ->sum('at_amount');
 
@@ -417,7 +417,7 @@ class FinancialStatementController extends Controller
             
             //Cash Asset Increment today
             $CashAssetIncrementToday = Transaction::where('table_type', 'Assets')
-                ->where('transaction_type', 'Sold')
+                ->whereIn('transaction_type', ['Sold', 'Received'])
                 ->where('status', 0)
                 ->where('payment_type', 'Cash')
                 ->whereDate('date', $today)
@@ -595,7 +595,6 @@ class FinancialStatementController extends Controller
             $cashInHand = $totalTodayCashIncrements - $totalTodayCashDecrements;
             $cashInBank = $totalTodayBankIncrements - $totalTodayBankDecrements;
             
-        // dd($totalTodayCashIncrements);
 
             //Total till yesterday Cash in Hand, Cash at Bank start 
             $yest = Carbon::yesterday();

@@ -202,7 +202,7 @@
                             </td>
                             <td colspan="2"></td>
                             @php
-                            $closingAssetBalance = $yesCashInHand + $cashInHand + $cashInBank + $yesBankInHand + $fixedAssetTotalFinalBalance  + $todaysAssetSoldAR;                                      
+                            $closingAssetBalance = $yesCashInHand + $cashInHand + $cashInBank + $yesBankInHand + $fixedAssetTotalFinalBalance  + $todaysAssetSoldAR - $todaysAccountReceivableCredit + $todaysAccountReceivableDebit;                                      
                             @endphp
                             <td>{{ number_format($yesBankInHand + $yesCashInHand + $fixedAssetTotalYesterdayBalance, 2) }}</td>
                             <td>{{ number_format($totalTodayBankIncrements + $totalTodayCashIncrements + $fixedAssetTotalDebitToday, 2) }}</td>
