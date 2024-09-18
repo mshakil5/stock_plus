@@ -115,9 +115,9 @@
                             <td>         
                                 {{ number_format($yesAccountReceiveable, 2) }}
                             </td>
-                            <td>{{ number_format($todaysAccountReceivableDebit, 2) }}</td></td>
+                            <td>{{ number_format($todaysAccountReceivableDebit + $todaysAssetSoldAR, 2) }}</td></td>
                             <td>{{ number_format($todaysAccountReceivableCredit, 2) }}</td></td>
-                            <td>{{ number_format($yesAccountReceiveable + $todaysAccountReceivableCredit - $todaysAccountReceivableDebit , 2) }}</td>
+                            <td>{{ number_format($yesAccountReceiveable - $todaysAccountReceivableCredit + $todaysAssetSoldAR + $todaysAccountReceivableDebit , 2) }}</td>
                         </tr>
 
                         <tr>
@@ -202,7 +202,7 @@
                             </td>
                             <td colspan="2"></td>
                             @php
-                            $closingAssetBalance = $yesCashInHand + $cashInHand + $cashInBank + $yesBankInHand + $fixedAssetTotalFinalBalance                                       
+                            $closingAssetBalance = $yesCashInHand + $cashInHand + $cashInBank + $yesBankInHand + $fixedAssetTotalFinalBalance  + $todaysAssetSoldAR;                                      
                             @endphp
                             <td>{{ number_format($yesBankInHand + $yesCashInHand + $fixedAssetTotalYesterdayBalance, 2) }}</td>
                             <td>{{ number_format($totalTodayBankIncrements + $totalTodayCashIncrements + $fixedAssetTotalDebitToday, 2) }}</td>

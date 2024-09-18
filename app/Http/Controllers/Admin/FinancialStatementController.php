@@ -135,6 +135,13 @@ class FinancialStatementController extends Controller
                     ->whereDate('date', $today)
                     ->sum('at_amount');
 
+        $todaysAssetSoldAR = Transaction::whereIn('asset_id', $accountReceiveableIds)
+                    ->where('status', 0)
+                    ->where('branch_id', auth()->user()->branch_id)
+                    ->where('transaction_type', 'Sold')
+                    ->whereDate('date', $today)
+                    ->sum('at_amount');
+
 
 
         $orderDues = Order::where('branch_id', auth()->user()->branch_id);
@@ -770,7 +777,7 @@ class FinancialStatementController extends Controller
         $yesBankInHand = $totalYestBankIncrement - $totalYestBankDecrement;
             // dd($totalYestCashIncrement);
             // $cashInHand = $totalTodayCashIncrements - $totalTodayCashDecrements;
-        return view('admin.balance_sheet.index', compact('currentAssetIds', 'currentBankAsset', 'currentCashAsset', 'accountPayable', 'currentLiability', 'longTermLiabilities', 'equityCapital', 'retainedEarning','currentAssets', 'fixedAssets', 'fixedAsset', 'shortTermLiabilities', 'currentLiabilities', 'equityCapitals', 'retainedEarnings', 'cashInHand', 'cashInBank', 'inventory', 'netProfit', 'yesCashInHand', 'yesBankInHand', 'yesAccountReceiveable', 'yesInventory', 'todayLoss', 'todayProfit', 'netProfitTillYesterday','totalTodayCashIncrements','totalTodayCashDecrements', 'totalTodayBankIncrements', 'totalTodayBankDecrements', 'todaysAccountReceivableCredit', 'todaysAccountReceivableDebit'));
+        return view('admin.balance_sheet.index', compact('currentAssetIds', 'currentBankAsset', 'currentCashAsset', 'accountPayable', 'currentLiability', 'longTermLiabilities', 'equityCapital', 'retainedEarning','currentAssets', 'fixedAssets', 'fixedAsset', 'shortTermLiabilities', 'currentLiabilities', 'equityCapitals', 'retainedEarnings', 'cashInHand', 'cashInBank', 'inventory', 'netProfit', 'yesCashInHand', 'yesBankInHand', 'yesAccountReceiveable', 'yesInventory', 'todayLoss', 'todayProfit', 'netProfitTillYesterday','totalTodayCashIncrements','totalTodayCashDecrements', 'totalTodayBankIncrements', 'totalTodayBankDecrements', 'todaysAccountReceivableCredit', 'todaysAccountReceivableDebit','todaysAssetSoldAR'));
     }
 
     public function calculateNetProfit(Request $request)
