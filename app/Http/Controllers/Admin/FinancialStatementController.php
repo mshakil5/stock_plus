@@ -151,21 +151,31 @@ class FinancialStatementController extends Controller
         //Yesterday's account receivable
         $yest = Carbon::yesterday()->format('Y-m-d');
 
-        $yesAccountReceiveablesCredit = Transaction::whereIn('chart_of_account_id', $accountReceiveableIds)
-                            ->where('status', 0)
-                            ->where('branch_id', auth()->user()->branch_id)
-                            ->whereIn('transaction_type', ['Sold', 'Received'])
-                            ->where('date', '<=', $yest)
-                            ->sum('at_amount');
-
         $yesAccountReceiveablesDebit = Transaction::whereIn('chart_of_account_id', $accountReceiveableIds)
                             ->where('status', 0)
                             ->where('branch_id', auth()->user()->branch_id)
-                            ->where('transaction_type', 'Purchase')
+                            ->whereIn('transaction_type', ['Payment'])
                             ->where('date', '<=', $yest)
                             ->sum('at_amount');
 
-           $yesAccountReceiveable = $yesAccountReceiveablesDebit - $yesAccountReceiveablesCredit;                 
+        $yesAccountReceiveablesCredit = Transaction::whereIn('chart_of_account_id', $accountReceiveableIds)
+                            ->where('status', 0)
+                            ->where('branch_id', auth()->user()->branch_id)
+                            ->whereIn('transaction_type', ['Received'])
+                            ->where('date', '<=', $yest)
+                            ->sum('at_amount');
+
+        $yestodaysAssetSoldAR = Transaction::whereIn('asset_id', $accountReceiveableIds)
+                            ->where('status', 0)
+                            ->where('branch_id', auth()->user()->branch_id)
+                            ->where('transaction_type', 'Sold')
+                            ->whereDate('date', $today)
+                            ->sum('at_amount');
+
+           $yesAccountReceiveable = $yesAccountReceiveablesDebit + $yestodaysAssetSoldAR - $yesAccountReceiveablesCredit;      
+           
+        //    dd($yesAccountReceiveablesCredit);
+
 
         // $yesOrderDues = Order::where('branch_id', auth()->user()->branch_id)
         //                     ->where('orderdate', '<=', $yest);
@@ -618,7 +628,7 @@ class FinancialStatementController extends Controller
                 ->sum('at_amount');
 
             $yestCashAssetIncrement = Transaction::where('table_type', 'Assets')
-                ->where('transaction_type', 'Sold')
+                ->whereIn('transaction_type', ['Received', 'Sold'])
                 ->where('status', 0)
                 ->where('payment_type', 'Cash')
                 ->where('branch_id', auth()->user()->branch_id)
