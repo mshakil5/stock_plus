@@ -257,13 +257,13 @@
                         <tr>
                             <td colspan="2"></td>
                             <td>{{ $longTermLiability->account_name }}</td>
-                            <td>{{ number_format($longTermLiability->transactions_sum_at_amount, 2) }}</td>
-                            <td> - {{ number_format($longTermLiability->total_debit_today, 2) }}</td>
+                            <td>{{ number_format($longTermLiability->total_debit_yesterday - $longTermLiability->total_credit_yesterday, 2) }}</td>
+                            <td>{{ number_format($longTermLiability->total_debit_today, 2) }}</td>
                             <td>{{ number_format($longTermLiability->total_credit_today, 2) }}</td>
                             <td>
                                 {{ number_format(
-                                    $longTermLiability->transactions_sum_at_amount - 
-                                    $longTermLiability->total_debit_today + 
+                                    $longTermLiability->total_debit_yesterday - $longTermLiability->total_credit_yesterday + 
+                                    $longTermLiability->total_debit_today - 
                                     $longTermLiability->total_credit_today, 
                                     2
                                 ) }}
@@ -303,7 +303,7 @@
                             <td colspan="2"></td>
                             @php
                                 $totalLiabilitySum = collect($shortTermLiabilities)->sum('total_debit_yesterday') - collect($shortTermLiabilities)->sum('total_credit_yesterday') +
-                                                        collect($longTermLiabilities)->sum('transactions_sum_at_amount')+
+                                collect($longTermLiabilities)->sum('total_debit_yesterday') - collect($longTermLiabilities)->sum('total_credit_yesterday') +
                                                         collect($currentLiabilities)->sum('total_debit_yesterday') - collect($currentLiabilities)->sum('total_credit_yesterday');
                                 $totalLiabilityDebitToday = collect($shortTermLiabilities)->sum('total_debit_today') +
                                                         collect($longTermLiabilities)->sum('total_debit_today')+
@@ -380,11 +380,11 @@
                         <tr>
                             <td colspan="2"></td>
                             <td>{{ $retainedEarning->account_name }}</td>
-                            <td>{{ number_format($retainedEarning->transactions_sum_at_amount, 2) }}</td>
-                            <td>- {{ number_format($retainedEarning->total_debit_today, 2) }}</td>
+                            <td>{{ number_format($retainedEarning->total_debit_yesterday - $retainedEarning->total_credit_yesterday, 2) }}</td>
+                            <td>{{ number_format($retainedEarning->total_debit_today, 2) }}</td>
                             <td>{{ number_format($retainedEarning->total_credit_today, 2) }}</td>
                             <td>
-                                {{ number_format($retainedEarning->transactions_sum_at_amount - $retainedEarning->total_debit_today + $retainedEarning->total_credit_today, 2) }}
+                                {{ number_format($retainedEarning->total_debit_yesterday - $retainedEarning->total_credit_yesterday + $retainedEarning->total_debit_today - $retainedEarning->total_credit_today, 2) }}
                             </td>
                         </tr>
                         @endforeach
@@ -395,17 +395,17 @@
                             </td>
                             <td colspan="2"></td>
                             @php
-                                $totalEquitySum = collect($equityCapitals)->sum('transactions_sum_at_amount') +
-                                                        collect($retainedEarnings)->sum('transactions_sum_at_amount');
+                                $totalEquitySum = collect($equityCapitals)->sum('total_previous_receive') - collect($equityCapitals)->sum('total_previous_payment') +
+                                collect($retainedEarnings)->sum('total_debit_yesterday') - collect($retainedEarnings)->sum('total_credit_yesterday');
                                                        
                                 $totalEquityDebitToday = collect($equityCapitals)->sum('total_debit_today') +
                                                         collect($retainedEarnings)->sum('total_debit_today');
                                 $totalEquityCreditToday = collect($equityCapitals)->sum('total_credit_today') +
                                                         collect($retainedEarnings)->sum('total_credit_today');
-                                 $closingEquityBalance = $totalEquitySum - $totalEquityDebitToday + $totalEquityCreditToday;                                             
+                                 $closingEquityBalance = $totalEquitySum  + $netProfitTillYesterday - $totalEquityDebitToday + $totalEquityCreditToday;                                             
                             @endphp
-                            <td>{{ number_format($totalEquitySum, 2) }}</td>
-                            <td>- {{ number_format($totalEquityDebitToday, 2) }}</td>
+                            <td>{{ number_format($totalEquitySum + $netProfitTillYesterday, 2) }}</td>
+                            <td>{{ number_format($totalEquityDebitToday, 2) }}</td>
                             <td>{{ number_format($totalEquityCreditToday, 2) }}</td>
                             <td>{{ number_format($closingEquityBalance, 2) }}</td>
                         </tr>
@@ -427,12 +427,12 @@
                                 $totalLiabilityEquitySum = $totalLiabilitySum + $totalEquitySum;
                                 $toalLiabilityEquityDebitSum = $totalLiabilityDebitToday + $totalEquityDebitToday;
                                 $totalLiabilityEquityCreditSum = $totalLiabilityCreditToday + $totalEquityCreditToday;
-                                $totalLiabilityEquityClosingSum = $closingLiabilityBalance + $closingEquityBalance + $netProfit + $netProfitTillYesterday + $totalCapitalClosingBalanceSum;
+                                $totalLiabilityEquityClosingSum = $closingLiabilityBalance + $closingEquityBalance;
 
 
                             @endphp
-                            <td>{{ number_format($totalLiabilityEquitySum, 2) }}</td>
-                            <td>- {{ number_format($toalLiabilityEquityDebitSum, 2) }}</td>
+                            <td>{{ number_format($totalLiabilityEquitySum + $netProfitTillYesterday, 2) }}</td>
+                            <td>{{ number_format($toalLiabilityEquityDebitSum, 2) }}</td>
                             <td>{{ number_format($totalLiabilityEquityCreditSum, 2) }}</td>
                             <td>{{ number_format($totalLiabilityEquityClosingSum, 2) }}</td>
                         </tr>

@@ -234,6 +234,22 @@ class FinancialStatementController extends Controller
             }], 'at_amount')
             ->get();
 
+            $longTermLiabilities->each(function ($liability) use ($yesterday) {
+                $liability->total_debit_yesterday = $liability->transactions()
+                    ->where('branch_id', auth()->user()->branch_id)
+                    ->where('transaction_type', 'Received')
+                    ->whereDate('date',  '<=', $yesterday)
+                    ->sum('at_amount');
+            });
+    
+            $longTermLiabilities->each(function ($liability) use ($yesterday) {
+                $liability->total_credit_yesterday = $liability->transactions()
+                    ->where('branch_id', auth()->user()->branch_id)
+                    ->where('transaction_type', 'Payment')
+                    ->whereDate('date',  '<=', $yesterday)
+                    ->sum('at_amount');
+            });
+
         $longTermLiabilities->each(function ($liability) use ($today) {
             $liability->total_debit_today = $liability->transactions()
                 ->where('branch_id', auth()->user()->branch_id)
@@ -328,6 +344,22 @@ class FinancialStatementController extends Controller
                     ->whereDate('date', '<=', $yesterday);
             }], 'at_amount')
             ->get();
+
+            $retainedEarnings->each(function ($liability) use ($yesterday) {
+                $liability->total_debit_yesterday = $liability->transactions()
+                    ->where('branch_id', auth()->user()->branch_id)
+                    ->where('transaction_type', 'Received')
+                    ->whereDate('date', $yesterday)
+                    ->sum('at_amount');
+            });
+    
+            $retainedEarnings->each(function ($liability) use ($yesterday) {
+                $liability->total_credit_yesterday = $liability->transactions()
+                    ->where('branch_id', auth()->user()->branch_id)
+                    ->where('transaction_type', 'Payment')
+                    ->whereDate('date', $yesterday)
+                    ->sum('at_amount');
+            });
 
         $retainedEarnings->each(function ($liability) use ($today) {
             $liability->total_debit_today = $liability->transactions()
