@@ -232,13 +232,13 @@
                         <tr>
                             <td colspan="2"></td>
                             <td>{{ $shortTermLiability->account_name }}</td>
-                            <td>{{ number_format($shortTermLiability->transactions_sum_at_amount, 2) }}</td>
-                            <td> - {{ number_format($shortTermLiability->total_debit_today, 2) }}</td>
+                            <td>{{ number_format($shortTermLiability->total_debit_yesterday - $shortTermLiability->total_credit_yesterday, 2) }}</td>
+                            <td>{{ number_format($shortTermLiability->total_debit_today, 2) }}</td>
                             <td>{{ number_format($shortTermLiability->total_credit_today, 2) }}</td>
                             <td>
                                 {{ number_format(
-                                    $shortTermLiability->transactions_sum_at_amount - 
-                                    $shortTermLiability->total_debit_today + 
+                                    $shortTermLiability->total_debit_yesterday - $shortTermLiability->total_credit_yesterday + 
+                                    $shortTermLiability->total_debit_today - 
                                     $shortTermLiability->total_credit_today, 
                                     2
                                 ) }}
@@ -282,12 +282,12 @@
                         <tr>
                             <td colspan="2"></td>
                             <td>{{ $currentLiability->account_name }}</td>
-                            <td>{{ number_format($currentLiability->transactions_sum_at_amount, 2) }}</td>
-                            <td> - {{ number_format($currentLiability->total_debit_today, 2) }}</td>
+                            <td>{{ number_format($currentLiability->total_debit_yesterday - $currentLiability->total_credit_yesterday, 2) }}</td>
+                            <td>{{ number_format($currentLiability->total_debit_today, 2) }}</td>
                             <td>{{ number_format($currentLiability->total_credit_today, 2) }}</td>
                             <td>
                                 {{ number_format(
-                                    $currentLiability->transactions_sum_at_amount - 
+                                    $currentLiability->total_debit_yesterday - $currentLiability->total_credit_yesterday - 
                                     $currentLiability->total_debit_today + 
                                     $currentLiability->total_credit_today, 
                                     2
@@ -302,19 +302,19 @@
                             </td>
                             <td colspan="2"></td>
                             @php
-                                $totalLiabilitySum = collect($shortTermLiabilities)->sum('transactions_sum_at_amount') +
+                                $totalLiabilitySum = collect($shortTermLiabilities)->sum('total_debit_yesterday') - collect($shortTermLiabilities)->sum('total_credit_yesterday') +
                                                         collect($longTermLiabilities)->sum('transactions_sum_at_amount')+
-                                                        collect($currentLiabilities)->sum('transactions_sum_at_amount');
+                                                        collect($currentLiabilities)->sum('total_debit_yesterday') - collect($currentLiabilities)->sum('total_credit_yesterday');
                                 $totalLiabilityDebitToday = collect($shortTermLiabilities)->sum('total_debit_today') +
                                                         collect($longTermLiabilities)->sum('total_debit_today')+
                                                         collect($currentLiabilities)->sum('total_debit_today');
                                 $totalLiabilityCreditToday = collect($shortTermLiabilities)->sum('total_credit_today') +
                                                         collect($longTermLiabilities)->sum('total_credit_today')+
                                                         collect($currentLiabilities)->sum('total_credit_today');
-                                 $closingLiabilityBalance = $totalLiabilitySum - $totalLiabilityDebitToday + $totalLiabilityCreditToday;                                             
+                                 $closingLiabilityBalance = $totalLiabilitySum + $totalLiabilityDebitToday - $totalLiabilityCreditToday;                                             
                             @endphp
                             <td>{{ number_format($totalLiabilitySum, 2) }}</td>
-                            <td> - {{ number_format($totalLiabilityDebitToday, 2) }}</td>
+                            <td>{{ number_format($totalLiabilityDebitToday, 2) }}</td>
                             <td>{{ number_format($totalLiabilityCreditToday, 2) }}</td>
                             <td>
                                 {{ number_format($closingLiabilityBalance, 2) }}
