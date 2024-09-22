@@ -154,7 +154,7 @@ class FinancialStatementController extends Controller
         $yesAccountReceiveablesDebit = Transaction::whereIn('chart_of_account_id', $accountReceiveableIds)
                             ->where('status', 0)
                             ->where('branch_id', auth()->user()->branch_id)
-                            ->whereIn('transaction_type', ['Payment'])
+                            ->where('transaction_type', 'Payment')
                             ->where('date', '<=', $yest)
                             ->sum('at_amount');
 
@@ -172,8 +172,65 @@ class FinancialStatementController extends Controller
                             ->whereDate('date', $today)
                             ->sum('at_amount');
 
-           $yesAccountReceiveable = $yesAccountReceiveablesDebit + $yestodaysAssetSoldAR - $yesAccountReceiveablesCredit;      
-           
+        $yesAccountReceiveable = $yesAccountReceiveablesDebit + $yestodaysAssetSoldAR - $yesAccountReceiveablesCredit;
+        
+        
+        $accountPayableIds = ChartOfAccount::where('sub_account_head', 'Account Payable')
+            ->where('branch_id', auth()->user()->branch_id)
+            ->pluck('id');
+
+
+        $todaysAccountPayableCredit = Transaction::whereIn('chart_of_account_id', $accountPayableIds)
+                ->where('status', 0)
+                ->where('branch_id', auth()->user()->branch_id)
+                ->where('transaction_type', 'Received')
+                ->whereDate('date', $today)
+                ->sum('at_amount');
+
+
+        $todaysAccountPayableDebit = Transaction::whereIn('chart_of_account_id', $accountPayableIds)
+            ->where('status', 0)
+            ->where('branch_id', auth()->user()->branch_id)
+            ->where('transaction_type', 'Payment')
+            ->whereDate('date', $today)
+            ->sum('at_amount');
+
+
+        $todaysProductCreditSold = Transaction::where('status', 0)
+            ->whereNotNull('order_id')
+            ->where('branch_id', auth()->user()->branch_id)
+            ->where('transaction_type', 'Credit')
+            ->whereDate('date', $today)
+            ->sum('at_amount');
+
+        
+        $yesAccountPayableCredit = Transaction::whereIn('chart_of_account_id', $accountPayableIds)
+            ->where('status', 0)
+            ->where('branch_id', auth()->user()->branch_id)
+            ->where('transaction_type', 'Payment')
+            ->where('date', '<=', $yest)
+            ->sum('at_amount');
+
+
+        $yesAccountPayableDebit = Transaction::whereIn('chart_of_account_id', $accountPayableIds)
+            ->where('status', 0)
+            ->where('branch_id', auth()->user()->branch_id)
+            ->where('transaction_type', 'Received')
+            ->where('date', '<=', $yest)
+            ->sum('at_amount'); 
+
+
+
+        $yesProductCreditSold = Transaction::where('status', 0)
+            ->whereNotNull('order_id')
+            ->where('branch_id', auth()->user()->branch_id)
+            ->where('transaction_type', 'Credit')
+            ->where('date', '<=', $yest)
+            ->sum('at_amount');
+            
+
+        $yesAccountPayable = $yesAccountPayableDebit + $yesProductCreditSold - $yesAccountPayableCredit;  
+        // dd($yesAccountPayable);
         //    dd($yesAccountReceiveablesCredit);
 
 
@@ -401,9 +458,7 @@ class FinancialStatementController extends Controller
             ->sum('at_amount');
 
         //Account Payable date to date
-        $accountPayableIds = ChartOfAccount::where('sub_account_head', 'Account Payable')
-            ->where('branch_id', auth()->user()->branch_id)
-            ->pluck('id');
+        
         $accountPayables = Transaction::whereIn('chart_of_account_id', $accountPayableIds)
             ->where('status', 0)
             ->where('branch_id', auth()->user()->branch_id);
@@ -430,6 +485,7 @@ class FinancialStatementController extends Controller
 
         //Total account payable
         $accountPayable = $accountPayables->sum('at_amount') + $purchaseDues->sum('due_amount');
+
 
         //All current liabilities
         $currentLiabilityIds = ChartOfAccount::where('sub_account_head', 'Current Liabilities')
@@ -844,7 +900,7 @@ class FinancialStatementController extends Controller
         $yesBankInHand = $totalYestBankIncrement - $totalYestBankDecrement;
             // dd($totalYestCashIncrement);
             // $cashInHand = $totalTodayCashIncrements - $totalTodayCashDecrements;
-        return view('admin.balance_sheet.index', compact('currentAssetIds', 'currentBankAsset', 'currentCashAsset', 'accountPayable', 'currentLiability', 'longTermLiabilities', 'equityCapital', 'retainedEarning','currentAssets', 'fixedAssets', 'fixedAsset', 'shortTermLiabilities', 'currentLiabilities', 'equityCapitals', 'retainedEarnings', 'cashInHand', 'cashInBank', 'inventory', 'netProfit', 'yesCashInHand', 'yesBankInHand', 'yesAccountReceiveable', 'yesInventory', 'todayLoss', 'todayProfit', 'netProfitTillYesterday','totalTodayCashIncrements','totalTodayCashDecrements', 'totalTodayBankIncrements', 'totalTodayBankDecrements', 'todaysAccountReceivableCredit', 'todaysAccountReceivableDebit','todaysAssetSoldAR'));
+        return view('admin.balance_sheet.index', compact('currentAssetIds', 'currentBankAsset', 'currentCashAsset', 'currentLiability', 'longTermLiabilities', 'equityCapital', 'retainedEarning','currentAssets', 'fixedAssets', 'fixedAsset', 'shortTermLiabilities', 'currentLiabilities', 'equityCapitals', 'retainedEarnings', 'cashInHand', 'cashInBank', 'inventory', 'netProfit', 'yesCashInHand', 'yesBankInHand', 'yesAccountReceiveable', 'yesInventory', 'todayLoss', 'todayProfit', 'netProfitTillYesterday','totalTodayCashIncrements','totalTodayCashDecrements', 'totalTodayBankIncrements', 'totalTodayBankDecrements', 'todaysAccountReceivableCredit', 'todaysAccountReceivableDebit','todaysAssetSoldAR', 'yesAccountPayable', 'todaysAccountPayableCredit', 'todaysAccountPayableDebit', 'todaysProductCreditSold'));
     }
 
     public function calculateNetProfit(Request $request)
