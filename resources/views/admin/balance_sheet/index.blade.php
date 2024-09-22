@@ -236,12 +236,7 @@
                             <td>{{ number_format($shortTermLiability->total_debit_today, 2) }}</td>
                             <td>{{ number_format($shortTermLiability->total_credit_today, 2) }}</td>
                             <td>
-                                {{ number_format(
-                                    $shortTermLiability->total_debit_yesterday - $shortTermLiability->total_credit_yesterday + 
-                                    $shortTermLiability->total_debit_today - 
-                                    $shortTermLiability->total_credit_today, 
-                                    2
-                                ) }}
+                                {{ number_format($shortTermLiability->total_debit_yesterday - $shortTermLiability->total_credit_yesterday + $shortTermLiability->total_debit_today - $shortTermLiability->total_credit_today, 2) }}
                             </td>
                         </tr>
                         @endforeach

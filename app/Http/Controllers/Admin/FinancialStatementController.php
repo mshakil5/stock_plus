@@ -182,38 +182,40 @@ class FinancialStatementController extends Controller
 
         // $yesAccountReceiveable = $yesAccountReceiveables->sum('at_amount') + $yesOrderDues->sum('due');
 
-        //Short Term Liabilities yesterday to today
+        //Short Term Liabilities
         $shortTermLiabilities = ChartOfAccount::where('sub_account_head', 'Short Term Liabilities')
             ->where('branch_id', auth()->user()->branch_id)
             ->withSum(['transactions' => function ($query) use ($yesterday) {
                 $query->where('branch_id', auth()->user()->branch_id)
-                    ->whereDate('date', '<=', $yesterday);
+                    ->whereDate('date', '<=', $yesterday)
+                    ->where('status', 0);
             }], 'at_amount')
             ->get();
 
-            $shortTermLiabilities->each(function ($liability) use ($yesterday) {
-                $liability->total_debit_yesterday = $liability->transactions()
-                    ->where('branch_id', auth()->user()->branch_id)
-                    ->where('transaction_type', 'Received')
-                    ->whereDate('date', '<=',  $yesterday)
-                    ->where('status', 0)
-                    ->sum('at_amount');
-            });
+        $shortTermLiabilities->each(function ($liability) use ($yesterday) {
+            $liability->total_debit_yesterday = $liability->transactions()
+                ->where('branch_id', auth()->user()->branch_id)
+                ->where('transaction_type', 'Received')
+                ->whereDate('date', '<=',  $yesterday)
+                ->where('status', 0)
+                ->sum('at_amount');
+        });
     
-            $shortTermLiabilities->each(function ($liability) use ($yesterday) {
-                $liability->total_credit_yesterday = $liability->transactions()
-                    ->where('branch_id', auth()->user()->branch_id)
-                    ->whereIn('transaction_type', ['Payment'])
-                    ->whereDate('date', '<=',  $yesterday)
-                    ->where('status', 0)
-                    ->sum('at_amount');
-            });
+        $shortTermLiabilities->each(function ($liability) use ($yesterday) {
+            $liability->total_credit_yesterday = $liability->transactions()
+                ->where('branch_id', auth()->user()->branch_id)
+                ->where('transaction_type', 'Payment')
+                ->whereDate('date', '<=',  $yesterday)
+                ->where('status', 0)
+                ->sum('at_amount');
+        });
 
         $shortTermLiabilities->each(function ($liability) use ($today) {
             $liability->total_debit_today = $liability->transactions()
                 ->where('branch_id', auth()->user()->branch_id)
                 ->where('transaction_type', 'Received')
                 ->whereDate('date', $today)
+                ->where('status', 0)
                 ->sum('at_amount');
         });
 
@@ -222,6 +224,7 @@ class FinancialStatementController extends Controller
                 ->where('branch_id', auth()->user()->branch_id)
                 ->where('transaction_type', 'Payment')
                 ->whereDate('date', $today)
+                ->where('status', 0)
                 ->sum('at_amount');
         });
 
@@ -336,12 +339,13 @@ class FinancialStatementController extends Controller
         // dd($equityCapitals);
         
 
-        //Retained Earnings yesterday to today
+        //Retained Earnings
         $retainedEarnings = ChartOfAccount::where('sub_account_head', 'Retained Earnings')
             ->where('branch_id', auth()->user()->branch_id)
             ->withSum(['transactions' => function ($query) use ($yesterday) {
                 $query->where('branch_id', auth()->user()->branch_id)
-                    ->whereDate('date', '<=', $yesterday);
+                    ->whereDate('date', '<=', $yesterday)
+                    ->where('status', 0);
             }], 'at_amount')
             ->get();
 
