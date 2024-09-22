@@ -66,9 +66,9 @@ class IncomeController extends Controller
             return response()->json(['status' => 303, 'message' => 'Transaction Type Field Is Required..!']);
         }
 
-        // if (empty($request->payment_type)) {
-        //     return response()->json(['status' => 303, 'message' => 'Payment Type Field Is Required..!']);
-        // }
+        if (empty($request->payment_type)) {
+            return response()->json(['status' => 303, 'message' => 'Payment Type Field Is Required..!']);
+        }
 
         $transaction = new Transaction();
         $transaction->date = $request->input('date');
@@ -137,9 +137,9 @@ class IncomeController extends Controller
             return response()->json(['status' => 303, 'message' => 'Transaction Type Field Is Required..!']);
         }
 
-        // if (empty($request->payment_type)) {
-        //     return response()->json(['status' => 303, 'message' => 'Payment Type Field Is Required..!']);
-        // }
+        if (empty($request->payment_type)) {
+            return response()->json(['status' => 303, 'message' => 'Payment Type Field Is Required..!']);
+        }
 
         $transaction = Transaction::find($id);
 

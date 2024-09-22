@@ -84,6 +84,7 @@
                 <h4 class="modal-title">Expense</h4>
             </div>
             <form class="form-horizontal" id="customer-form">
+            <div id="alert-container1"></div>
                 <div class="modal-body">
                     {{csrf_field()}}
                     
@@ -428,7 +429,7 @@
                     $('#alert-container').html('');
                 } else if (response.status === 303) {
                     let alertMessage = `<div class='alert alert-warning'><a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a><b>${response.message}</b></div>`;
-                    $('#alert-container').html(alertMessage);
+                    $('#alert-container1').html(alertMessage);
                 }
             },
             error: function(xhr, status, error) {
@@ -458,7 +459,7 @@
                     $('#alert-container').html('');
                 } else if (response.status === 303) {
                     let alertMessage = `<div class='alert alert-warning'><a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a><b>${response.message}</b></div>`;
-                    $('#alert-container').html(alertMessage);
+                    $('#alert-container1').html(alertMessage);
                 }
             },
             error: function(xhr, status, error) {

@@ -71,9 +71,9 @@ class ExpenseController extends Controller
             return response()->json(['status' => 303, 'message' => 'Transaction Type Field Is Required..!']);
         }
 
-        // if (empty($request->payment_type)) {
-        //     return response()->json(['status' => 303, 'message' => 'Payment Type Field Is Required..!']);
-        // }
+        if (empty($request->payment_type)) {
+            return response()->json(['status' => 303, 'message' => 'Payment Type Field Is Required..!']);
+        }
 
         $transaction = new Transaction();
         $transaction->tran_id = strtoupper(Str::random(2)) . date('Y') . str_pad(mt_rand(1, 999999), 6, '0', STR_PAD_LEFT);
@@ -144,9 +144,9 @@ class ExpenseController extends Controller
             return response()->json(['status' => 303, 'message' => 'Transaction Type Field Is Required..!']);
         }
 
-        // if (empty($request->payment_type)) {
-        //     return response()->json(['status' => 303, 'message' => 'Payment Type Field Is Required..!']);
-        // }
+        if (empty($request->payment_type)) {
+            return response()->json(['status' => 303, 'message' => 'Payment Type Field Is Required..!']);
+        }
 
         $transaction = Transaction::find($id);
 
