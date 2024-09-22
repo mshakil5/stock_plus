@@ -406,7 +406,7 @@
                                                         collect($retainedEarnings)->sum('total_debit_today');
                                 $totalEquityCreditToday = collect($equityCapitals)->sum('total_credit_today') +
                                                         collect($retainedEarnings)->sum('total_credit_today');
-                                 $closingEquityBalance = $totalEquitySum  + $netProfitTillYesterday - $totalEquityDebitToday + $totalEquityCreditToday;                                             
+                                 $closingEquityBalance = $totalEquitySum  + $netProfitTillYesterday + $totalEquityDebitToday - $totalEquityCreditToday;                                             
                             @endphp
                             <td>{{ number_format($totalEquitySum + $netProfitTillYesterday, 2) }}</td>
                             <td>{{ number_format($totalEquityDebitToday, 2) }}</td>
