@@ -104,11 +104,13 @@ class AssetController extends Controller
     public function edit($id)
     {
         $transaction = Transaction::findOrFail($id);
-
+        $chartOfAccount = ChartOfAccount::find($transaction->chart_of_account_id);
+    
         $responseData = [
             'id' => $transaction->id,
             'date' => $transaction->date,
             'chart_of_account_id' => $transaction->chart_of_account_id,
+            'chart_of_account_type' => $chartOfAccount ? $chartOfAccount->sub_account_head : null,
             'ref' => $transaction->ref,
             'transaction_type' => $transaction->transaction_type,
             'amount' => $transaction->amount,

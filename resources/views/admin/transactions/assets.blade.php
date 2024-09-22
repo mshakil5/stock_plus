@@ -106,7 +106,7 @@
                                         $assets = ChartOfAccount::where('account_head', 'Assets')->get();
                                     @endphp
                                     @foreach($assets as $asset)
-                                        <option value="{{ $asset->id }}">{{ $asset->account_name }}</option>
+                                        <option value="{{ $asset->id }}" data-type="{{ $asset->sub_account_head }}">{{ $asset->account_name }}</option>
                                     @endforeach
                                 </select>
                             </div>
@@ -123,12 +123,6 @@
                         <label for="transaction_type" class="col-sm-3 control-label">Transaction Type</label>
                         <div class="col-sm-9">
                             <select class="form-control" id="transaction_type" name="transaction_type">
-                                <option value="">Select transaction type</option>
-                                <option value="Received">Received</option>
-                                <option value="Payment">Payment</option>
-                                <option value="Purchase">Purchase</option>
-                                <option value="Sold">Sold</option>
-                                <option value="Depreciation">Depreciation</option>
                             </select>
                         </div>
                     </div>
@@ -260,6 +254,27 @@
         function clearPayableHolder() {
             $("#payable_holder_id, #recivible_holder_id").val('');
         }
+
+        $('#chart_of_account_id').change(function() {
+            var accountType = $(this).find(':selected').data('type');
+            var transactionTypeDropdown = $('#transaction_type');
+
+            transactionTypeDropdown.empty();
+
+            if(accountType === 'Fixed Asset') {
+                transactionTypeDropdown.append('<option value="">Select transaction type</option>');
+                transactionTypeDropdown.append('<option value="Purchase">Purchase</option>');
+                transactionTypeDropdown.append('<option value="Sold">Sold</option>');
+                transactionTypeDropdown.append('<option value="Depreciation">Depreciation</option>');
+            } else {
+                transactionTypeDropdown.append('<option value="">Select transaction type</option>');
+                transactionTypeDropdown.append('<option value="Received">Received</option>');
+                transactionTypeDropdown.append('<option value="Payment">Payment</option>');
+                transactionTypeDropdown.append('<option value="Purchase">Purchase</option>');
+                transactionTypeDropdown.append('<option value="Sold">Sold</option>');
+                transactionTypeDropdown.append('<option value="Depreciation">Depreciation</option>');
+            }
+        });
     });
 </script>
 
@@ -352,7 +367,7 @@
                     return request.setRequestHeader('X-CSRF-Token', $("meta[name='csrf-token']").attr('content'));
                 },
                 success: function (response) {
-                    // console.log(response);
+                    console.log(response);
                     $('#date').val(response.date);
                     $('#ref').val(response.ref);
                     $('#transaction_type').val(response.transaction_type);
@@ -364,6 +379,28 @@
                     $('#description').val(response.description);
 
                     $('#chart_of_account_id').val(response.chart_of_account_id);
+
+                    var accountType = response.chart_of_account_type;
+
+                    var transactionTypeDropdown = $('#transaction_type');
+
+                    transactionTypeDropdown.empty();
+
+                    if(accountType === 'Fixed Asset') {
+                        transactionTypeDropdown.append('<option value="">Select transaction type</option>');
+                        transactionTypeDropdown.append('<option value="Purchase">Purchase</option>');
+                        transactionTypeDropdown.append('<option value="Sold">Sold</option>');
+                        transactionTypeDropdown.append('<option value="Depreciation">Depreciation</option>');
+                        $('#transaction_type').val(response.transaction_type);
+                    } else {
+                        transactionTypeDropdown.append('<option value="">Select transaction type</option>');
+                        transactionTypeDropdown.append('<option value="Received">Received</option>');
+                        transactionTypeDropdown.append('<option value="Payment">Payment</option>');
+                        transactionTypeDropdown.append('<option value="Purchase">Purchase</option>');
+                        transactionTypeDropdown.append('<option value="Sold">Sold</option>');
+                        transactionTypeDropdown.append('<option value="Depreciation">Depreciation</option>');
+                        $('#transaction_type').val(response.transaction_type);
+                    }     
 
                     if (response.transaction_type == 'Purchase') {
 
@@ -495,6 +532,15 @@
     $('#showpayable, #showreceivable').hide();
     $('#payable_holder_id').val('');
     $('#recivible_holder_id').val('');
+    var transactionTypeDropdown = $('#transaction_type');
+    transactionTypeDropdown.empty();
+    transactionTypeDropdown.append('<option value="">Select transaction type</option>');
+    transactionTypeDropdown.append('<option value="Received">Received</option>');
+    transactionTypeDropdown.append('<option value="Payment">Payment</option>');
+    transactionTypeDropdown.append('<option value="Purchase">Purchase</option>');
+    transactionTypeDropdown.append('<option value="Sold">Sold</option>');
+    transactionTypeDropdown.append('<option value="Depreciation">Depreciation</option>');
+
 });
 
 
