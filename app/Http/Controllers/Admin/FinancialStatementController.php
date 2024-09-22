@@ -345,27 +345,30 @@ class FinancialStatementController extends Controller
             }], 'at_amount')
             ->get();
 
-            $retainedEarnings->each(function ($liability) use ($yesterday) {
-                $liability->total_debit_yesterday = $liability->transactions()
-                    ->where('branch_id', auth()->user()->branch_id)
-                    ->where('transaction_type', 'Received')
-                    ->whereDate('date', $yesterday)
-                    ->sum('at_amount');
-            });
-    
-            $retainedEarnings->each(function ($liability) use ($yesterday) {
-                $liability->total_credit_yesterday = $liability->transactions()
-                    ->where('branch_id', auth()->user()->branch_id)
-                    ->where('transaction_type', 'Payment')
-                    ->whereDate('date', $yesterday)
-                    ->sum('at_amount');
-            });
+        $retainedEarnings->each(function ($liability) use ($yesterday) {
+            $liability->total_debit_yesterday = $liability->transactions()
+                ->where('branch_id', auth()->user()->branch_id)
+                ->where('transaction_type', 'Received')
+                ->whereDate('date', '<=',  $yesterday)
+                ->where('status', 0)
+                ->sum('at_amount');
+        });
+
+        $retainedEarnings->each(function ($liability) use ($yesterday) {
+            $liability->total_credit_yesterday = $liability->transactions()
+                ->where('branch_id', auth()->user()->branch_id)
+                ->where('transaction_type', 'Payment')
+                ->whereDate('date', '<=',  $yesterday)
+                ->where('status', 0)
+                ->sum('at_amount');
+        });
 
         $retainedEarnings->each(function ($liability) use ($today) {
             $liability->total_debit_today = $liability->transactions()
                 ->where('branch_id', auth()->user()->branch_id)
                 ->where('transaction_type', 'Received')
                 ->whereDate('date', $today)
+                ->where('status', 0)
                 ->sum('at_amount');
         });
 
@@ -374,6 +377,7 @@ class FinancialStatementController extends Controller
                 ->where('branch_id', auth()->user()->branch_id)
                 ->where('transaction_type', 'Payment')
                 ->whereDate('date', $today)
+                ->where('status', 0)
                 ->sum('at_amount');
         });
 
