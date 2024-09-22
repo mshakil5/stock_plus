@@ -137,21 +137,17 @@
                         <tr>
                             <td colspan="2"></td>
                             <td>{{ $currentAsset->account_name }}</td>
-                            @if ($currentAsset->transactions_sum_at_amount !== null)
-                                <td>{{ number_format($currentAsset->transactions_sum_at_amount, 2) }}</td>
-                                <td> - {{ number_format($currentAsset->total_debit_today, 2) }}</td>
-                                <td>{{ number_format($currentAsset->total_credit_today, 2) }}</td>
-                                <td>
-                                    {{ number_format(
-                                        $currentAsset->transactions_sum_at_amount - 
-                                        $currentAsset->total_debit_today + 
-                                        $currentAsset->total_credit_today, 
-                                        2
-                                    ) }}
-                                </td>
-                            @else
-                                <td colspan="4"></td>
-                            @endif
+                            <td>{{ number_format($currentAsset->total_debit_yesterday - $currentAsset->total_credit_yesterday, 2) }}</td>
+                            <td>{{ number_format($currentAsset->total_debit_today, 2) }}</td>
+                            <td>{{ number_format($currentAsset->total_credit_today, 2) }}</td>
+                            <td>
+                                {{ number_format(
+                                    $currentAsset->total_debit_yesterday - $currentAsset->total_credit_yesterday +
+                                    $currentAsset->total_debit_today + 
+                                    $currentAsset->total_credit_today, 
+                                    2
+                                ) }}
+                            </td>
                         </tr>
                         @endforeach
 

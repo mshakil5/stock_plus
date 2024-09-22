@@ -27,6 +27,8 @@ class FinancialStatementController extends Controller
         //Net Profit Till Yesterday
         $netProfitTillYesterday = $this->calculateNetProfitTillYesterday();
 
+        $yest = Carbon::yesterday()->format('Y-m-d');
+
         // dd($netProfitTillYesterday);
         //All Fixed Asset
         $fixedAssetIds = ChartOfAccount::where('sub_account_head', 'Fixed Asset')
@@ -45,28 +47,50 @@ class FinancialStatementController extends Controller
         //Current Asset yesterday to today
         $currentAssets = ChartOfAccount::where('sub_account_head', 'Current Asset')
             ->where('branch_id', auth()->user()->branch_id)
-            ->withSum(['transactions' => function ($query) use ($yesterday) {
-                $query->where('branch_id', auth()->user()->branch_id)
-                    ->whereDate('date', '<=', $yesterday);
-            }], 'at_amount')
-            ->where('status', 0)
+            ->with(['transactions' => function ($query) use ($yest) {
+                $query->where('branch_id', auth()->user()->branch_id);
+            }])
+
             ->get();
+            
+
+            $currentAssets->each(function ($asset) use ($yest) {
+                $asset->total_debit_yesterday = $asset->transactions()
+                    ->where('branch_id', auth()->user()->branch_id)
+                    ->where('transaction_type', 'Received')
+                    ->whereDate('date', '<=', $yest)
+                    ->where('status', 0)
+                    ->sum('at_amount');
+            });
+    
+            $currentAssets->each(function ($asset) use ($yest) {
+                $asset->total_credit_yesterday = $asset->transactions()
+                    ->where('branch_id', auth()->user()->branch_id)
+                    ->where('transaction_type', 'Payment')
+                    ->whereDate('date', '<=', $yest)
+                    ->where('status', 0)
+                    ->sum('at_amount');
+            });
 
         $currentAssets->each(function ($asset) use ($today) {
             $asset->total_debit_today = $asset->transactions()
                 ->where('branch_id', auth()->user()->branch_id)
-                ->where('transaction_type', 'Purchase')
+                ->where('transaction_type', 'Received')
                 ->whereDate('date', $today)
+                ->where('status', 0)
                 ->sum('at_amount');
         });
 
         $currentAssets->each(function ($asset) use ($today) {
             $asset->total_credit_today = $asset->transactions()
                 ->where('branch_id', auth()->user()->branch_id)
-                ->whereIn('transaction_type', ['Sold', 'Depreciation'])
+                ->where('transaction_type', 'Payment')
                 ->whereDate('date', $today)
+                ->where('status', 0)
                 ->sum('at_amount');
-        });   
+        });  
+        
+        // dd($currentAssets);
 
         //Fixed Asset till yesterday, Today debit, credit
         $fixedAssets = ChartOfAccount::where('sub_account_head', 'Fixed Asset')
@@ -149,7 +173,7 @@ class FinancialStatementController extends Controller
         // $accountReceiveable = $accountReceiveables->sum('at_amount') + $orderDues->sum('due');
 
         //Yesterday's account receivable
-        $yest = Carbon::yesterday()->format('Y-m-d');
+        
 
         $yesAccountReceiveablesDebit = Transaction::whereIn('chart_of_account_id', $accountReceiveableIds)
                             ->where('status', 0)
