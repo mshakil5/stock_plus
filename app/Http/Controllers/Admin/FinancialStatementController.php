@@ -215,7 +215,14 @@ class FinancialStatementController extends Controller
         $todaysAccountPayableDebit = Transaction::whereIn('chart_of_account_id', $accountPayableIds)
             ->where('status', 0)
             ->where('branch_id', auth()->user()->branch_id)
-            ->where('transaction_type', 'Payment')
+            ->whereIn('transaction_type', ['Payment', 'Due'])
+            ->whereDate('date', $today)
+            ->sum('at_amount');
+
+        $todaysDueAccountPayableDebit = Transaction::whereIn('liability_id', $accountPayableIds)
+            ->where('status', 0)
+            ->where('branch_id', auth()->user()->branch_id)
+            ->whereIn('transaction_type', ['Payment', 'Due'])
             ->whereDate('date', $today)
             ->sum('at_amount');
 
@@ -554,14 +561,7 @@ class FinancialStatementController extends Controller
                 ->where('branch_id', auth()->user()->branch_id)
                 ->sum('at_amount');
 
-            //Cash Expense Increment today
-            // $CashExpenseIncrement = Transaction::where('table_type', 'Expenses')
-            //     ->whereIn('transaction_type', ['Current', 'Prepaid'])
-            //     ->where('status', 0)
-            //     ->where('payment_type', 'Cash')
-            //     ->where('branch_id', auth()->user()->branch_id)
-            //     ->sum('at_amount');
-
+            
             
             //Cash Asset Increment today
             $CashAssetIncrementToday = Transaction::where('table_type', 'Assets')
@@ -637,7 +637,7 @@ class FinancialStatementController extends Controller
 
             //Cash Expense Decrement today
             $expenseCashDecrement = Transaction::where('table_type', 'Expenses')
-                ->whereIn('transaction_type', ['Current', 'Due Adjust'])
+                ->whereIn('transaction_type', ['Current','Prepaid', 'Due Adjust'])
                 ->where('status', 0)
                 ->where('payment_type', 'Cash')
                 ->whereDate('date', $today)
@@ -693,7 +693,7 @@ class FinancialStatementController extends Controller
 
             //Bank Expense Decrement today
             $todayExpenseBankDecrement = Transaction::where('table_type', 'Expenses')
-                ->whereIn('transaction_type', ['Current', 'Due Adjust'])
+                ->whereIn('transaction_type', ['Current','Prepaid', 'Due Adjust'])
                 ->where('status', 0)
                 ->where('payment_type', 'Bank')
                 ->whereDate('date', $today)
@@ -758,7 +758,7 @@ class FinancialStatementController extends Controller
                 ->sum('at_amount');
 
             $yestCashExpenseIncrement = Transaction::where('table_type', 'Expenses')
-                ->whereIn('transaction_type', ['Current', 'Prepaid'])
+                ->whereIn('transaction_type', ['Current','Prepaid', 'Due Adjust'])
                 ->where('status', 0)
                 ->where('payment_type', 'Cash')
                 ->where('branch_id', auth()->user()->branch_id)
@@ -795,7 +795,7 @@ class FinancialStatementController extends Controller
             //Till Yesterday Cash Decrement
 
             $yestExpenseCashDecrement = Transaction::where('table_type', 'Expenses')
-                ->whereIn('transaction_type', ['Current', 'Due Adjust'])
+                ->whereIn('transaction_type', ['Current','Prepaid', 'Due Adjust'])
                 ->where('status', 0)
                 ->where('payment_type', 'Cash')
                 ->where('branch_id', auth()->user()->branch_id)
@@ -879,7 +879,7 @@ class FinancialStatementController extends Controller
             //Till Yesterday Bank Decrement
 
             $yestExpenseBankDecrement = Transaction::where('table_type', 'Expenses')
-                ->whereIn('transaction_type', ['Current', 'Due Adjust'])
+                ->whereIn('transaction_type', ['Current','Prepaid', 'Due Adjust'])
                 ->where('status', 0)
                 ->where('payment_type', 'Bank')
                 ->where('branch_id', auth()->user()->branch_id)
@@ -924,7 +924,7 @@ class FinancialStatementController extends Controller
         $yesBankInHand = $totalYestBankIncrement - $totalYestBankDecrement;
             // dd($totalYestCashIncrement);
             // $cashInHand = $totalTodayCashIncrements - $totalTodayCashDecrements;
-        return view('admin.balance_sheet.index', compact('currentAssetIds', 'currentBankAsset', 'currentCashAsset', 'currentLiability', 'longTermLiabilities', 'equityCapital', 'retainedEarning','currentAssets', 'fixedAssets', 'fixedAsset', 'shortTermLiabilities', 'currentLiabilities', 'equityCapitals', 'retainedEarnings', 'cashInHand', 'cashInBank', 'inventory', 'netProfit', 'yesCashInHand', 'yesBankInHand', 'yesAccountReceiveable', 'yesInventory', 'todayLoss', 'todayProfit', 'netProfitTillYesterday','totalTodayCashIncrements','totalTodayCashDecrements', 'totalTodayBankIncrements', 'totalTodayBankDecrements', 'todaysAccountReceivableCredit', 'todaysAccountReceivableDebit','todaysAssetSoldAR', 'yesAccountPayable', 'todaysAccountPayableCredit', 'todaysAccountPayableDebit', 'todaysProductCreditSold'));
+        return view('admin.balance_sheet.index', compact('currentAssetIds', 'currentBankAsset', 'currentCashAsset', 'currentLiability', 'longTermLiabilities', 'equityCapital', 'retainedEarning','currentAssets', 'fixedAssets', 'fixedAsset', 'shortTermLiabilities', 'currentLiabilities', 'equityCapitals', 'retainedEarnings', 'cashInHand', 'cashInBank', 'inventory', 'netProfit', 'yesCashInHand', 'yesBankInHand', 'yesAccountReceiveable', 'yesInventory', 'todayLoss', 'todayProfit', 'netProfitTillYesterday','totalTodayCashIncrements','totalTodayCashDecrements', 'totalTodayBankIncrements', 'totalTodayBankDecrements', 'todaysAccountReceivableCredit', 'todaysAccountReceivableDebit','todaysAssetSoldAR', 'yesAccountPayable', 'todaysAccountPayableCredit', 'todaysAccountPayableDebit', 'todaysProductCreditSold','todaysDueAccountPayableDebit'));
     }
 
     public function calculateNetProfit(Request $request)

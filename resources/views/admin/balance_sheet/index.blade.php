@@ -294,9 +294,9 @@
                             <td>         
                                 {{ number_format($yesAccountPayable, 2) }}
                             </td>
-                            <td>{{ number_format($todaysAccountPayableDebit + $todaysProductCreditSold, 2) }}</td></td>
+                            <td>{{ number_format($todaysAccountPayableDebit + $todaysDueAccountPayableDebit + $todaysProductCreditSold, 2) }}</td></td>
                             <td>{{ number_format($todaysAccountPayableCredit, 2) }}</td></td>
-                            <td>{{ number_format($yesAccountPayable - $todaysAccountPayableCredit + $todaysProductCreditSold + $todaysAccountPayableDebit , 2) }}</td>
+                            <td>{{ number_format($yesAccountPayable - $todaysAccountPayableCredit + $todaysProductCreditSold + $todaysAccountPayableDebit+ $todaysDueAccountPayableDebit , 2) }}</td>
                         </tr>
                        <!-- Account Payable -->
 
@@ -315,7 +315,7 @@
                                 $totalLiabilityCreditToday = collect($shortTermLiabilities)->sum('total_credit_today') +
                                                         collect($longTermLiabilities)->sum('total_credit_today')+
                                                         collect($currentLiabilities)->sum('total_credit_today') + $todaysAccountPayableCredit;
-                                 $closingLiabilityBalance = $totalLiabilitySum + $totalLiabilityDebitToday - $totalLiabilityCreditToday;                                             
+                                 $closingLiabilityBalance = $totalLiabilitySum + $totalLiabilityDebitToday - $totalLiabilityCreditToday + $todaysDueAccountPayableDebit;                                             
                             @endphp
                             <td>{{ number_format($totalLiabilitySum, 2) }}</td>
                             <td>{{ number_format($totalLiabilityDebitToday, 2) }}</td>
