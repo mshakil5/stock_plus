@@ -969,6 +969,15 @@ class FinancialStatementController extends Controller
                 ->where('status', 0)
                 ->whereNotNull('chart_of_account_id')
                 ->where('branch_id', $branchId)
+                ->whereIn('transaction_type', ['Current', 'Advance'])
+                ->whereDate('date', $today)
+                ->sum('amount');
+
+        $operatingIncomeRefundToday = Transaction::where('table_type', 'Income')
+                ->where('status', 0)
+                ->whereNotNull('chart_of_account_id')
+                ->where('branch_id', $branchId)
+                ->whereIn('transaction_type', ['Refund'])
                 ->whereDate('date', $today)
                 ->sum('amount');
 
@@ -1020,7 +1029,7 @@ class FinancialStatementController extends Controller
         $taxAndVat = $purchaseVatSum + $salesVatSum + $operatingExpenseVatSum + $administrativeExpenseVatSum;
         $netSalesToday = $salesSumToday - $salesReturn - $salesDiscount;
         $grossProfit = $netSalesToday - $purchaseSumToday;
-        $profitBeforeTax = $grossProfit + $operatingIncomeSumToday - $operatingExpenseSumToday - $administrativeExpenseSumToday;
+        $profitBeforeTax = $grossProfit + $operatingIncomeSumToday - $operatingIncomeRefundToday - $operatingExpenseSumToday - $administrativeExpenseSumToday;
         $netProfit = $profitBeforeTax - $taxAndVat;
             // dd($administrativeExpenseSumToday);
 
