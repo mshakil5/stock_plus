@@ -43,7 +43,7 @@
             <!-- mini logo for sidebar mini 50x50 pixels -->
 
             <span class="logo-lg">
-                        <img src="{{ asset('admin/demo.png')}}" width="32px" height="32px">{{config('app.name')}}
+                        <img src="{{ asset('admin/demo.png')}}" width="32px" height="32px">SMS
                     </span>
                     
         </a>
