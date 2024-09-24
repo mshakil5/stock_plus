@@ -278,8 +278,8 @@
                             <td>{{ number_format($currentLiability->total_credit_today, 2) }}</td>
                             <td>
                                 {{ number_format(
-                                    $currentLiability->total_debit_yesterday - $currentLiability->total_credit_yesterday - 
-                                    $currentLiability->total_debit_today + 
+                                    $currentLiability->total_debit_yesterday - $currentLiability->total_credit_yesterday + 
+                                    $currentLiability->total_debit_today - 
                                     $currentLiability->total_credit_today, 
                                     2
                                 ) }}

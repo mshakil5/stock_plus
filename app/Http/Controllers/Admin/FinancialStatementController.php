@@ -29,7 +29,6 @@ class FinancialStatementController extends Controller
 
         $yest = Carbon::yesterday()->format('Y-m-d');
 
-        // dd($netProfitTillYesterday);
         //All Fixed Asset
         $fixedAssetIds = ChartOfAccount::where('sub_account_head', 'Fixed Asset')
             ->pluck('id');
@@ -250,6 +249,13 @@ class FinancialStatementController extends Controller
             ->where('date', '<=', $yest)
             ->sum('at_amount'); 
 
+        $yesExpenseDue = Transaction::whereIn('liability_id', $accountPayableIds)
+            ->where('status', 0)
+            ->where('branch_id', auth()->user()->branch_id)
+            ->where('transaction_type', 'Due')
+            ->where('date', '<=', $yest)
+            ->sum('at_amount'); 
+
 
 
         $yesProductCreditSold = Transaction::where('status', 0)
@@ -260,7 +266,7 @@ class FinancialStatementController extends Controller
             ->sum('at_amount');
             
 
-        $yesAccountPayable = $yesAccountPayableDebit + $yesProductCreditSold - $yesAccountPayableCredit;  
+        $yesAccountPayable = $yesAccountPayableDebit + $yesProductCreditSold + $yesExpenseDue - $yesAccountPayableCredit;  
         // dd($yesAccountPayable);
         //    dd($yesAccountReceiveablesCredit);
 
@@ -394,7 +400,7 @@ class FinancialStatementController extends Controller
 
         $equityCapitals->each(function ($equity) use ($branchId, $yesterday) {
             $equity->total_previous_payment = $equity->transactions()
-                ->where('branch_id', $branchId)
+                ->where('branch_id', $branchId)->where('status', 0)
                 ->where('transaction_type', 'Payment')
                 ->whereDate('date','<=', $yesterday)
                 ->sum('at_amount');
@@ -402,7 +408,7 @@ class FinancialStatementController extends Controller
 
         $equityCapitals->each(function ($equity) use ($branchId, $yesterday) {
             $equity->total_previous_receive = $equity->transactions()
-                ->where('branch_id', $branchId)
+                ->where('branch_id', $branchId)->where('status', 0)
                 ->where('transaction_type', 'Received')
                 ->whereDate('date','<=', $yesterday)
                 ->sum('at_amount');
@@ -410,7 +416,7 @@ class FinancialStatementController extends Controller
 
         $equityCapitals->each(function ($equity) use ($branchId, $today) {
             $equity->total_debit_today = $equity->transactions()
-                ->where('branch_id', $branchId)
+                ->where('branch_id', $branchId)->where('status', 0)
                 ->where('transaction_type', 'Received')
                 ->whereDate('date', $today)
                 ->sum('at_amount');
@@ -418,7 +424,7 @@ class FinancialStatementController extends Controller
 
         $equityCapitals->each(function ($equity) use ($branchId, $today) {
             $equity->total_credit_today = $equity->transactions()
-                ->where('branch_id', $branchId)
+                ->where('branch_id', $branchId)->where('status', 0)
                 ->where('transaction_type', 'Payment')
                 ->whereDate('date', $today)
                 ->sum('at_amount');
@@ -472,6 +478,7 @@ class FinancialStatementController extends Controller
                 ->where('status', 0)
                 ->sum('at_amount');
         });
+
 
         //All current assets
         $currentAssetIds = ChartOfAccount::where('sub_account_head', 'Current Asset')
@@ -1152,10 +1159,27 @@ class FinancialStatementController extends Controller
         // Calculate the date for "yesterday"
         $yesterday = Carbon::yesterday();
 
+        $yesOperatingIncome = Transaction::where('table_type', 'Income')
+            ->where('status', 0)
+            ->whereNotNull('chart_of_account_id')
+            ->whereIn('transaction_type', ['Current','Advance'])
+            ->where('branch_id', $branchId)
+            ->whereDate('date', '<=', $yesterday)
+            ->sum('amount');
+
+        $yesOperatingIncomeRefund = Transaction::where('table_type', 'Income')
+            ->where('status', 0)
+            ->whereNotNull('chart_of_account_id')
+            ->whereIn('transaction_type', ['Refund'])
+            ->where('branch_id', $branchId)
+            ->whereDate('date', '<=', $yesterday)
+            ->sum('amount');
+
+
         // Sales sum
         $salesSum = Transaction::where('table_type', 'Income')
             ->where('status', 0)
-            // ->whereNull('chart_of_account_id')
+            ->whereNull('chart_of_account_id')
             ->where('branch_id', $branchId)
             ->whereDate('date', '<=', $yesterday)
             ->sum('amount');
@@ -1226,10 +1250,14 @@ class FinancialStatementController extends Controller
 
         // Net Profit Calculation
         $taxAndVat = $purchaseVatSum + $salesVatSum + $operatingExpenseVatSum + $administrativeExpenseVatSum;
-        $netSales = $salesSum - $salesReturn - $salesDiscount;
+        $netSales = $salesSum - $salesReturn - $salesDiscount + $yesOperatingIncome - $yesOperatingIncomeRefund;
+
+        
+        
         $grossProfit = $netSales - $purchaseSum;
         $profitBeforeTax = $grossProfit - $operatingExpenseSum - $administrativeExpenseSum;
         $netProfitTillYesterday = $profitBeforeTax - $taxAndVat;
+        
 
         return $netProfitTillYesterday;
     }

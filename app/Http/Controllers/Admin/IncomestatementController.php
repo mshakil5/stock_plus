@@ -41,7 +41,7 @@ class IncomestatementController extends Controller
                 $query->whereBetween('date', [$request->input('start_date'), $request->input('end_date')]);
             })
             ->sum('amount');
-
+            
         $operatingExpenseId = ChartOfAccount::where('sub_account_head', 'Operating Expense')->pluck('id');
         $operatingExpenses = Transaction::select('chart_of_account_id', DB::raw('SUM(amount) as total_amount'))
             ->with('chartOfAccount')
