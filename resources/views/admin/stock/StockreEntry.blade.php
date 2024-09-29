@@ -362,13 +362,16 @@
             })
             $('#grand_total').val(grand_total.toFixed(2));
             $('#net_amount').val(total_with_vat.toFixed(2));
+            $('#due_amount').val(total_with_vat.toFixed(2));
         }
         function net_total_vat(){
             var vat_total=0;
-            $('.vatamount').each(function(){
+            
+            $('.totalvat').each(function(){
                 vat_total += ($(this).val()-0);
             })
-            $('#net_vat_amount').val(vat_total.toFixed(2));
+
+            $('#total_vat_amount').val(vat_total.toFixed(2));
         }
     </script>
 
