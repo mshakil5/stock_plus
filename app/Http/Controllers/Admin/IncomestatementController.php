@@ -169,7 +169,7 @@ class IncomestatementController extends Controller
             })
             ->sum('vat_amount');
 
-        $taxAndVat = $purchaseVatSum + $salesVatSum + $operatingExpenseVatSum + $administrativeExpenseVatSum + $operatingIncomeVatSum;
+        $taxAndVat =  $salesVatSum + $operatingIncomeVatSum - ($purchaseVatSum + $operatingExpenseVatSum + $administrativeExpenseVatSum);
 
         return view('admin.income_statement.index', compact(
             'purchaseSum', 
