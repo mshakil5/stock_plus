@@ -88,6 +88,7 @@
                                   <select name="type" id="type" class="form-control">
                                     <option value="">Select</option>
                                     <option value="Cash">Cash</option>
+                                    <option value="Bank">Bank</option>
                                     <option value="Credit">Credit</option>
                                   </select>
                                 </div>

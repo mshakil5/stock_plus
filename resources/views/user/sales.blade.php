@@ -22,6 +22,7 @@
                                         <label for="">Sales Type</label>
                                         <select name="salestype" id="salestype" class="form-control input-sm">
                                             <option value="Cash">Cash</option>
+                                            <option value="Bank">Bank</option>
                                             <option value="Credit">Credit</option>
                                         </select>
                                     </div>

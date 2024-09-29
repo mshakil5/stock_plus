@@ -115,9 +115,9 @@
                             <td>         
                                 {{ number_format($yesAccountReceiveable, 2) }}
                             </td>
-                            <td>{{ number_format($todaysAccountReceivableDebit + $todaysAssetSoldAR, 2) }}</td></td>
-                            <td>{{ number_format($todaysAccountReceivableCredit, 2) }}</td></td>
-                            <td>{{ number_format($yesAccountReceiveable - $todaysAccountReceivableCredit + $todaysAssetSoldAR + $todaysAccountReceivableDebit , 2) }}</td>
+                            <td>{{ number_format($todaysAccountReceivableDebit + $todaysAssetSoldAR +$todaysProductCreditSold, 2) }}</td>
+                            <td>{{ number_format($todaysAccountReceivableCredit, 2) }}</td>
+                            <td>{{ number_format($yesAccountReceiveable - $todaysAccountReceivableCredit + $todaysAssetSoldAR + $todaysProductCreditSold + $todaysAccountReceivableDebit , 2) }}</td>
                         </tr>
 
                         <tr>
@@ -294,9 +294,9 @@
                             <td>         
                                 {{ number_format($yesAccountPayable, 2) }}
                             </td>
-                            <td>{{ number_format($todaysAccountPayableDebit + $todaysDueAccountPayableDebit + $todaysProductCreditSold, 2) }}</td></td>
-                            <td>{{ number_format($todaysAccountPayableCredit, 2) }}</td></td>
-                            <td>{{ number_format($yesAccountPayable - $todaysAccountPayableCredit + $todaysProductCreditSold + $todaysAccountPayableDebit+ $todaysDueAccountPayableDebit , 2) }}</td>
+                            <td>{{ number_format($todaysAccountPayableDebit + $todaysDueAccountPayableDebit + $todaysCreditSalesAP, 2) }}</td>
+                            <td>{{ number_format($todaysAccountPayableCredit, 2) }}</td>
+                            <td>{{ number_format($yesAccountPayable - $todaysAccountPayableCredit + $todaysCreditSalesAP + $todaysAccountPayableDebit+ $todaysDueAccountPayableDebit , 2) }}</td>
                         </tr>
                        <!-- Account Payable -->
 
@@ -311,7 +311,7 @@
                                                         collect($currentLiabilities)->sum('total_debit_yesterday') - collect($currentLiabilities)->sum('total_credit_yesterday') + $yesAccountPayable;
                                 $totalLiabilityDebitToday = collect($shortTermLiabilities)->sum('total_debit_today') +
                                                         collect($longTermLiabilities)->sum('total_debit_today')+
-                                                        collect($currentLiabilities)->sum('total_debit_today') + $todaysAccountPayableDebit + $todaysProductCreditSold;
+                                                        collect($currentLiabilities)->sum('total_debit_today') + $todaysAccountPayableDebit + $todaysDueAccountPayableDebit + $todaysCreditSalesAP;
                                 $totalLiabilityCreditToday = collect($shortTermLiabilities)->sum('total_credit_today') +
                                                         collect($longTermLiabilities)->sum('total_credit_today')+
                                                         collect($currentLiabilities)->sum('total_credit_today') + $todaysAccountPayableCredit;

@@ -35,7 +35,33 @@ class IncomestatementController extends Controller
 
         $salesSum = Transaction::where('table_type', 'Income')
             ->where('status', 0)
-            // ->whereNull('chart_of_account_id')
+            ->whereNull('chart_of_account_id')
+            ->where('branch_id', $branchId)
+            ->when($request->has('start_date') && $request->has('end_date'), function ($query) use ($request) {
+                $query->whereBetween('date', [$request->input('start_date'), $request->input('end_date')]);
+            })
+            ->sum('amount');
+
+            $operatingIncomes = Transaction::where('table_type', 'Income')
+                ->with('chartOfAccount')
+                ->where('status', 0)
+                ->whereNotNull('chart_of_account_id')
+                ->where('branch_id', $branchId)
+                ->whereIn('transaction_type', ['Current','Advance'])
+                ->when($request->has('start_date') && $request->has('end_date'), function ($query) use ($request) {
+                    $query->whereBetween('date', [$request->input('start_date'), $request->input('end_date')]);
+                })
+                ->selectRaw('chart_of_account_id, SUM(amount) as total_amount')
+                ->groupBy('chart_of_account_id')
+                ->get();
+        
+        $operatingIncomeSums = $operatingIncomes->sum('total_amount');
+        // dd($operatingIncomeSums);
+
+        $operatingIncomeRefundSum = Transaction::where('table_type', 'Income')
+            ->where('status', 0)
+            ->whereNotNull('chart_of_account_id')
+            ->whereIn('transaction_type', ['Refund'])
             ->where('branch_id', $branchId)
             ->when($request->has('start_date') && $request->has('end_date'), function ($query) use ($request) {
                 $query->whereBetween('date', [$request->input('start_date'), $request->input('end_date')]);
@@ -118,6 +144,15 @@ class IncomestatementController extends Controller
             })
             ->sum('vat_amount');
 
+        $operatingIncomeVatSum = Transaction::where('table_type', 'Income')
+            ->where('status', 0)
+            ->where('branch_id', $branchId)
+            ->whereNotNull('chart_of_account_id')
+            ->when($request->has('start_date') && $request->has('end_date'), function ($query) use ($request) {
+                $query->whereBetween('date', [$request->input('start_date'), $request->input('end_date')]);
+            })
+            ->sum('vat_amount');
+
         $operatingExpenseVatSum = Transaction::whereIn('chart_of_account_id', $operatingExpenseId)
             ->where('status', 0)
             ->where('branch_id', $branchId)
@@ -134,7 +169,7 @@ class IncomestatementController extends Controller
             })
             ->sum('vat_amount');
 
-        $taxAndVat = $purchaseVatSum + $salesVatSum + $operatingExpenseVatSum + $administrativeExpenseVatSum;
+        $taxAndVat = $purchaseVatSum + $salesVatSum + $operatingExpenseVatSum + $administrativeExpenseVatSum + $operatingIncomeVatSum;
 
         return view('admin.income_statement.index', compact(
             'purchaseSum', 
@@ -147,7 +182,10 @@ class IncomestatementController extends Controller
             'administrativeExpenseSum', 
             'totalOpeningStock', 
             'totalClosingStock', 
-            'taxAndVat'
+            'taxAndVat',
+            'operatingIncomes',
+            'operatingIncomeSums',
+            'operatingIncomeRefundSum'
         ))->with('start_date', $startDate)->with('end_date', $endDate);
     }
 

@@ -172,6 +172,31 @@
 
                         <tr>
                             <td>
+                            </td>
+                            <td>
+                                <strong>Operating Income</strong>
+                            </td>
+                            <td colspan="3"></td>
+                        </tr>
+
+                        @foreach ($operatingIncomes as $operatingIncome)
+                        <tr>
+                            <td colspan="2">
+                            
+                            </td>
+                            <td>
+                                {{ $operatingIncome->chartOfAccount->account_name }}
+                            </td>
+                            <td colspan="2">{{ number_format($operatingIncome->total_amount, 2) }}</td>
+                        </tr>
+                        @endforeach
+
+                        <tr>
+                            <td colspan="5"></td>
+                        </tr>
+
+                        <tr>
+                            <td>
                                 <strong>C</strong>
                             </td>
                             <td>
@@ -229,7 +254,7 @@
                                 @php
                                   $totalOperatingExpenses = $operatingExpenses->sum('total_amount');
                                   $totalAdministrativeExpenses = $administrativeExpenses->sum('total_amount');
-                                  $profitBeforeTax =  $grossProfit - $totalOperatingExpenses - $totalAdministrativeExpenses
+                                  $profitBeforeTax =  $grossProfit +$operatingIncomeSums - $totalOperatingExpenses - $totalAdministrativeExpenses - $operatingIncomeRefundSum
                                 @endphp
                                 {{ number_format($profitBeforeTax, 2) }}
                             </td>
