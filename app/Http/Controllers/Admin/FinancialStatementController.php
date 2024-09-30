@@ -184,18 +184,26 @@ class FinancialStatementController extends Controller
         $yesAccountReceiveablesCredit = Transaction::whereIn('chart_of_account_id', $accountReceiveableIds)
                             ->where('status', 0)
                             ->where('branch_id', auth()->user()->branch_id)
-                            ->whereIn('transaction_type', ['Received'])
+                            ->where('transaction_type', 'Received')
                             ->where('date', '<=', $yest)
                             ->sum('at_amount');
 
-        $yestodaysAssetSoldAR = Transaction::whereIn('asset_id', $accountReceiveableIds)
-                            ->where('status', 0)
+        $yestodaysAssetSoldAR = Transaction::where('status', 0)
                             ->where('branch_id', auth()->user()->branch_id)
                             ->where('transaction_type', 'Sold')
                             ->whereDate('date', $today)
                             ->sum('at_amount');
 
-        $yesAccountReceiveable = $yesAccountReceiveablesDebit + $yestodaysAssetSoldAR - $yesAccountReceiveablesCredit;
+        $yesProductCreditSold = Transaction::where('status', 0)
+                            ->where('table_type', 'Income')
+                            ->whereNotNull('order_id')
+                            ->where('branch_id', auth()->user()->branch_id)
+                            ->where('transaction_type', 'Current')
+                            ->where('payment_type', 'Account Receivable')
+                            ->where('date', '<=', $yest)
+                            ->sum('at_amount');
+
+        $yesAccountReceiveable = $yesAccountReceiveablesDebit + $yestodaysAssetSoldAR - $yesAccountReceiveablesCredit + $yesProductCreditSold;
         
         
         $accountPayableIds = ChartOfAccount::where('sub_account_head', 'Account Payable')
@@ -237,7 +245,8 @@ class FinancialStatementController extends Controller
         $todaysProductCreditSold = Transaction::where('status', 0)
             ->whereNotNull('order_id')
             ->where('branch_id', auth()->user()->branch_id)
-            ->where('transaction_type', 'Credit')
+            ->where('transaction_type', 'Current')
+            ->where('payment_type', 'Account Receivable')
             ->whereDate('date', $today)
             ->sum('at_amount');
 
@@ -266,15 +275,16 @@ class FinancialStatementController extends Controller
 
 
 
-        $yesProductCreditSold = Transaction::where('status', 0)
-            ->whereNotNull('order_id')
+        $yesProductCreditPurchase = Transaction::where('status', 0)
+            ->whereNotNull('purchase_id')
             ->where('branch_id', auth()->user()->branch_id)
-            ->where('transaction_type', 'Credit')
+            ->where('transaction_type', 'Current')
+            ->where('payment_type', 'Account Payable')
             ->where('date', '<=', $yest)
             ->sum('at_amount');
             
 
-        $yesAccountPayable = $yesAccountPayableDebit + $yesProductCreditSold + $yesExpenseDue - $yesAccountPayableCredit;  
+        $yesAccountPayable = $yesAccountPayableDebit + $yesProductCreditPurchase + $yesExpenseDue - $yesAccountPayableCredit;  
         // dd($yesAccountPayable);
         //    dd($yesAccountReceiveablesCredit);
 
@@ -787,14 +797,6 @@ class FinancialStatementController extends Controller
                 ->where('date', '<=', $yest)
                 ->sum('at_amount');
 
-            $yestCashExpenseIncrement = Transaction::where('table_type', 'Expenses')
-                ->whereIn('transaction_type', ['Current','Prepaid'])
-                ->where('status', 0)
-                ->where('payment_type', 'Cash')
-                ->where('branch_id', auth()->user()->branch_id)
-                ->where('date', '<=', $yest)
-                ->sum('at_amount');
-
             $yestCashAssetIncrement = Transaction::where('table_type', 'Assets')
                 ->whereIn('transaction_type', ['Received', 'Sold'])
                 ->where('status', 0)
@@ -825,7 +827,7 @@ class FinancialStatementController extends Controller
             //Till Yesterday Cash Decrement
 
             $yestExpenseCashDecrement = Transaction::where('table_type', 'Expenses')
-                ->whereIn('transaction_type', ['Current','Prepaid'])
+                ->whereIn('transaction_type', ['Current','Prepaid', 'Due Adjust'])
                 ->where('status', 0)
                 ->where('payment_type', 'Cash')
                 ->where('branch_id', auth()->user()->branch_id)
@@ -865,7 +867,17 @@ class FinancialStatementController extends Controller
                 ->where('date','<=', $yest)
                 ->sum('at_amount');
 
-        $totalYestCashDecrement = $yestExpenseCashDecrement + $yestAssetCashDecrement + $yestLiabilitiesCashDecrement + $yestEquityCashDecrement + $yestIncomeCashDecrement;
+            $yestPurchaseCashDecrement = Transaction::where('table_type', 'Cogs')
+                ->where('transaction_type', 'Current')
+                ->where('status', 0)
+                ->where('payment_type', 'Cash')
+                ->where('branch_id', auth()->user()->branch_id)
+                ->where('date','<=', $yest)
+                ->sum('at_amount');
+
+                // dd($yestPurchaseCashDecrement);
+
+        $totalYestCashDecrement = $yestExpenseCashDecrement + $yestAssetCashDecrement + $yestLiabilitiesCashDecrement + $yestEquityCashDecrement + $yestIncomeCashDecrement + $yestPurchaseCashDecrement;
 
             //Till Today Bank Increment
 
@@ -900,6 +912,7 @@ class FinancialStatementController extends Controller
                 ->where('branch_id', auth()->user()->branch_id)
                 ->where('date', '<=', $yest)
                 ->sum('at_amount');
+                // dd($yestIncomeBankIncrement);
 
         
         
@@ -948,7 +961,15 @@ class FinancialStatementController extends Controller
                 ->where('date','<=', $yest)
                 ->sum('at_amount');
 
-        $totalYestBankDecrement = $yestExpenseBankDecrement + $yestAssetBankDecrement + $yestLiabilitiesBankDecrement + $yestEquityBankDecrement + $yestIncomeBankDecrement;  
+            $yestPurchaseCashDecrement = Transaction::where('table_type', 'Cogs')
+                ->where('transaction_type', 'Current')
+                ->where('status', 0)
+                ->where('payment_type', 'Bank')
+                ->where('branch_id', auth()->user()->branch_id)
+                ->where('date','<=', $yest)
+                ->sum('at_amount');
+
+        $totalYestBankDecrement = $yestExpenseBankDecrement + $yestAssetBankDecrement + $yestLiabilitiesBankDecrement + $yestEquityBankDecrement + $yestIncomeBankDecrement + $yestPurchaseCashDecrement;  
 
         $yesCashInHand = $totalYestCashIncrement - $totalYestCashDecrement;
         $yesBankInHand = $totalYestBankIncrement - $totalYestBankDecrement;
