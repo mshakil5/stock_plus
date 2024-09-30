@@ -117,7 +117,10 @@
                             </td>
                             <td>{{ number_format($todaysAccountReceivableDebit + $todaysAssetSoldAR +$todaysProductCreditSold, 2) }}</td>
                             <td>{{ number_format($todaysAccountReceivableCredit, 2) }}</td>
-                            <td>{{ number_format($yesAccountReceiveable - $todaysAccountReceivableCredit + $todaysAssetSoldAR + $todaysProductCreditSold + $todaysAccountReceivableDebit , 2) }}</td>
+                            @php
+                                $totalReceivable = $yesAccountReceiveable - $todaysAccountReceivableCredit + $todaysAssetSoldAR + $todaysProductCreditSold + $todaysAccountReceivableDebit
+                            @endphp
+                            <td>{{ number_format( $totalReceivable, 2) }}</td>
                         </tr>
 
                         <tr>
@@ -198,13 +201,14 @@
                             </td>
                             <td colspan="2"></td>
                             @php
-                            $closingAssetBalance = $yesCashInHand + $cashInHand + $cashInBank + $yesBankInHand + $fixedAssetTotalFinalBalance  + $todaysAssetSoldAR - $todaysAccountReceivableCredit+ $yesAccountReceiveable + $todaysAccountReceivableDebit;                                      
+                            $closingAssetBalance = $yesCashInHand + $cashInHand + $cashInBank + $yesBankInHand + $fixedAssetTotalFinalBalance  + $totalReceivable;
                             @endphp
                             <td>{{ number_format($yesBankInHand + $yesCashInHand + $yesAccountReceiveable + $fixedAssetTotalYesterdayBalance, 2) }}</td>
                             <td>{{ number_format($totalTodayBankIncrements + $totalTodayCashIncrements + $fixedAssetTotalDebitToday, 2) }}</td>
                             <td>{{ number_format($totalTodayBankDecrements + $totalTodayCashDecrements + $fixedAssetTotalCreditToday, 2) }}</td>
                             <td>
                                 {{ number_format($closingAssetBalance, 2) }}
+
                             </td>
                         </tr>
                         <!-- Asset End -->

@@ -188,10 +188,11 @@ class FinancialStatementController extends Controller
                             ->where('date', '<=', $yest)
                             ->sum('at_amount');
 
-        $yestodaysAssetSoldAR = Transaction::where('status', 0)
+        $yesAssetSoldAR = Transaction::whereIn('asset_id', $accountReceiveableIds)
+                            ->where('status', 0)
                             ->where('branch_id', auth()->user()->branch_id)
                             ->where('transaction_type', 'Sold')
-                            ->whereDate('date', $today)
+                            ->where('date', '<=', $yest)
                             ->sum('at_amount');
 
         $yesProductCreditSold = Transaction::where('status', 0)
@@ -203,7 +204,7 @@ class FinancialStatementController extends Controller
                             ->where('date', '<=', $yest)
                             ->sum('at_amount');
 
-        $yesAccountReceiveable = $yesAccountReceiveablesDebit + $yestodaysAssetSoldAR - $yesAccountReceiveablesCredit + $yesProductCreditSold;
+        $yesAccountReceiveable = $yesAccountReceiveablesDebit + $yesAssetSoldAR - $yesAccountReceiveablesCredit + $yesProductCreditSold;
         
         
         $accountPayableIds = ChartOfAccount::where('sub_account_head', 'Account Payable')
