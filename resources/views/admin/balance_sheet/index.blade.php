@@ -116,9 +116,9 @@
                                 {{ number_format($yesAccountReceiveable, 2) }}
                             </td>
                             <td>{{ number_format($todaysAccountReceivableDebit + $todaysAssetSoldAR +$todaysProductCreditSold, 2) }}</td>
-                            <td>{{ number_format($todaysAccountReceivableCredit, 2) }}</td>
+                            <td>{{ number_format($totalTodaysAccountReceivableCredit, 2) }}</td>
                             @php
-                                $totalReceivable = $yesAccountReceiveable - $todaysAccountReceivableCredit + $todaysAssetSoldAR + $todaysProductCreditSold + $todaysAccountReceivableDebit
+                                $totalReceivable = $yesAccountReceiveable - $totalTodaysAccountReceivableCredit + $todaysAssetSoldAR + $todaysProductCreditSold + $todaysAccountReceivableDebit
                             @endphp
                             <td>{{ number_format( $totalReceivable, 2) }}</td>
                         </tr>

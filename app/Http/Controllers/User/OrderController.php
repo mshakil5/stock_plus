@@ -1264,6 +1264,24 @@ class OrderController extends Controller
             $data->created_by = Auth::user()->id;
             $data->status = 1;
             if($data->save()){
+
+                $transaction = new Transaction();
+                $transaction->date = $request->returndate;
+                $transaction->table_type = 'Income';
+                $transaction->amount = $request->net_total;
+                $transaction->at_amount = $request->net_total;
+                $transaction->transaction_type = 'Return';
+                $transaction->description = 'Sales Return';
+                $order = Transaction::where('order_id', $request->order_id)->first();
+                $transaction->payment_type = $order->payment_type;
+                $transaction->order_id = $request->order_id;
+                $transaction->branch_id = Auth::user()->branch_id;
+                $transaction->created_by = Auth()->user()->id;
+                $transaction->created_ip = request()->ip();
+                $transaction->save();
+                $transaction->tran_id = 'RT' . date('Ymd') . str_pad($transaction->id, 4, '0', STR_PAD_LEFT);
+                $transaction->save();
+
                 foreach($request->input('product_id') as $key => $value)
                 {
                     $orderDtl = new SalesReturnDetail();
