@@ -230,6 +230,16 @@ class FinancialStatementController extends Controller
                 ->whereDate('date', $today)
                 ->sum('at_amount');
 
+         $todaysPurchaseReturnAP = Transaction::where('table_type', 'Cogs')
+                    ->where('transaction_type', 'Return')
+                    ->where('status', 0)
+                    ->where('payment_type', 'Account Payable')
+                    ->whereDate('date', $today)
+                    ->where('branch_id', auth()->user()->branch_id)
+                    ->sum('at_amount');     
+
+          $totalTodaysAccountPayableCredit = $todaysAccountPayableCredit + $todaysPurchaseReturnAP;      
+
         $todaysAccountPayableDebit = Transaction::whereIn('chart_of_account_id', $accountPayableIds)
             ->where('status', 0)
             ->where('branch_id', auth()->user()->branch_id)
@@ -626,9 +636,17 @@ class FinancialStatementController extends Controller
                 ->whereDate('date', $today)
                 ->where('branch_id', auth()->user()->branch_id)
                 ->sum('at_amount');
+                
+            $PurchaseReturnCashIncrementToday = Transaction::where('table_type', 'Cogs')
+                ->where('transaction_type', 'Return')
+                ->where('status', 0)
+                ->where('payment_type', 'Cash')
+                ->whereDate('date', $today)
+                ->where('branch_id', auth()->user()->branch_id)
+                ->sum('at_amount');
 
             //Total Cash Increment today
-            $totalTodayCashIncrements = $CashIncomeIncrementToday + $CashAssetIncrementToday + $CashLiabilitiesIncrementToday + $CashEquityIncrementToday;
+            $totalTodayCashIncrements = $CashIncomeIncrementToday + $CashAssetIncrementToday + $CashLiabilitiesIncrementToday + $CashEquityIncrementToday + $PurchaseReturnCashIncrementToday;
 
             //Bank Increment
             //Bank Income Increment today
@@ -666,9 +684,16 @@ class FinancialStatementController extends Controller
                 ->whereDate('date', $today)
                 ->where('branch_id', auth()->user()->branch_id)->sum('at_amount');
 
+            $PurchaseReturnBankIncrementToday = Transaction::where('table_type', 'Cogs')
+                ->where('transaction_type', 'Return')
+                ->where('status', 0)
+                ->where('payment_type', 'Bank')
+                ->whereDate('date', $today)
+                ->where('branch_id', auth()->user()->branch_id)
+                ->sum('at_amount');
 
             //Total Today Bank Increment
-            $totalTodayBankIncrements = $todayBankIncomeIncrement + $todayBankAssetIncrement + $todayBankLiabilitiesIncrement + $todayBankEquityIncrement;
+            $totalTodayBankIncrements = $todayBankIncomeIncrement + $todayBankAssetIncrement + $todayBankLiabilitiesIncrement + $todayBankEquityIncrement + $PurchaseReturnBankIncrementToday;
 
             //Cash Decrement
 
@@ -1002,7 +1027,7 @@ class FinancialStatementController extends Controller
         $yesBankInHand = $totalYestBankIncrement - $totalYestBankDecrement;
             // dd($totalYestCashIncrement);
             // $cashInHand = $totalTodayCashIncrements - $totalTodayCashDecrements;
-        return view('admin.balance_sheet.index', compact('currentAssetIds', 'currentBankAsset', 'currentCashAsset', 'currentLiability', 'longTermLiabilities', 'equityCapital', 'retainedEarning','currentAssets', 'fixedAssets', 'fixedAsset', 'shortTermLiabilities', 'currentLiabilities', 'equityCapitals', 'retainedEarnings', 'cashInHand', 'cashInBank', 'inventory', 'netProfit', 'yesCashInHand', 'yesBankInHand', 'yesAccountReceiveable', 'yesInventory', 'todayLoss', 'todayProfit', 'netProfitTillYesterday','totalTodayCashIncrements','totalTodayCashDecrements', 'totalTodayBankIncrements', 'totalTodayBankDecrements', 'todaysAccountReceivableDebit','todaysAssetSoldAR', 'yesAccountPayable', 'todaysAccountPayableCredit', 'todaysAccountPayableDebit', 'todaysProductCreditSold','todaysDueAccountPayableDebit', 'todaysCreditSalesAP', 'totalTodaysAccountReceivableCredit'));
+        return view('admin.balance_sheet.index', compact('currentAssetIds', 'currentBankAsset', 'currentCashAsset', 'currentLiability', 'longTermLiabilities', 'equityCapital', 'retainedEarning','currentAssets', 'fixedAssets', 'fixedAsset', 'shortTermLiabilities', 'currentLiabilities', 'equityCapitals', 'retainedEarnings', 'cashInHand', 'cashInBank', 'inventory', 'netProfit', 'yesCashInHand', 'yesBankInHand', 'yesAccountReceiveable', 'yesInventory', 'todayLoss', 'todayProfit', 'netProfitTillYesterday','totalTodayCashIncrements','totalTodayCashDecrements', 'totalTodayBankIncrements', 'totalTodayBankDecrements', 'todaysAccountReceivableDebit','todaysAssetSoldAR', 'yesAccountPayable', 'totalTodaysAccountPayableCredit', 'todaysAccountPayableDebit', 'todaysProductCreditSold','todaysDueAccountPayableDebit', 'todaysCreditSalesAP', 'totalTodaysAccountReceivableCredit'));
     }
 
     public function calculateNetProfit(Request $request)
@@ -1061,6 +1086,14 @@ class FinancialStatementController extends Controller
                 ->whereDate('date', $today)
                 ->sum('amount');
 
+        //Purchase return today
+        $purchaseReturnToday = Transaction::where('table_type', 'Cogs')
+                ->where('transaction_type', 'Return')
+                ->where('status', 0)
+                ->whereDate('date', $today)
+                ->where('branch_id', auth()->user()->branch_id)
+                ->sum('at_amount');
+
         // Operating Expenses today
         $operatingExpenseId = ChartOfAccount::where('sub_account_head', 'Operating Expense')->pluck('id');
         $operatingExpenseSumToday = Transaction::whereIn('chart_of_account_id', $operatingExpenseId)
@@ -1108,7 +1141,7 @@ class FinancialStatementController extends Controller
         // Net Profit Calculation
         $taxAndVat = $purchaseVatSum + $salesVatSum + $operatingExpenseVatSum + $administrativeExpenseVatSum;
         $netSalesToday = $salesSumToday - $salesReturnToday - $salesDiscount;
-        $grossProfit = $netSalesToday - $purchaseSumToday;
+        $grossProfit = $netSalesToday + $purchaseReturnToday - $purchaseSumToday ;
         $profitBeforeTax = $grossProfit + $operatingIncomeSumToday - $operatingIncomeRefundToday - $operatingExpenseSumToday - $administrativeExpenseSumToday;
         $netProfit = $profitBeforeTax - $taxAndVat;
 

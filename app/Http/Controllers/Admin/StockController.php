@@ -429,6 +429,8 @@ class StockController extends Controller
         
 
             try{
+
+                $amount = 0;
                 
                 foreach($request->input('product_id') as $key => $value)
                     {
@@ -436,6 +438,11 @@ class StockController extends Controller
                         $pid = $request->get('product_id')[$key];
                         $qty = $request->get('quantity')[$key];
                         $purchase_history_id  = $request->get('purchase_his_id')[$key];
+
+                        $purchase_history = PurchaseHistory::find($purchase_history_id);
+                        $purchase_price = $purchase_history->purchase_price;
+                        $product_amount = $purchase_price * $qty;
+                        $amount += $product_amount;
 
 
                         $purchasereturn = new PurchaseReturn;
@@ -456,10 +463,29 @@ class StockController extends Controller
                         $upstock->updated_by = Auth::user()->id;
                         $upstock->save();
                         // stock update end
-
-
-                    
                     }
+
+                    $transaction = new Transaction();
+                    $transaction->date = $request->date;
+                    $transaction->table_type = 'Cogs';
+                    $transaction->amount = $amount;
+                    $transaction->at_amount = $amount;
+                    $transaction->transaction_type = 'Return';
+                    $transaction->description = 'Purchase Return';
+
+                    $purchase_history_id = $request->get('purchase_his_id')[0];
+                    $purchase_id = PurchaseHistory::find($purchase_history_id)->purchase_id;
+                    $purchase = Transaction::where('purchase_id', $purchase_id)->first();
+
+                    $transaction->payment_type = $purchase->payment_type;
+                    $transaction->purchase_id = $purchase_id;
+                    $transaction->branch_id = Auth::user()->branch_id;
+                    $transaction->created_by = Auth()->user()->id;
+                    $transaction->created_ip = request()->ip();
+                    $transaction->save();
+                    $transaction->tran_id = 'RT' . date('Ymd') . str_pad($transaction->id, 4, '0', STR_PAD_LEFT);
+                    $transaction->save();
+
                     $message ="<div class='alert alert-success' style='color:white'><a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a><b>Product Purchase Return Successfully.</b></div>";
                     
                     return response()->json(['status'=> 300,'message'=>$message]);
