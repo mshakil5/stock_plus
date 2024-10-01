@@ -23,6 +23,7 @@
                                         <input type="hidden" id="order_id" value="{{ $invoices->id }}">
                                         <select name="salestype" id="salestype" class="form-control input-sm">
                                             <option value="Cash" @if ( $invoices->salestype == "Cash" ) selected @endif>Cash</option>
+                                            <option value="Bank" @if ( $invoices->salestype == "Bank" ) selected @endif>Bank</option>
                                             <option value="Credit" @if ( $invoices->salestype == "Credit" ) selected @endif>Credit</option>
                                         </select>
                                     </div>

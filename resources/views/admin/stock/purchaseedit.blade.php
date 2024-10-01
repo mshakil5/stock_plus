@@ -89,6 +89,7 @@
                                   <select name="type" id="type" class="form-control">
                                     <option value="">Select</option>
                                     <option value="Cash" @if ($purchase->purchase_type == "Cash") selected @endif>Cash</option>
+                                    <option value="Bank" @if ($purchase->purchase_type == "Bank") selected @endif>Bank</option>
                                     <option value="Credit" @if ($purchase->purchase_type == "Credit") selected @endif>Credit</option>
                                   </select>
                                 </div>

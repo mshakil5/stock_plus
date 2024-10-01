@@ -649,7 +649,18 @@ class OrderController extends Controller
         $order->return_amount = $request->return_amount;
         $order->updated_by = Auth::user()->id;
         if($order->save()){
-            
+
+        $transaction = Transaction::where('order_id', '=', $order->id)->first();
+        $transaction->date = $request->orderdate;
+        $transaction->table_type = 'Income';
+        $transaction->description = 'Sales';
+        $transaction->amount = $request->grand_total;
+        $transaction->vat_amount = $request->vat_total;
+        $transaction->at_amount = $request->net_total;
+        $transaction->updated_by = Auth()->user()->id;
+        $transaction->updated_ip = request()->ip();
+        $transaction->save();
+        $transaction->save();      
 
             // $collection = OrderDetail::where('order_id', $request->order_id)->get(['id']);
             // OrderDetail::destroy($collection->toArray());
