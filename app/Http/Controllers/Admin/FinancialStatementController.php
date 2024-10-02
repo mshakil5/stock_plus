@@ -215,7 +215,17 @@ class FinancialStatementController extends Controller
                             ->where('date', '<=', $yest)
                             ->sum('at_amount');
 
-        $yesAccountReceiveable = $yesAccountReceiveablesDebit + $yesAssetSoldAR - $yesAccountReceiveablesCredit + $yesProductCreditSold;
+        $yesReturnAR = Transaction::where('status', 0)
+                            ->where('table_type', 'Income')
+                            ->whereNotNull('order_id')
+                            ->where('branch_id', auth()->user()->branch_id)
+                            ->where('transaction_type', 'Return')
+                            ->where('payment_type', 'Account Receivable')
+                            ->where('date', '<=', $yest)
+                            ->sum('at_amount'); 
+                            // dd($yesReturnAR);                
+
+        $yesAccountReceiveable = $yesAccountReceiveablesDebit + $yesAssetSoldAR - $yesAccountReceiveablesCredit + $yesProductCreditSold - $yesReturnAR;
         
         
         $accountPayableIds = ChartOfAccount::where('sub_account_head', 'Account Payable')
@@ -236,7 +246,8 @@ class FinancialStatementController extends Controller
                     ->where('payment_type', 'Account Payable')
                     ->whereDate('date', $today)
                     ->where('branch_id', auth()->user()->branch_id)
-                    ->sum('at_amount');     
+                    ->sum('at_amount');    
+
 
           $totalTodaysAccountPayableCredit = $todaysAccountPayableCredit + $todaysPurchaseReturnAP;      
 
@@ -304,9 +315,18 @@ class FinancialStatementController extends Controller
             ->where('payment_type', 'Account Payable')
             ->where('date', '<=', $yest)
             ->sum('at_amount');
+
+        $yesPurchaseReturnAP = Transaction::where('table_type', 'Cogs')
+            ->where('transaction_type', 'Return')
+            ->where('status', 0)
+            ->where('payment_type', 'Account Payable')
+            ->where('date', '<=', $yest)
+            ->where('branch_id', auth()->user()->branch_id)
+            ->sum('at_amount');
+                    // dd($yesPurchaseReturnAP);    
             
 
-        $yesAccountPayable = $yesAccountPayableDebit + $yesProductCreditPurchase + $yesExpenseDue - $yesAccountPayableCredit;  
+        $yesAccountPayable = $yesAccountPayableDebit + $yesProductCreditPurchase + $yesExpenseDue - $yesAccountPayableCredit - $yesPurchaseReturnAP;  
         // dd($yesAccountPayable);
         //    dd($yesAccountReceiveablesCredit);
 
@@ -1028,7 +1048,7 @@ class FinancialStatementController extends Controller
                 ->where('date','<=', $yest)
                 ->sum('at_amount');
 
-            $yestPurchaseCashDecrement = Transaction::where('table_type', 'Cogs')
+            $yestPurchaseBankDecrement = Transaction::where('table_type', 'Cogs')
                 ->where('transaction_type', 'Current')
                 ->where('status', 0)
                 ->where('payment_type', 'Bank')
@@ -1036,7 +1056,15 @@ class FinancialStatementController extends Controller
                 ->where('date','<=', $yest)
                 ->sum('at_amount');
 
-        $totalYestBankDecrement = $yestExpenseBankDecrement + $yestAssetBankDecrement + $yestLiabilitiesBankDecrement + $yestEquityBankDecrement + $yestIncomeBankDecrement + $yestPurchaseCashDecrement;  
+            $yestSalesRetunBankDecrement = Transaction::where('table_type', 'Income')
+                ->where('transaction_type', 'Return')
+                ->where('status', 0)
+                ->where('payment_type', 'Bank')
+                ->where('branch_id', auth()->user()->branch_id)
+                ->where('date','<=', $yest)
+                ->sum('at_amount');
+
+        $totalYestBankDecrement = $yestExpenseBankDecrement + $yestAssetBankDecrement + $yestLiabilitiesBankDecrement + $yestEquityBankDecrement + $yestIncomeBankDecrement + $yestPurchaseBankDecrement + $yestSalesRetunBankDecrement;  
 
         $yesCashInHand = $totalYestCashIncrement - $totalYestCashDecrement;
         $yesBankInHand = $totalYestBankIncrement - $totalYestBankDecrement;
@@ -1171,6 +1199,7 @@ class FinancialStatementController extends Controller
         $salesSum = Transaction::where('table_type', 'Income')
             ->where('status', 0)
             ->whereNull('chart_of_account_id')
+            ->whereNot('transaction_type','Return')
             ->where('branch_id', $branchId)
             ->whereDate('date', $today)
             ->sum('amount');
@@ -1279,6 +1308,7 @@ class FinancialStatementController extends Controller
         // Calculate the date for "yesterday"
         $yesterday = Carbon::yesterday();
 
+        // Operating Income
         $yesOperatingIncome = Transaction::where('table_type', 'Income')
             ->where('status', 0)
             ->whereNotNull('chart_of_account_id')
@@ -1287,32 +1317,31 @@ class FinancialStatementController extends Controller
             ->whereDate('date', '<=', $yesterday)
             ->sum('amount');
 
-            // dd($yesOperatingIncome);
-
+        // Operating Income Refund
         $yesOperatingIncomeRefund = Transaction::where('table_type', 'Income')
             ->where('status', 0)
             ->whereNotNull('chart_of_account_id')
-            ->whereIn('transaction_type', ['Refund'])
+            ->where('transaction_type', 'Refund')
             ->where('branch_id', $branchId)
             ->whereDate('date', '<=', $yesterday)
             ->sum('amount');
-
-            // dd($yesOperatingIncomeRefund);
-
 
         // Sales sum
         $salesSum = Transaction::where('table_type', 'Income')
             ->where('status', 0)
             ->whereNull('chart_of_account_id')
+            ->whereNot('transaction_type', 'Return')
             ->where('branch_id', $branchId)
             ->whereDate('date', '<=', $yesterday)
             ->sum('amount');
-            // dd($salesSum);
 
-        // Sales Return
-        $salesReturn = SalesReturn::where('branch_id', $branchId)
-            ->whereDate('returndate', '<=', $yesterday)
-            ->sum('net_total');
+        //Previous Sales Return
+        $salesReturn = Transaction::where('table_type', 'Income')
+            ->where('status', 0)
+            ->where('transaction_type', 'Return')
+            ->whereDate('date', '<=', $yesterday)
+            ->where('branch_id', $branchId)
+            ->sum('amount');
 
         // Sales Discount
         $salesDiscount = Order::where('branch_id', $branchId)
@@ -1328,14 +1357,13 @@ class FinancialStatementController extends Controller
             ->whereDate('date', '<=', $yesterday)
             ->sum('amount');
 
-            // dd($purchaseSum);
-
-            $previousPurchaseReturn = Transaction::where('table_type', 'Cogs')
-                ->where('transaction_type', 'Return')
-                ->where('status', 0)
-                ->whereDate('date', '<=', $yesterday)
-                ->where('branch_id', auth()->user()->branch_id)
-                ->sum('at_amount');
+        //Previous Purchase Return
+        $previousPurchaseReturn = Transaction::where('table_type', 'Cogs')
+            ->where('transaction_type', 'Return')
+            ->where('status', 0)
+            ->whereDate('date', '<=', $yesterday)
+            ->where('branch_id', auth()->user()->branch_id)
+            ->sum('at_amount');
 
         // Operating Expenses
         $operatingExpenseId = ChartOfAccount::where('sub_account_head', 'Operating Expense')->pluck('id');
@@ -1385,13 +1413,10 @@ class FinancialStatementController extends Controller
         $taxAndVat = $purchaseVatSum + $salesVatSum + $operatingExpenseVatSum + $administrativeExpenseVatSum;
         $netSales = $salesSum + $previousPurchaseReturn - $salesReturn - $salesDiscount + $yesOperatingIncome - $yesOperatingIncomeRefund;
 
-        
-        
         $grossProfit = $netSales - $purchaseSum;
         $profitBeforeTax = $grossProfit - $operatingExpenseSum - $administrativeExpenseSum;
         $netProfitTillYesterday = $profitBeforeTax - $taxAndVat;
         
-
         return $netProfitTillYesterday;
     }
 
