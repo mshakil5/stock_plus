@@ -246,6 +246,14 @@ class FinancialStatementController extends Controller
                     ->where('payment_type', 'Account Payable')
                     ->whereDate('date', $today)
                     ->where('branch_id', auth()->user()->branch_id)
+                    ->sum('at_amount'); 
+
+         $todaysPurchaseReturnAP = Transaction::where('table_type', 'Cogs')
+                    ->where('transaction_type', 'Return')
+                    ->where('status', 0)
+                    ->where('payment_type', 'Account Payable')
+                    ->whereDate('date', $today)
+                    ->where('branch_id', auth()->user()->branch_id)
                     ->sum('at_amount');    
 
 
@@ -1142,6 +1150,16 @@ class FinancialStatementController extends Controller
         $operatingExpenseSumToday = Transaction::whereIn('chart_of_account_id', $operatingExpenseId)
             ->where('status', 0)
             ->where('branch_id', $branchId)
+            ->whereIn('transaction_type', ['Current', 'Prepaid', 'Due'])
+            ->whereDate('date', $today)
+            ->sum('amount');
+
+        // OverHead Expenses today
+        $overHeadExpenseId = ChartOfAccount::where('sub_account_head', 'Overhead Expense')->pluck('id');
+        $overHeadExpenseSumToday = Transaction::whereIn('chart_of_account_id', $overHeadExpenseId)
+            ->where('status', 0)
+            ->where('branch_id', $branchId)
+            ->whereIn('transaction_type', ['Current', 'Prepaid', 'Due'])
             ->whereDate('date', $today)
             ->sum('amount');
 
@@ -1150,8 +1168,11 @@ class FinancialStatementController extends Controller
         $administrativeExpenseSumToday = Transaction::whereIn('chart_of_account_id', $administrativeExpenseId)
             ->where('status', 0)
             ->where('branch_id', $branchId)
+            ->whereIn('transaction_type', ['Current', 'Prepaid', 'Due'])
             ->whereDate('date', $today)
             ->sum('amount');
+
+            // dd($administrativeExpenseSumToday);
 
         // VAT Calculations
         $purchaseVatSum = Transaction::where('table_type', 'Cogs')
@@ -1185,10 +1206,11 @@ class FinancialStatementController extends Controller
         $taxAndVat = $purchaseVatSum + $salesVatSum + $operatingExpenseVatSum + $administrativeExpenseVatSum;
         $netSalesToday = $salesSumToday - $salesReturnToday - $salesDiscount;
         $grossProfit = $netSalesToday + $purchaseReturnToday - $purchaseSumToday ;
-        $profitBeforeTax = $grossProfit + $operatingIncomeSumToday - $operatingIncomeRefundToday - $operatingExpenseSumToday - $administrativeExpenseSumToday;
+        $profitBeforeTax = $grossProfit + $operatingIncomeSumToday - $operatingIncomeRefundToday - $operatingExpenseSumToday - $administrativeExpenseSumToday - $overHeadExpenseSumToday;
         $netProfit = $profitBeforeTax - $taxAndVat;
-
+        // dd($netProfit);
         return $netProfit;
+
     }
 
     public function calculateTodayProfit()
@@ -1371,6 +1393,16 @@ class FinancialStatementController extends Controller
             ->where('status', 0)
             ->where('branch_id', $branchId)
             ->whereDate('date', '<=', $yesterday)
+            ->whereIn('transaction_type', ['Current', 'Prepaid', 'Due'])
+            ->sum('amount');
+
+        // Overhead Expenses
+        $overheadExpenseId = ChartOfAccount::where('sub_account_head', 'Overhead Expense')->pluck('id');
+        $overheadExpenseSum = Transaction::whereIn('chart_of_account_id', $overheadExpenseId)
+            ->where('status', 0)
+            ->where('branch_id', $branchId)
+            ->whereDate('date', '<=', $yesterday)
+            ->whereIn('transaction_type', ['Current', 'Prepaid', 'Due'])
             ->sum('amount');
 
         // Administrative Expenses
@@ -1379,6 +1411,7 @@ class FinancialStatementController extends Controller
             ->where('status', 0)
             ->where('branch_id', $branchId)
             ->whereDate('date', '<=', $yesterday)
+            ->whereIn('transaction_type', ['Current', 'Prepaid', 'Due'])
             ->sum('amount');
 
         // VAT Calculations
@@ -1414,7 +1447,7 @@ class FinancialStatementController extends Controller
         $netSales = $salesSum + $previousPurchaseReturn - $salesReturn - $salesDiscount + $yesOperatingIncome - $yesOperatingIncomeRefund;
 
         $grossProfit = $netSales - $purchaseSum;
-        $profitBeforeTax = $grossProfit - $operatingExpenseSum - $administrativeExpenseSum;
+        $profitBeforeTax = $grossProfit - $operatingExpenseSum - $administrativeExpenseSum - $overheadExpenseSum;
         $netProfitTillYesterday = $profitBeforeTax - $taxAndVat;
         
         return $netProfitTillYesterday;

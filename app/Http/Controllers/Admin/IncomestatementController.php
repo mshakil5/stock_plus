@@ -67,12 +67,14 @@ class IncomestatementController extends Controller
                 $query->whereBetween('date', [$request->input('start_date'), $request->input('end_date')]);
             })
             ->sum('amount');
-            
+         
+         //Operating Expense   
         $operatingExpenseId = ChartOfAccount::where('sub_account_head', 'Operating Expense')->pluck('id');
         $operatingExpenses = Transaction::select('chart_of_account_id', DB::raw('SUM(amount) as total_amount'))
             ->with('chartOfAccount')
             ->whereIn('chart_of_account_id', $operatingExpenseId)
             ->where('status', 0)
+            ->whereIn('transaction_type', ['Current', 'Prepaid', 'Due'])
             ->where('branch_id', $branchId)
             ->when($request->has('start_date') && $request->has('end_date'), function ($query) use ($request) {
                 $query->whereBetween('date', [$request->input('start_date'), $request->input('end_date')]);
@@ -80,12 +82,31 @@ class IncomestatementController extends Controller
             ->groupBy('chart_of_account_id')
             ->get();
         $operatingExpenseSum = $operatingExpenses->sum('total_amount');
+        // dd($operatingExpenseSum);
 
+        //Overhead expense
+        $overHeadExpenseId = ChartOfAccount::where('sub_account_head', 'Overhead Expense')->pluck('id');
+        $overHeadExpenses = Transaction::select('chart_of_account_id', DB::raw('SUM(amount) as total_amount'))
+            ->with('chartOfAccount')
+            ->whereIn('chart_of_account_id', $overHeadExpenseId)
+            ->where('status', 0)
+            ->whereIn('transaction_type', ['Current', 'Prepaid', 'Due'])
+            ->where('branch_id', $branchId)
+            ->when($request->has('start_date') && $request->has('end_date'), function ($query) use ($request) {
+                $query->whereBetween('date', [$request->input('start_date'), $request->input('end_date')]);
+            })
+            ->groupBy('chart_of_account_id')
+            ->get();
+
+        $overHeadExpenseSum = $overHeadExpenses->sum('total_amount');
+
+        //Administrative Expense
         $administrativeExpenseId = ChartOfAccount::where('sub_account_head', 'Administrative Expense')->pluck('id');
         $administrativeExpenses = Transaction::select('chart_of_account_id', DB::raw('SUM(amount) as total_amount'))
             ->with('chartOfAccount')
             ->whereIn('chart_of_account_id', $administrativeExpenseId)
             ->where('status', 0)
+            ->whereIn('transaction_type', ['Current', 'Prepaid', 'Due'])
             ->where('branch_id', $branchId)
             ->when($request->has('start_date') && $request->has('end_date'), function ($query) use ($request) {
                 $query->whereBetween('date', [$request->input('start_date'), $request->input('end_date')]);
@@ -198,7 +219,9 @@ class IncomestatementController extends Controller
             'operatingIncomes',
             'operatingIncomeSums',
             'operatingIncomeRefundSum',
-            'purchaseReturn'
+            'purchaseReturn',
+            'overHeadExpenses',
+            'overHeadExpenseSum',
         ))->with('start_date', $startDate)->with('end_date', $endDate);
     }
 

@@ -220,6 +220,29 @@
 
                         <tr>
                             <td>
+                                <strong></strong>
+                            </td>
+                            <td>
+                                <strong>OverHead Expenses</strong>
+                            </td>
+                            <td colspan="3"></td>
+                        </tr>
+
+                        @foreach($overHeadExpenses as $overHeadExpense)
+                        <tr>
+                            <td colspan="2"></td>
+                            <td>{{ $overHeadExpense->chartOfAccount->account_name }}</td>                           
+                            <td>{{ number_format($overHeadExpense->total_amount, 2) }}</td>
+                            <td></td>
+                        </tr>
+                        @endforeach
+
+                        <tr>
+                            <td colspan="5"></td>
+                        </tr>
+
+                        <tr>
+                            <td>
                                 <strong>D</strong>
                             </td>
                             <td>
@@ -254,7 +277,8 @@
                                 @php
                                   $totalOperatingExpenses = $operatingExpenses->sum('total_amount');
                                   $totalAdministrativeExpenses = $administrativeExpenses->sum('total_amount');
-                                  $profitBeforeTax =  $grossProfit +$operatingIncomeSums - $totalOperatingExpenses +$purchaseReturn - $totalAdministrativeExpenses - $operatingIncomeRefundSum
+                                  $totalOverHeadExpenses = $overHeadExpenses->sum('total_amount');
+                                  $profitBeforeTax =  $grossProfit +$operatingIncomeSums - $totalOperatingExpenses +$purchaseReturn - $totalAdministrativeExpenses - $operatingIncomeRefundSum - $totalOverHeadExpenses
                                 @endphp
                                 {{ number_format($profitBeforeTax, 2) }}
                             </td>

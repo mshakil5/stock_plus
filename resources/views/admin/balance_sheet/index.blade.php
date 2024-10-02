@@ -319,7 +319,8 @@
                                 $totalLiabilityCreditToday = collect($shortTermLiabilities)->sum('total_credit_today') +
                                                         collect($longTermLiabilities)->sum('total_credit_today')+
                                                         collect($currentLiabilities)->sum('total_credit_today') + $totalTodaysAccountPayableCredit;
-                                 $closingLiabilityBalance = $totalLiabilitySum + $totalLiabilityDebitToday - $totalLiabilityCreditToday + $todaysDueAccountPayableDebit;                                             
+                                 $closingLiabilityBalance = $totalLiabilitySum + $totalLiabilityDebitToday - $totalLiabilityCreditToday;                                             
+                                 
                             @endphp
                             <td>{{ number_format($totalLiabilitySum, 2) }}</td>
                             <td>{{ number_format($totalLiabilityDebitToday, 2) }}</td>
