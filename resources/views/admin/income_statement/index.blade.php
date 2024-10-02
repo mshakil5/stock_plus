@@ -254,7 +254,7 @@
                                 @php
                                   $totalOperatingExpenses = $operatingExpenses->sum('total_amount');
                                   $totalAdministrativeExpenses = $administrativeExpenses->sum('total_amount');
-                                  $profitBeforeTax =  $grossProfit +$operatingIncomeSums - $totalOperatingExpenses - $totalAdministrativeExpenses - $operatingIncomeRefundSum
+                                  $profitBeforeTax =  $grossProfit +$operatingIncomeSums - $totalOperatingExpenses +$purchaseReturn - $totalAdministrativeExpenses - $operatingIncomeRefundSum
                                 @endphp
                                 {{ number_format($profitBeforeTax, 2) }}
                             </td>

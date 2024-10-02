@@ -36,32 +36,32 @@ class IncomestatementController extends Controller
         $salesSum = Transaction::where('table_type', 'Income')
             ->where('status', 0)
             ->whereNull('chart_of_account_id')
+            ->whereNot('transaction_type', 'Return')
             ->where('branch_id', $branchId)
             ->when($request->has('start_date') && $request->has('end_date'), function ($query) use ($request) {
                 $query->whereBetween('date', [$request->input('start_date'), $request->input('end_date')]);
             })
             ->sum('amount');
 
-            $operatingIncomes = Transaction::where('table_type', 'Income')
-                ->with('chartOfAccount')
-                ->where('status', 0)
-                ->whereNotNull('chart_of_account_id')
-                ->where('branch_id', $branchId)
-                ->whereIn('transaction_type', ['Current','Advance'])
-                ->when($request->has('start_date') && $request->has('end_date'), function ($query) use ($request) {
-                    $query->whereBetween('date', [$request->input('start_date'), $request->input('end_date')]);
-                })
-                ->selectRaw('chart_of_account_id, SUM(amount) as total_amount')
-                ->groupBy('chart_of_account_id')
-                ->get();
+        $operatingIncomes = Transaction::where('table_type', 'Income')
+            ->with('chartOfAccount')
+            ->where('status', 0)
+            ->whereNotNull('chart_of_account_id')
+            ->where('branch_id', $branchId)
+            ->whereIn('transaction_type', ['Current','Advance'])
+            ->when($request->has('start_date') && $request->has('end_date'), function ($query) use ($request) {
+                $query->whereBetween('date', [$request->input('start_date'), $request->input('end_date')]);
+            })
+            ->selectRaw('chart_of_account_id, SUM(amount) as total_amount')
+            ->groupBy('chart_of_account_id')
+            ->get();
         
         $operatingIncomeSums = $operatingIncomes->sum('total_amount');
-        // dd($operatingIncomeSums);
 
         $operatingIncomeRefundSum = Transaction::where('table_type', 'Income')
             ->where('status', 0)
             ->whereNotNull('chart_of_account_id')
-            ->whereIn('transaction_type', ['Refund'])
+            ->where('transaction_type', 'Refund')
             ->where('branch_id', $branchId)
             ->when($request->has('start_date') && $request->has('end_date'), function ($query) use ($request) {
                 $query->whereBetween('date', [$request->input('start_date'), $request->input('end_date')]);
@@ -94,11 +94,23 @@ class IncomestatementController extends Controller
             ->get();
         $administrativeExpenseSum = $administrativeExpenses->sum('total_amount');
 
-        $salesReturn = SalesReturn::where('branch_id', $branchId)
+        $salesReturn = Transaction::where('table_type', 'Income')
+            ->where('status', 0)
+            ->where('transaction_type', 'Return')
+            ->where('branch_id', $branchId)
             ->when($request->has('start_date') && $request->has('end_date'), function ($query) use ($request) {
                 $query->whereBetween('date', [$request->input('start_date'), $request->input('end_date')]);
             })
-            ->sum('net_total');
+            ->sum('amount');
+
+        $purchaseReturn = Transaction::where('table_type', 'Cogs')
+            ->where('status', 0)
+            ->where('transaction_type', 'Return')
+            ->where('branch_id', $branchId)
+            ->when($request->has('start_date') && $request->has('end_date'), function ($query) use ($request) {
+                $query->whereBetween('date', [$request->input('start_date'), $request->input('end_date')]);
+            })
+            ->sum('amount');
 
         $salesDiscount = Order::where('branch_id', $branchId)
             ->when($request->has('start_date') && $request->has('end_date'), function ($query) use ($request) {
@@ -185,7 +197,8 @@ class IncomestatementController extends Controller
             'taxAndVat',
             'operatingIncomes',
             'operatingIncomeSums',
-            'operatingIncomeRefundSum'
+            'operatingIncomeRefundSum',
+            'purchaseReturn'
         ))->with('start_date', $startDate)->with('end_date', $endDate);
     }
 
