@@ -115,6 +115,19 @@ class IncomestatementController extends Controller
             ->get();
         $administrativeExpenseSum = $administrativeExpenses->sum('total_amount');
 
+        //Fixed Asset Depreciation Expense
+        $fixedAssetId = ChartOfAccount::where('sub_account_head', 'Fixed Asset')->where('account_head', 'Assets')->pluck('id');
+
+        $fixedAssetDepriciation = Transaction::whereIn('chart_of_account_id', $fixedAssetId)
+            ->where('status', 0)
+            ->where('table_type', 'Assets')
+            ->whereIn('transaction_type', ['Depreciation'])
+            ->where('branch_id', $branchId)
+            ->when($request->has('start_date') && $request->has('end_date'), function ($query) use ($request) {
+                $query->whereBetween('date', [$request->input('start_date'), $request->input('end_date')]);
+            })
+            ->sum('amount');
+
         $salesReturn = Transaction::where('table_type', 'Income')
             ->where('status', 0)
             ->where('transaction_type', 'Return')
@@ -222,6 +235,7 @@ class IncomestatementController extends Controller
             'purchaseReturn',
             'overHeadExpenses',
             'overHeadExpenseSum',
+            'fixedAssetDepriciation'
         ))->with('start_date', $startDate)->with('end_date', $endDate);
     }
 

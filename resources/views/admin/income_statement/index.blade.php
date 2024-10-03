@@ -251,6 +251,13 @@
                             <td colspan="3"></td>
                         </tr>
 
+                        <tr>
+                            <td colspan="2"></td>
+                            <td>Depreciation Expense</td>                      
+                            <td>{{ number_format($fixedAssetDepriciation, 2) }}</td>
+                            <td></td>
+                        </tr>
+
                         @foreach($administrativeExpenses as $administrativeExpense)
                         <tr>
                             <td colspan="2"></td>
@@ -278,7 +285,7 @@
                                   $totalOperatingExpenses = $operatingExpenses->sum('total_amount');
                                   $totalAdministrativeExpenses = $administrativeExpenses->sum('total_amount');
                                   $totalOverHeadExpenses = $overHeadExpenses->sum('total_amount');
-                                  $profitBeforeTax =  $grossProfit +$operatingIncomeSums - $totalOperatingExpenses +$purchaseReturn - $totalAdministrativeExpenses - $operatingIncomeRefundSum - $totalOverHeadExpenses
+                                  $profitBeforeTax =  $grossProfit +$operatingIncomeSums - $totalOperatingExpenses +$purchaseReturn - $totalAdministrativeExpenses - $operatingIncomeRefundSum - $totalOverHeadExpenses - $fixedAssetDepriciation
                                 @endphp
                                 {{ number_format($profitBeforeTax, 2) }}
                             </td>
