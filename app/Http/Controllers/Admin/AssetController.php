@@ -65,11 +65,7 @@ class AssetController extends Controller
             return response()->json(['status' => 303, 'message' => 'Transaction Type Field Is Required..!']);
         }
 
-        if (empty($request->payment_type)) {
-            return response()->json(['status' => 303, 'message' => 'Payment Type Field Is Required..!']);
-        }
-
-        if (empty($request->payment_type)) {
+        if (empty($request->payment_type) && $request->transaction_type != "Depreciation") {
             return response()->json(['status' => 303, 'message' => 'Payment Type Field Is Required..!']);
         }
 
@@ -144,11 +140,7 @@ class AssetController extends Controller
             return response()->json(['status' => 303, 'message' => 'Transaction Type Field Is Required..!']);
         }
 
-        if (empty($request->payment_type)) {
-            return response()->json(['status' => 303, 'message' => 'Payment Type Field Is Required..!']);
-        }
-
-        if (empty($request->payment_type)) {
+        if (empty($request->payment_type) && $request->transaction_type != "Depreciation") {
             return response()->json(['status' => 303, 'message' => 'Payment Type Field Is Required..!']);
         }
 
