@@ -270,9 +270,6 @@
                 transactionTypeDropdown.append('<option value="">Select transaction type</option>');
                 transactionTypeDropdown.append('<option value="Received">Received</option>');
                 transactionTypeDropdown.append('<option value="Payment">Payment</option>');
-                transactionTypeDropdown.append('<option value="Purchase">Purchase</option>');
-                transactionTypeDropdown.append('<option value="Sold">Sold</option>');
-                transactionTypeDropdown.append('<option value="Depreciation">Depreciation</option>');
             }
         });
     });
@@ -396,9 +393,6 @@
                         transactionTypeDropdown.append('<option value="">Select transaction type</option>');
                         transactionTypeDropdown.append('<option value="Received">Received</option>');
                         transactionTypeDropdown.append('<option value="Payment">Payment</option>');
-                        transactionTypeDropdown.append('<option value="Purchase">Purchase</option>');
-                        transactionTypeDropdown.append('<option value="Sold">Sold</option>');
-                        transactionTypeDropdown.append('<option value="Depreciation">Depreciation</option>');
                         $('#transaction_type').val(response.transaction_type);
                     }     
 
@@ -540,6 +534,7 @@
     transactionTypeDropdown.append('<option value="Purchase">Purchase</option>');
     transactionTypeDropdown.append('<option value="Sold">Sold</option>');
     transactionTypeDropdown.append('<option value="Depreciation">Depreciation</option>');
+
 
 });
 
