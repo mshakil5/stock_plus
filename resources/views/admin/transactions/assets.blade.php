@@ -210,28 +210,29 @@
     
 @section('script')
 
-<!-- Payable holder id -->
 <script>
     $(document).ready(function() {
         $("#transaction_type").change(function () {
             var transaction_type = $(this).val();
             if (transaction_type == "Purchase") {
+                $("#payment_type_container").show();
                 $("#payment_type").html("<option value=''>Please Select</option><option value='Cash'>Cash</option><option value='Bank'>Bank</option><option value='Account Payable'>Account Payable</option>");
             } else if (transaction_type == "Receipt") {
                 $("#showpayable, #showreceivable").hide();
+                $("#payment_type_container").show();
                 $("#payment_type").html("<option value=''>Please Select</option><option value='Cash'>Cash</option><option value='Bank'>Bank</option>");
                 clearPayableHolder();
             } else if (transaction_type == "Payment") {
                 $("#showpayable , #showreceivable").hide();
+                $("#payment_type_container").show();
                 $("#payment_type").html("<option value=''>Please Select</option><option value='Cash'>Cash</option><option value='Bank'>Bank</option>");
                 clearPayableHolder();
             } else if (transaction_type == "Depreciation") {
-                $("#showpayable , #showreceivable").hide();
-                $("#payment_type").html("<option value=''>Please Select</option><option value='Cash'>Cash</option><option value='Bank'>Bank</option>");
-                clearPayableHolder();
+                $('#payment_type').val('');
+                $("#payment_type_container").hide();
             } else if (transaction_type == "Sold") {
-                // clearTaxPaymentTypefield();
                 $("#showpayable , #showreceivable").hide();
+                $("#payment_type_container").show();
                 $("#payment_type").html("<option value=''>Please Select</option><option value='Cash'>Cash</option><option value='Bank'>Bank</option> <option value='Account Receivable'>Account Receivable</option>");
                 clearPayableHolder();
             }
@@ -415,6 +416,9 @@
                         $('#payment_type').val(response.payment_type);
                         $('#showpayable').hide();
                     } 
+                    else if (response.transaction_type == 'Depreciation') {
+                        $('#payment_type_container').hide();
+                    }
                     else {
                         $("#payment_type").html("<option value=''>Please Select</option>" + "<option value='Cash'>Cash</option>" + "<option value='Bank'>Bank</option>");
                         $('#payment_type').val(response.payment_type);
@@ -505,41 +509,27 @@
 
 </script>
 
-<!-- Main script -->
-
 <script>
-    // $(document).ready(function() {
-    //     $('#chartModal').on('hidden.bs.modal', function (e) {
-    //         // alert('hidden');
-    //         $('#payment_type').val('').change();
-    //         $('#showpayable, #showreceivable').hide()
-    //     });
-    // });
-
     $('#chartModal').on('hidden.bs.modal', function (e) {
-    $('#customer-form')[0].reset(); 
-    $('#customer-form textarea').text(''); 
-    $('#chartModal .submit-btn').removeClass('update-btn').addClass('save-btn').text('Save').val("");
-    $('#payment_type').html("<option value=''>Please Select</option>" + 
-                            "<option value='Cash'>Cash</option>" + 
-                            "<option value='Bank'>Bank</option>");
-    $('#showpayable, #showreceivable').hide();
-    $('#payable_holder_id').val('');
-    $('#recivible_holder_id').val('');
-    var transactionTypeDropdown = $('#transaction_type');
-    transactionTypeDropdown.empty();
-    transactionTypeDropdown.append('<option value="">Select transaction type</option>');
-    transactionTypeDropdown.append('<option value="Received">Received</option>');
-    transactionTypeDropdown.append('<option value="Payment">Payment</option>');
-    transactionTypeDropdown.append('<option value="Purchase">Purchase</option>');
-    transactionTypeDropdown.append('<option value="Sold">Sold</option>');
-    transactionTypeDropdown.append('<option value="Depreciation">Depreciation</option>');
-
-
-});
-
-
+        $('#customer-form')[0].reset(); 
+        $('#customer-form textarea').text(''); 
+        $('#chartModal .submit-btn').removeClass('update-btn').addClass('save-btn').text('Save').val("");
+        $('#payment_type_container').show();
+        $('#payment_type').html("<option value=''>Please Select</option>" + 
+                                "<option value='Cash'>Cash</option>" + 
+                                "<option value='Bank'>Bank</option>");
+        $('#showpayable, #showreceivable').hide();
+        $('#payable_holder_id').val('');
+        $('#recivible_holder_id').val('');
+        var transactionTypeDropdown = $('#transaction_type');
+        transactionTypeDropdown.empty();
+        transactionTypeDropdown.append('<option value="">Select transaction type</option>');
+        transactionTypeDropdown.append('<option value="Received">Received</option>');
+        transactionTypeDropdown.append('<option value="Payment">Payment</option>');
+        transactionTypeDropdown.append('<option value="Purchase">Purchase</option>');
+        transactionTypeDropdown.append('<option value="Sold">Sold</option>');
+        transactionTypeDropdown.append('<option value="Depreciation">Depreciation</option>');
+    });
 </script>
-
 
 @endsection
