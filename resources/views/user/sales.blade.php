@@ -286,11 +286,11 @@
                                 <div class="col-lg-6">
                                     <div class="form-group mx-1 flex-fill">
                                         <label for="">Discount Amount</label>
-                                        <input type="number" id="discount_amount" name="discount_amount" class="form-control " style="flex: 0.6;">
+                                        <input type="number" id="discount_amount" name="discount_amount" class="form-control " style="flex: 0.6;" min="0">
                                     </div>
                                     <div class="form-group mx-1 flex-fill">
                                         <label for="">Vat Percent(%)</label>
-                                        <input type="number" id="vat_percent" name="vat_percent" value="5" class="form-control" style="flex: 0.6;">
+                                        <input type="number" id="vat_percent" name="vat_percent" value="5" class="form-control" style="flex: 0.6;" min="0">
                                     </div>
                                     <div class="form-group mx-1 flex-fill">
                                         <label for="">Total Vat Amount</label>
@@ -804,7 +804,7 @@
             // var paymentmethod = $("#paymentmethod").val();
             // var comment = $("#comment").val();
 
-            console.log(product_id, paymentmethod, comment);
+            // console.log(product_id, paymentmethod, comment);
 
                 $.ajax({
                     url: orderurl,
@@ -813,7 +813,7 @@
 
                     success: function (d) {
                         if (d.status == 303) {
-                            console.log(d);
+                            // console.log(d);
                             $(".ermsg").html(d.message);
                             pagetop();
                         }else if(d.status == 300){
@@ -1022,7 +1022,7 @@
                         if (d.status == 303) {
 
                         }else if(d.status == 300){
-                            console.log(d);
+                            // console.log(d);
                             $("#customer_id").val(d.customer_id);
                             $("#showcustomername").val(d.customername);
                             $("#showcustomeraddress").val(d.address);
@@ -1041,16 +1041,13 @@
             });
 
             // calculation start 
-			$("#discount_amount, #vat_percent").keyup(function(){
-				// var dInput = this.value;
+			$("#discount_amount, #vat_percent").on('input', function(){
 				var grand_total = $("#grand_total").val();
 				var dInput = $("#discount_amount").val();
 				var vat_percent = $("#vat_percent").val();
-				var payingAmount = $("#vat_percent").val();
 			    var customer_paid = $("#customer_paid").val();
-
 				var grand_total_with_discount = grand_total - dInput;
-				var net_vat_amount = grand_total_with_discount * (vat_percent/100);
+				var net_vat_amount = grand_total_with_discount * (vat_percent / 100);
 				var net_total = grand_total -  dInput + net_vat_amount;
                 var dueAmountCal = net_total - customer_paid;
 
@@ -1195,7 +1192,7 @@
                         return request.setRequestHeader('X-CSRF-Token', $("meta[name='csrf-token']").attr('content'));
                     },
                     success: function (response) {
-                        console.log(response);
+                        // console.log(response);
                         $('#reqStockModal').modal('toggle');
                         $(".stockreqermsg").html(response.message);
                         // $("#customers").val("").trigger('change');
