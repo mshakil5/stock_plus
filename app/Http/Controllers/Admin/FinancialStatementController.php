@@ -749,7 +749,7 @@ class FinancialStatementController extends Controller
 
             //Cash Expense Decrement today
             $expenseCashDecrement = Transaction::where('table_type', 'Expenses')
-                ->whereIn('transaction_type', ['Current','Prepaid', 'Due Adjust'])
+                ->whereIn('transaction_type', ['Current','Prepaid'])
                 ->where('status', 0)
                 ->where('payment_type', 'Cash')
                 ->whereDate('date', $today)
@@ -819,7 +819,7 @@ class FinancialStatementController extends Controller
 
             //Bank Expense Decrement today
             $todayExpenseBankDecrement = Transaction::where('table_type', 'Expenses')
-                ->whereIn('transaction_type', ['Current','Prepaid', 'Due Adjust'])
+                ->whereIn('transaction_type', ['Current','Prepaid'])
                 ->where('status', 0)
                 ->where('payment_type', 'Bank')
                 ->whereDate('date', $today)
@@ -937,7 +937,7 @@ class FinancialStatementController extends Controller
             //Till Yesterday Cash Decrement
 
             $yestExpenseCashDecrement = Transaction::where('table_type', 'Expenses')
-                ->whereIn('transaction_type', ['Current','Prepaid', 'Due Adjust'])
+                ->whereIn('transaction_type', ['Current','Prepaid'])
                 ->where('status', 0)
                 ->where('payment_type', 'Cash')
                 ->where('branch_id', auth()->user()->branch_id)
@@ -1039,7 +1039,7 @@ class FinancialStatementController extends Controller
             //Till Yesterday Bank Decrement
 
             $yestExpenseBankDecrement = Transaction::where('table_type', 'Expenses')
-                ->whereIn('transaction_type', ['Current','Prepaid', 'Due Adjust'])
+                ->whereIn('transaction_type', ['Current','Prepaid'])
                 ->where('status', 0)
                 ->where('payment_type', 'Bank')
                 ->where('branch_id', auth()->user()->branch_id)
