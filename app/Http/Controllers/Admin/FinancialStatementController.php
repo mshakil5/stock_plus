@@ -236,7 +236,7 @@ class FinancialStatementController extends Controller
         $todaysAccountPayableCredit = Transaction::whereIn('chart_of_account_id', $accountPayableIds)
                 ->where('status', 0)
                 ->where('branch_id', auth()->user()->branch_id)
-                ->where('transaction_type', 'Received')
+                ->where('transaction_type', 'Payment')
                 ->whereDate('date', $today)
                 ->sum('at_amount');
 
@@ -263,7 +263,7 @@ class FinancialStatementController extends Controller
         $todaysAccountPayableDebit = Transaction::whereIn('chart_of_account_id', $accountPayableIds)
             ->where('status', 0)
             ->where('branch_id', auth()->user()->branch_id)
-            ->whereIn('transaction_type', ['Payment'])
+            ->whereIn('transaction_type', ['Received'])
             ->whereDate('date', $today)
             ->sum('at_amount');
 
@@ -284,7 +284,6 @@ class FinancialStatementController extends Controller
             ->whereIn('transaction_type', ['Payment', 'Due', 'Purchase'])
             ->whereDate('date', $today)
             ->sum('at_amount');
-            // dd($todaysDueAccountPayableDebit);
 
 
         //This query is related to account receivable
@@ -296,7 +295,7 @@ class FinancialStatementController extends Controller
             ->whereDate('date', $today)
             ->sum('at_amount');
 
-        
+        //Yesterday's account payable credit    
         $yesAccountPayableCredit = Transaction::whereIn('chart_of_account_id', $accountPayableIds)
             ->where('status', 0)
             ->where('branch_id', auth()->user()->branch_id)
@@ -304,7 +303,7 @@ class FinancialStatementController extends Controller
             ->where('date', '<=', $yest)
             ->sum('at_amount');
 
-
+        //Yesterday's account payable debit
         $yesAccountPayableDebit = Transaction::whereIn('chart_of_account_id', $accountPayableIds)
             ->where('status', 0)
             ->where('branch_id', auth()->user()->branch_id)
@@ -312,15 +311,15 @@ class FinancialStatementController extends Controller
             ->where('date', '<=', $yest)
             ->sum('at_amount'); 
 
-        $yesExpenseDue = Transaction::whereIn('liability_id', $accountPayableIds)
+         //Yesterday's Asset expense and due   
+        $yesAssetExpenseDue = Transaction::whereIn('liability_id', $accountPayableIds)
             ->where('status', 0)
             ->where('branch_id', auth()->user()->branch_id)
-            ->where('transaction_type', 'Due')
+            ->whereIn('transaction_type', ['Due', 'Purchase'])
             ->where('date', '<=', $yest)
             ->sum('at_amount'); 
 
-
-
+        //Yesterday's product purchse by credit
         $yesProductCreditPurchase = Transaction::where('status', 0)
             ->whereNotNull('purchase_id')
             ->where('branch_id', auth()->user()->branch_id)
@@ -329,25 +328,17 @@ class FinancialStatementController extends Controller
             ->where('date', '<=', $yest)
             ->sum('at_amount');
 
+        //yesterday's purchase return by credit
         $yesPurchaseReturnAP = Transaction::where('table_type', 'Cogs')
             ->where('transaction_type', 'Return')
             ->where('status', 0)
             ->where('payment_type', 'Account Payable')
             ->where('date', '<=', $yest)
             ->where('branch_id', auth()->user()->branch_id)
-            ->sum('at_amount');
-                    // dd($yesPurchaseReturnAP);    
+            ->sum('at_amount'); 
             
-
-        $yesAccountPayable = $yesAccountPayableDebit + $yesProductCreditPurchase + $yesExpenseDue - $yesAccountPayableCredit - $yesPurchaseReturnAP;  
-        // dd($yesAccountPayable);
-        //    dd($yesAccountReceiveablesCredit);
-
-
-        // $yesOrderDues = Order::where('branch_id', auth()->user()->branch_id)
-        //                     ->where('orderdate', '<=', $yest);
-
-        // $yesAccountReceiveable = $yesAccountReceiveables->sum('at_amount') + $yesOrderDues->sum('due');
+        //Total yesterday's account payable
+        $yesAccountPayable = $yesAccountPayableDebit + $yesProductCreditPurchase + $yesAssetExpenseDue - $yesAccountPayableCredit - $yesPurchaseReturnAP;  
 
         //Short Term Liabilities
         $shortTermLiabilities = ChartOfAccount::where('sub_account_head', 'Short Term Liabilities')
@@ -400,31 +391,35 @@ class FinancialStatementController extends Controller
             ->where('branch_id', auth()->user()->branch_id)
             ->withSum(['transactions' => function ($query) use ($yesterday) {
                 $query->where('branch_id', auth()->user()->branch_id)
-                    ->whereDate('date', '<=', $yesterday);
+                    ->whereDate('date', '<=', $yesterday)
+                    ->where('status', 0);
             }], 'at_amount')
             ->get();
 
-            $longTermLiabilities->each(function ($liability) use ($yesterday) {
-                $liability->total_debit_yesterday = $liability->transactions()
-                    ->where('branch_id', auth()->user()->branch_id)
-                    ->where('transaction_type', 'Received')
-                    ->whereDate('date',  '<=', $yesterday)
-                    ->sum('at_amount');
-            });
-    
-            $longTermLiabilities->each(function ($liability) use ($yesterday) {
-                $liability->total_credit_yesterday = $liability->transactions()
-                    ->where('branch_id', auth()->user()->branch_id)
-                    ->where('transaction_type', 'Payment')
-                    ->whereDate('date',  '<=', $yesterday)
-                    ->sum('at_amount');
-            });
+        $longTermLiabilities->each(function ($liability) use ($yesterday) {
+            $liability->total_debit_yesterday = $liability->transactions()
+                ->where('branch_id', auth()->user()->branch_id)
+                ->where('transaction_type', 'Received')
+                ->whereDate('date',  '<=', $yesterday)
+                ->where('status', 0)
+                ->sum('at_amount');
+        });
+
+        $longTermLiabilities->each(function ($liability) use ($yesterday) {
+            $liability->total_credit_yesterday = $liability->transactions()
+                ->where('branch_id', auth()->user()->branch_id)
+                ->where('transaction_type', 'Payment')
+                ->whereDate('date',  '<=', $yesterday)
+                ->where('status', 0)
+                ->sum('at_amount');
+        });
 
         $longTermLiabilities->each(function ($liability) use ($today) {
             $liability->total_debit_today = $liability->transactions()
                 ->where('branch_id', auth()->user()->branch_id)
                 ->where('transaction_type', 'Received')
                 ->whereDate('date', $today)
+                ->where('status', 0)
                 ->sum('at_amount');
         });
 
@@ -433,15 +428,17 @@ class FinancialStatementController extends Controller
                 ->where('branch_id', auth()->user()->branch_id)
                 ->where('transaction_type', 'Payment')
                 ->whereDate('date', $today)
+                ->where('status', 0)
                 ->sum('at_amount');
         });
 
-        //Current Liabilities yesterday to today
+        //Current Liabilities
         $currentLiabilities = ChartOfAccount::where('sub_account_head', 'Current Liabilities')
             ->where('branch_id', auth()->user()->branch_id)
             ->withSum(['transactions' => function ($query) use ($yesterday) {
                 $query->where('branch_id', auth()->user()->branch_id)
-                    ->whereDate('date', '<=', $yesterday);
+                    ->whereDate('date', '<=', $yesterday)
+                    ->where('status', 0);
             }], 'at_amount')
             ->get();
 
@@ -450,6 +447,7 @@ class FinancialStatementController extends Controller
                 ->where('branch_id', auth()->user()->branch_id)
                 ->where('transaction_type', 'Received')
                 ->whereDate('date', $today)
+                ->where('status', 0)
                 ->sum('at_amount');
         });
 
@@ -458,6 +456,25 @@ class FinancialStatementController extends Controller
                 ->where('branch_id', auth()->user()->branch_id)
                 ->where('transaction_type', 'Payment')
                 ->whereDate('date', $today)
+                ->where('status', 0)
+                ->sum('at_amount');
+        });
+
+        $currentLiabilities->each(function ($liability) use ($yesterday) {
+            $liability->total_debit_yesterday = $liability->transactions()
+                ->where('branch_id', auth()->user()->branch_id)
+                ->where('transaction_type', 'Received')
+                ->whereDate('date','<=', $yesterday)
+                ->where('status', 0)
+                ->sum('at_amount');
+        });
+
+        $currentLiabilities->each(function ($liability) use ($yesterday) {
+            $liability->total_credit_yesterday = $liability->transactions()
+                ->where('branch_id', auth()->user()->branch_id)
+                ->where('transaction_type', 'Payment')
+                ->whereDate('date','<=', $yesterday)
+                ->where('status', 0)
                 ->sum('at_amount');
         });
 
