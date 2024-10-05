@@ -343,7 +343,7 @@
                         <ul class="treeview-menu">
                             <li class="{{ (request()->is('admin/cash-flow')) ? 'active' : '' }}"><a href="{{ route('admin.cashflow') }}"><i class="fa fa-adjust"></i> Cash Flow</a></li>
                             <li class="{{ (request()->is('admin/income-statement')) ? 'active' : '' }}"><a href="{{ route('admin.incomestatement') }}"><i class="fa fa-adjust"></i>Income Statement</a></li>
-                            <li class="{{ (request()->is('admin/balance-sheet')) ? 'active' : '' }}"><a href="{{ route('admin.balancesheet') }}"><i class="fa fa-adjust"></i>Balance Sheet</a></li>
+                            <li class="{{ (request()->is('admin/balance-sheet')) ? 'active' : '' }}"><a href="{{ route('admin.getStartDate') }}"><i class="fa fa-adjust"></i>Balance Sheet</a></li>
                         </ul>
                     </li>
 

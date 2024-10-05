@@ -291,6 +291,9 @@ Route::group(['prefix' =>'admin/', 'middleware' => ['auth', 'is_admin']], functi
     Route::post('cash-flow', [CashflowController::class, 'cashFlowByDate'])->name('admin.cashflow');
     Route::get('income-statement', [IncomestatementController::class, 'incomeStatement'])->name('admin.incomestatement');
     Route::post('income-statement', [IncomestatementController::class, 'incomeStatement'])->name('admin.incomestatement');
+
+    Route::get('get-start-date', [FinancialStatementController::class, 'getStartDate'])->name('admin.getStartDate');
+    Route::post('get-start-date', [FinancialStatementController::class, 'postStartDate'])->name('admin.getStartDate');
     Route::get('balance-sheet', [FinancialStatementController::class, 'balanceSheet'])->name('admin.balancesheet');
     Route::post('balance-sheet', [FinancialStatementController::class, 'balanceSheet'])->name('admin.balancesheet');
 
