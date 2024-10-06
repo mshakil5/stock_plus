@@ -1006,8 +1006,17 @@ class FinancialStatementController extends Controller
             ->where('date', '<=', $yest)
             ->sum('at_amount');
 
+        //Till Yesterday Cash Sales Return Decrement    
+        $yesSalesReturnCashDecrement = Transaction::where('table_type', 'Income')
+            ->where('status', 0)
+            ->where('payment_type', 'Cash')
+            ->where('transaction_type', 'Return')
+            ->where('date', '<=', $yest)
+            ->where('branch_id', auth()->user()->branch_id)
+            ->sum('at_amount');
+
         //Total Till Yesterday Cash Decrement
-        $totalYestCashDecrement = $yestExpenseCashDecrement + $yestAssetCashDecrement + $yestLiabilitiesCashDecrement + $yestEquityCashDecrement + $yestIncomeCashDecrement + $yestPurchaseCashDecrement;
+        $totalYestCashDecrement = $yestExpenseCashDecrement + $yestAssetCashDecrement + $yestLiabilitiesCashDecrement + $yestEquityCashDecrement + $yestIncomeCashDecrement + $yestPurchaseCashDecrement + $yesSalesReturnCashDecrement;
 
         //Till Yesterday Bank Increment
         //Till Yesterday Asset Bank Increment

@@ -69,9 +69,10 @@
                             <div class="form-row">
                                 <div class="form-group col-md-4">
                                   <label for="date">Transaction Type</label>
-                                  <select name="type" id="type" class="form-control" readonly>
+                                  <select name="type" id="type" class="form-control" disabled>
                                     <option value="">Select</option>
                                     <option value="Cash" @if ($purchase->purchase_type == "Cash") selected @endif>Cash</option>
+                                    <option value="Bank" @if ($purchase->purchase_type == "Bank") selected @endif>Bank</option>
                                     <option value="Credit" @if ($purchase->purchase_type == "Credit") selected @endif>Credit</option>
                                   </select>
                                 </div>
