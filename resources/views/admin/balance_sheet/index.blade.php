@@ -51,10 +51,6 @@
                 <table id="cashIncomingTable" class="table table-striped table-bordered">
                     <thead>
                         <tr>
-                            <!-- <th>Particulars</th>
-                            <th>Amount</th>
-                            <th>Amount</th>
-                            <th>Amount</th> -->
                         </tr>
                     </thead>
                     <tbody>
@@ -84,62 +80,62 @@
                         <tr>
                             <td></td>
                             <td>Cash In Hand</td>
-                            <td>
+                            <td style="text-align: right;">
                                 {{ number_format($yesCashInHand, 2) }}
                             </td>
-                            <td>{{ number_format($totalTodayCashIncrements, 2) }}</td>
-                            <td>{{ number_format($totalTodayCashDecrements, 2) }}</td>
-                            <td>{{ number_format($yesCashInHand + $cashInHand, 2) }}</td>
+                            <td style="text-align: right;">{{ number_format($totalTodayCashIncrements, 2) }}</td>
+                            <td style="text-align: right;">{{ number_format($totalTodayCashDecrements, 2) }}</td>
+                            <td style="text-align: right;">{{ number_format($yesCashInHand + $cashInHand, 2) }}</td>
                         </tr>
 
                         <tr>
                             <td></td>
                             <td>Cash at Bank</td>
-                            <td> 
+                            <td style="text-align: right;"> 
                                     {{ number_format($yesBankInHand, 2) }}
                             </td>
-                            <td>                
+                            <td style="text-align: right;">                
                                     {{ number_format($totalTodayBankIncrements, 2) }}
                             </td>
-                            <td>
+                            <td style="text-align: right;">
                                     {{ number_format($totalTodayBankDecrements, 2) }}
                             </td>
-                            <td>{{ number_format($cashInBank + $yesBankInHand, 2) }}</td>
+                            <td style="text-align: right;">{{ number_format($cashInBank + $yesBankInHand, 2) }}</td>
                         </tr>
 
                         <tr>
                             <td></td>
                             <td>Account Receivable</td>
-                            <td>         
+                            <td style="text-align: right;">         
                                 {{ number_format($yesAccountReceiveable, 2) }}
                             </td>
-                            <td>{{ number_format($todaysAccountReceivableDebit + $todaysAssetSoldAR +$todaysProductCreditSold, 2) }}</td>
-                            <td>{{ number_format($totalTodaysAccountReceivableCredit, 2) }}</td>
+                            <td style="text-align: right;">{{ number_format($todaysAccountReceivableDebit + $todaysAssetSoldAR +$todaysProductCreditSold, 2) }}</td>
+                            <td style="text-align: right;">{{ number_format($totalTodaysAccountReceivableCredit, 2) }}</td>
                             @php
                                 $totalReceivable = $yesAccountReceiveable - $totalTodaysAccountReceivableCredit + $todaysAssetSoldAR + $todaysProductCreditSold + $todaysAccountReceivableDebit
                             @endphp
-                            <td>{{ number_format( $totalReceivable, 2) }}</td>
+                            <td style="text-align: right;">{{ number_format( $totalReceivable, 2) }}</td>
                         </tr>
 
                         <tr>
                             <td></td>
                             <td>Inventory</td>
-                            <td>                            
+                            <td style="text-align: right;">                            
                                     {{ number_format($yesInventory, 2) }}       
                             </td>
                             <td></td>
                             <td></td>
-                            <td>{{ number_format($inventory, 2) }}</td>
+                            <td style="text-align: right;">{{ number_format($inventory, 2) }}</td>
                         </tr>
 
                         @foreach($currentAssets as $currentAsset)
                         <tr>
                             <td></td>
                             <td>{{ $currentAsset->account_name }}</td>
-                            <td>{{ number_format($currentAsset->total_debit_yesterday - $currentAsset->total_credit_yesterday, 2) }}</td>
-                            <td>{{ number_format($currentAsset->total_debit_today, 2) }}</td>
-                            <td>{{ number_format($currentAsset->total_credit_today, 2) }}</td>
-                            <td>
+                            <td style="text-align: right;">{{ number_format($currentAsset->total_debit_yesterday - $currentAsset->total_credit_yesterday, 2) }}</td>
+                            <td style="text-align: right;">{{ number_format($currentAsset->total_debit_today, 2) }}</td>
+                            <td style="text-align: right;">{{ number_format($currentAsset->total_credit_today, 2) }}</td>
+                            <td style="text-align: right;">
                                 {{ number_format(
                                     $currentAsset->total_debit_yesterday - $currentAsset->total_credit_yesterday +
                                     $currentAsset->total_debit_today + 
@@ -179,10 +175,10 @@
                         <tr>
                             <td></td>
                             <td>{{ $fixedAsset->account_name }}</td>                            
-                            <td>{{ number_format($fixedAsset->total_debit_yesterday - $fixedAsset->total_credit_yesterday, 2) }}</td>
-                            <td>{{ number_format($fixedAsset->total_debit_today, 2) }}</td>
-                            <td>{{ number_format($fixedAsset->total_credit_today, 2) }}</td>
-                            <td>
+                            <td style="text-align: right;">{{ number_format($fixedAsset->total_debit_yesterday - $fixedAsset->total_credit_yesterday, 2) }}</td>
+                            <td style="text-align: right;">{{ number_format($fixedAsset->total_debit_today, 2) }}</td>
+                            <td style="text-align: right;">{{ number_format($fixedAsset->total_credit_today, 2) }}</td>
+                            <td style="text-align: right;">
                                 {{ number_format(
                                     $fixedAsset->total_debit_yesterday - $fixedAsset->total_credit_yesterday + $fixedAsset->total_debit_today - $fixedAsset->total_credit_today, 2
                                 ) }}
@@ -198,12 +194,11 @@
                             @php
                             $closingAssetBalance = $yesCashInHand + $cashInHand + $cashInBank + $yesBankInHand + $fixedAssetTotalFinalBalance  + $totalReceivable;
                             @endphp
-                            <td>{{ number_format($yesBankInHand + $yesCashInHand + $yesAccountReceiveable + $fixedAssetTotalYesterdayBalance, 2) }}</td>
-                            <td>{{ number_format($totalTodayBankIncrements + $totalTodayCashIncrements + $fixedAssetTotalDebitToday, 2) }}</td>
-                            <td>{{ number_format($totalTodayBankDecrements + $totalTodayCashDecrements + $fixedAssetTotalCreditToday, 2) }}</td>
-                            <td>
+                            <td style="text-align: right;">{{ number_format($yesBankInHand + $yesCashInHand + $yesAccountReceiveable + $fixedAssetTotalYesterdayBalance, 2) }}</td>
+                            <td style="text-align: right;">{{ number_format($totalTodayBankIncrements + $totalTodayCashIncrements + $fixedAssetTotalDebitToday, 2) }}</td>
+                            <td style="text-align: right;">{{ number_format($totalTodayBankDecrements + $totalTodayCashDecrements + $fixedAssetTotalCreditToday, 2) }}</td>
+                            <td style="text-align: right;">
                                 {{ number_format($closingAssetBalance, 2) }}
-
                             </td>
                         </tr>
                         <!-- Asset End -->
@@ -229,10 +224,10 @@
                         <tr>
                             <td></td>
                             <td>{{ $shortTermLiability->account_name }}</td>
-                            <td>{{ number_format($shortTermLiability->total_debit_yesterday - $shortTermLiability->total_credit_yesterday, 2) }}</td>
-                            <td>{{ number_format($shortTermLiability->total_debit_today, 2) }}</td>
-                            <td>{{ number_format($shortTermLiability->total_credit_today, 2) }}</td>
-                            <td>
+                            <td style="text-align: right;">{{ number_format($shortTermLiability->total_debit_yesterday - $shortTermLiability->total_credit_yesterday, 2) }}</td>
+                            <td style="text-align: right;">{{ number_format($shortTermLiability->total_debit_today, 2) }}</td>
+                            <td style="text-align: right;">{{ number_format($shortTermLiability->total_credit_today, 2) }}</td>
+                            <td style="text-align: right;">
                                 {{ number_format($shortTermLiability->total_debit_yesterday - $shortTermLiability->total_credit_yesterday + $shortTermLiability->total_debit_today - $shortTermLiability->total_credit_today, 2) }}
                             </td>
                         </tr>
@@ -248,10 +243,10 @@
                         <tr>
                             <td></td>
                             <td>{{ $longTermLiability->account_name }}</td>
-                            <td>{{ number_format($longTermLiability->total_debit_yesterday - $longTermLiability->total_credit_yesterday, 2) }}</td>
-                            <td>{{ number_format($longTermLiability->total_debit_today, 2) }}</td>
-                            <td>{{ number_format($longTermLiability->total_credit_today, 2) }}</td>
-                            <td>
+                            <td style="text-align: right;">{{ number_format($longTermLiability->total_debit_yesterday - $longTermLiability->total_credit_yesterday, 2) }}</td>
+                            <td style="text-align: right;">{{ number_format($longTermLiability->total_debit_today, 2) }}</td>
+                            <td style="text-align: right;">{{ number_format($longTermLiability->total_credit_today, 2) }}</td>
+                            <td style="text-align: right;">
                                 {{ number_format(
                                     $longTermLiability->total_debit_yesterday - $longTermLiability->total_credit_yesterday + 
                                     $longTermLiability->total_debit_today - 
@@ -272,10 +267,10 @@
                         <tr>
                             <td></td>
                             <td>{{ $currentLiability->account_name }}</td>
-                            <td>{{ number_format($currentLiability->total_debit_yesterday - $currentLiability->total_credit_yesterday, 2) }}</td>
-                            <td>{{ number_format($currentLiability->total_debit_today, 2) }}</td>
-                            <td>{{ number_format($currentLiability->total_credit_today, 2) }}</td>
-                            <td>
+                            <td style="text-align: right;">{{ number_format($currentLiability->total_debit_yesterday - $currentLiability->total_credit_yesterday, 2) }}</td>
+                            <td style="text-align: right;">{{ number_format($currentLiability->total_debit_today, 2) }}</td>
+                            <td style="text-align: right;">{{ number_format($currentLiability->total_credit_today, 2) }}</td>
+                            <td style="text-align: right;">
                                 {{ number_format(
                                     $currentLiability->total_debit_yesterday - $currentLiability->total_credit_yesterday + 
                                     $currentLiability->total_debit_today - 
@@ -290,12 +285,12 @@
                         <tr>
                             <td></td>
                             <td>Account Payable</td>
-                            <td>         
+                            <td style="text-align: right;">         
                                 {{ number_format($yesAccountPayable, 2) }}
                             </td>
-                            <td>{{ number_format($todaysAccountPayableDebit + $todaysDueAccountPayableDebit + $todaysCreditPurchaseAP, 2) }}</td>
-                            <td>{{ number_format($totalTodaysAccountPayableCredit, 2) }}</td>
-                            <td>{{ number_format($yesAccountPayable - $totalTodaysAccountPayableCredit + $todaysCreditPurchaseAP + $todaysAccountPayableDebit+ $todaysDueAccountPayableDebit , 2) }}</td>
+                            <td style="text-align: right;">{{ number_format($todaysAccountPayableDebit + $todaysDueAccountPayableDebit + $todaysCreditPurchaseAP, 2) }}</td>
+                            <td style="text-align: right;">{{ number_format($totalTodaysAccountPayableCredit, 2) }}</td>
+                            <td style="text-align: right;">{{ number_format($yesAccountPayable - $totalTodaysAccountPayableCredit + $todaysCreditPurchaseAP + $todaysAccountPayableDebit+ $todaysDueAccountPayableDebit , 2) }}</td>
                         </tr>
                        <!-- Account Payable -->
 
@@ -317,10 +312,10 @@
                                  $closingLiabilityBalance = $totalLiabilitySum + $totalLiabilityDebitToday - $totalLiabilityCreditToday;                                             
                                  
                             @endphp
-                            <td>{{ number_format($totalLiabilitySum, 2) }}</td>
-                            <td>{{ number_format($totalLiabilityDebitToday, 2) }}</td>
-                            <td>{{ number_format($totalLiabilityCreditToday, 2) }}</td>
-                            <td>
+                            <td style="text-align: right;">{{ number_format($totalLiabilitySum, 2) }}</td>
+                            <td style="text-align: right;">{{ number_format($totalLiabilityDebitToday, 2) }}</td>
+                            <td style="text-align: right;">{{ number_format($totalLiabilityCreditToday, 2) }}</td>
+                            <td style="text-align: right;">
                                 {{ number_format($closingLiabilityBalance, 2) }}
                             </td>
                         </tr>
@@ -350,10 +345,10 @@
                         <tr>
                             <td></td>
                             <td>{{ $equityCapital->account_name }}</td>
-                            <td>{{ number_format($equityCapital->total_previous_receive - $equityCapital->total_previous_payment, 2) }}</td>
-                            <td>{{ number_format($equityCapital->total_debit_today, 2) }}</td>
-                            <td>{{ number_format($equityCapital->total_credit_today, 2) }}</td>
-                            <td>
+                            <td style="text-align: right;">{{ number_format($equityCapital->total_previous_receive - $equityCapital->total_previous_payment, 2) }}</td>
+                            <td style="text-align: right;">{{ number_format($equityCapital->total_debit_today, 2) }}</td>
+                            <td style="text-align: right;">{{ number_format($equityCapital->total_credit_today, 2) }}</td>
+                            <td style="text-align: right;">
                                 {{ number_format($equityCapital->total_previous_receive - $equityCapital->total_previous_payment + $equityCapital->total_debit_today - $equityCapital->total_credit_today, 2) }}
                             </td>
                         </tr>
@@ -367,16 +362,16 @@
                         <tr>
                             <td></td>
                             <td>Net Profit</td>
-                            <td>
+                            <td style="text-align: right;">
                                 {{ number_format($netProfitTillYesterday, 2) }}
                             </td>                           
-                            <td>
+                            <td style="text-align: right;">
                                 {{ number_format($netProfit, 2) }}
                             </td>
-                            <td>
+                            <td style="text-align: right;">
                                  {{-- {{ number_format($todayProfit, 2) }} --}}
                             </td>
-                            <td>
+                            <td style="text-align: right;">
                                 {{ number_format($netProfit + $netProfitTillYesterday, 2) }}
                             </td>
                         </tr>
@@ -386,10 +381,10 @@
                         <tr>
                             <td></td>
                             <td>{{ $retainedEarning->account_name }}</td>
-                            <td>{{ number_format($retainedEarning->total_debit_yesterday - $retainedEarning->total_credit_yesterday, 2) }}</td>
-                            <td>{{ number_format($retainedEarning->total_debit_today, 2) }}</td>
-                            <td>{{ number_format($retainedEarning->total_credit_today, 2) }}</td>
-                            <td>
+                            <td style="text-align: right;">{{ number_format($retainedEarning->total_debit_yesterday - $retainedEarning->total_credit_yesterday, 2) }}</td>
+                            <td style="text-align: right;">{{ number_format($retainedEarning->total_debit_today, 2) }}</td>
+                            <td style="text-align: right;">{{ number_format($retainedEarning->total_credit_today, 2) }}</td>
+                            <td style="text-align: right;">
                                 {{ number_format($retainedEarning->total_debit_yesterday - $retainedEarning->total_credit_yesterday + $retainedEarning->total_debit_today - $retainedEarning->total_credit_today, 2) }}
                             </td>
                         </tr>
@@ -410,10 +405,10 @@
                                                         collect($retainedEarnings)->sum('total_credit_today');
                                  $closingEquityBalance = $totalEquitySum  + $netProfitTillYesterday + $totalEquityDebitToday - $totalEquityCreditToday + $netProfit;                                             
                             @endphp
-                            <td>{{ number_format($totalEquitySum + $netProfitTillYesterday, 2) }}</td>
-                            <td>{{ number_format($totalEquityDebitToday + $netProfit, 2) }}</td>
-                            <td>{{ number_format($totalEquityCreditToday, 2) }}</td>
-                            <td>{{ number_format($closingEquityBalance, 2) }}</td>
+                            <td style="text-align: right;">{{ number_format($totalEquitySum + $netProfitTillYesterday, 2) }}</td>
+                            <td style="text-align: right;">{{ number_format($totalEquityDebitToday + $netProfit, 2) }}</td>
+                            <td style="text-align: right;">{{ number_format($totalEquityCreditToday, 2) }}</td>
+                            <td style="text-align: right;">{{ number_format($closingEquityBalance, 2) }}</td>
                         </tr>
                         <tr>
                             <td colspan="6"></td>
@@ -437,10 +432,10 @@
 
 
                             @endphp
-                            <td>{{ number_format($totalLiabilityEquitySum + $netProfitTillYesterday, 2) }}</td>
-                            <td>{{ number_format($toalLiabilityEquityDebitSum + $netProfit, 2) }}</td>
-                            <td>{{ number_format($totalLiabilityEquityCreditSum, 2) }}</td>
-                            <td>{{ number_format($totalLiabilityEquityClosingSum, 2) }}</td>
+                            <td style="text-align: right;">{{ number_format($totalLiabilityEquitySum + $netProfitTillYesterday, 2) }}</td>
+                            <td style="text-align: right;">{{ number_format($toalLiabilityEquityDebitSum + $netProfit, 2) }}</td>
+                            <td style="text-align: right;">{{ number_format($totalLiabilityEquityCreditSum, 2) }}</td>
+                            <td style="text-align: right;">{{ number_format($totalLiabilityEquityClosingSum, 2) }}</td>
                         </tr>
 
                     </tbody>
