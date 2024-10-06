@@ -33,8 +33,6 @@ class FinancialStatementController extends Controller
 
     public function balanceSheet(Request $request)
     {
-        $startDate = $request->query('start_date');
-
         $startDate = $request->input('start_date');
         if ($startDate) {
             $yest = Carbon::parse($startDate)->subDay()->format('Y-m-d');
@@ -42,7 +40,7 @@ class FinancialStatementController extends Controller
             $yest = Carbon::yesterday()->format('Y-m-d');
         }
 
-        //Net Profit
+        //Net Profit Today
         $netProfit = $this->calculateNetProfit($request);
 
         //Net Profit Till Yesterday
@@ -57,11 +55,10 @@ class FinancialStatementController extends Controller
             ->where('branch_id', auth()->user()->branch_id)
             ->get();
 
-        $yesterday = Carbon::yesterday();
         $today = date('Y-m-d');
         $branchId = auth()->user()->branch_id;
 
-        //Current Asset yesterday to today
+        //Current Asset
         $currentAssets = ChartOfAccount::where('sub_account_head', 'Current Asset')
             ->where('branch_id', auth()->user()->branch_id)
             ->with(['transactions' => function ($query) use ($yest) {
@@ -69,7 +66,8 @@ class FinancialStatementController extends Controller
             }])
 
             ->get();
-            
+
+        //Debit till yesterday   
         $currentAssets->each(function ($asset) use ($yest) {
             $asset->total_debit_yesterday = $asset->transactions()
                 ->where('branch_id', auth()->user()->branch_id)
@@ -79,6 +77,7 @@ class FinancialStatementController extends Controller
                 ->sum('at_amount');
         });
 
+        //Credit till yesterday
         $currentAssets->each(function ($asset) use ($yest) {
             $asset->total_credit_yesterday = $asset->transactions()
                 ->where('branch_id', auth()->user()->branch_id)
@@ -88,6 +87,7 @@ class FinancialStatementController extends Controller
                 ->sum('at_amount');
         });
 
+        //Debit Today
         $currentAssets->each(function ($asset) use ($today) {
             $asset->total_debit_today = $asset->transactions()
                 ->where('branch_id', auth()->user()->branch_id)
@@ -97,6 +97,7 @@ class FinancialStatementController extends Controller
                 ->sum('at_amount');
         });
 
+        //Credit Today
         $currentAssets->each(function ($asset) use ($today) {
             $asset->total_credit_today = $asset->transactions()
                 ->where('branch_id', auth()->user()->branch_id)
@@ -104,9 +105,9 @@ class FinancialStatementController extends Controller
                 ->whereDate('date', $today)
                 ->where('status', 0)
                 ->sum('at_amount');
-        });  
-        
-        //Fixed Asset till yesterday, Today debit, credit
+        });
+
+        //Fixed Asset
         $fixedAssets = ChartOfAccount::where('sub_account_head', 'Fixed Asset')
             ->where('branch_id', auth()->user()->branch_id)
             ->withSum(['transactions' => function ($query) use ($yest) {
@@ -116,6 +117,7 @@ class FinancialStatementController extends Controller
             }], 'at_amount')
             ->get();
 
+        //Debit till yesterday
         $fixedAssets->each(function ($asset) use ($yest) {
             $asset->total_debit_yesterday = $asset->transactions()
                 ->where('branch_id', auth()->user()->branch_id)
@@ -125,6 +127,7 @@ class FinancialStatementController extends Controller
                 ->sum('at_amount');
         });
 
+        //Credit till yesterday
         $fixedAssets->each(function ($asset) use ($yest) {
             $asset->total_credit_yesterday = $asset->transactions()
                 ->where('branch_id', auth()->user()->branch_id)
@@ -134,6 +137,7 @@ class FinancialStatementController extends Controller
                 ->sum('at_amount');
         });
 
+        //Debit Today
         $fixedAssets->each(function ($asset) use ($today) {
             $asset->total_debit_today = $asset->transactions()
                 ->where('branch_id', auth()->user()->branch_id)
@@ -143,6 +147,7 @@ class FinancialStatementController extends Controller
                 ->sum('at_amount');
         });
 
+        //Credit Today
         $fixedAssets->each(function ($asset) use ($today) {
             $asset->total_credit_today = $asset->transactions()
                 ->where('branch_id', auth()->user()->branch_id)
@@ -154,120 +159,118 @@ class FinancialStatementController extends Controller
 
         //Account Receivable
         $accountReceiveableIds = ChartOfAccount::where('sub_account_head', 'Account Receivable')
-        ->where('branch_id', auth()->user()->branch_id)
-        ->pluck('id');
+            ->where('branch_id', auth()->user()->branch_id)
+            ->pluck('id');
 
+        //Todays Account Receivable
         $todaysAccountReceivableCredit = Transaction::whereIn('chart_of_account_id', $accountReceiveableIds)
-                    ->where('status', 0)
-                    ->where('branch_id', auth()->user()->branch_id)
-                    ->where('transaction_type', 'Received')
-                    ->whereDate('date', $today)
-                    ->sum('at_amount');
+            ->where('status', 0)
+            ->where('branch_id', auth()->user()->branch_id)
+            ->where('transaction_type', 'Received')
+            ->whereDate('date', $today)
+            ->sum('at_amount');
 
+        //Sales Return Credit   
         $salesReturnCredit = Transaction::where('table_type', 'Income')
-                ->where('status', 0)
-                ->where('payment_type', 'Account Receivable')
-                ->where('transaction_type', 'Return')
-                ->whereDate('date', $today)
-                ->where('branch_id', auth()->user()->branch_id)
-                ->sum('at_amount');
+            ->where('status', 0)
+            ->where('payment_type', 'Account Receivable')
+            ->where('transaction_type', 'Return')
+            ->whereDate('date', $today)
+            ->where('branch_id', auth()->user()->branch_id)
+            ->sum('at_amount');
 
+        //Total Todays Account Receivable    
         $totalTodaysAccountReceivableCredit = $todaysAccountReceivableCredit + $salesReturnCredit;
 
-
+        //Todays Account Receivable Debit
         $todaysAccountReceivableDebit = Transaction::whereIn('chart_of_account_id', $accountReceiveableIds)
-                    ->where('status', 0)
-                    ->where('branch_id', auth()->user()->branch_id)
-                    ->whereIn('transaction_type', ['Purchase', 'Payment'])
-                    ->whereDate('date', $today)
-                    ->sum('at_amount');
+            ->where('status', 0)
+            ->where('branch_id', auth()->user()->branch_id)
+            ->whereIn('transaction_type', ['Purchase', 'Payment'])
+            ->whereDate('date', $today)
+            ->sum('at_amount');
 
+        //Todays Asset Sold Account Receivable    
         $todaysAssetSoldAR = Transaction::whereIn('asset_id', $accountReceiveableIds)
-                    ->where('status', 0)
-                    ->where('branch_id', auth()->user()->branch_id)
-                    ->where('transaction_type', 'Sold')
-                    ->whereDate('date', $today)
-                    ->sum('at_amount');
+            ->where('status', 0)
+            ->where('branch_id', auth()->user()->branch_id)
+            ->where('transaction_type', 'Sold')
+            ->whereDate('date', $today)
+            ->sum('at_amount');
 
-
-
+        //order due    
         $orderDues = Order::where('branch_id', auth()->user()->branch_id);
 
-        //Yesterday's account receivable
-        
-
+        //Yesterday's account receivable debit
         $yesAccountReceiveablesDebit = Transaction::whereIn('chart_of_account_id', $accountReceiveableIds)
-                            ->where('status', 0)
-                            ->where('branch_id', auth()->user()->branch_id)
-                            ->where('transaction_type', 'Payment')
-                            ->where('date', '<=', $yest)
-                            ->sum('at_amount');
+            ->where('status', 0)
+            ->where('branch_id', auth()->user()->branch_id)
+            ->where('transaction_type', 'Payment')
+            ->where('date', '<=', $yest)
+            ->sum('at_amount');
 
+        //Yesterday's account receivable credit    
         $yesAccountReceiveablesCredit = Transaction::whereIn('chart_of_account_id', $accountReceiveableIds)
-                            ->where('status', 0)
-                            ->where('branch_id', auth()->user()->branch_id)
-                            ->where('transaction_type', 'Received')
-                            ->where('date', '<=', $yest)
-                            ->sum('at_amount');
+            ->where('status', 0)
+            ->where('branch_id', auth()->user()->branch_id)
+            ->where('transaction_type', 'Received')
+            ->where('date', '<=', $yest)
+            ->sum('at_amount');
 
+        //Yesterday's asset sold account receivable    
         $yesAssetSoldAR = Transaction::whereIn('asset_id', $accountReceiveableIds)
-                            ->where('status', 0)
-                            ->where('branch_id', auth()->user()->branch_id)
-                            ->where('transaction_type', 'Sold')
-                            ->where('date', '<=', $yest)
-                            ->sum('at_amount');
+            ->where('status', 0)
+            ->where('branch_id', auth()->user()->branch_id)
+            ->where('transaction_type', 'Sold')
+            ->where('date', '<=', $yest)
+            ->sum('at_amount');
 
+        //Yesterday's product credit sold    
         $yesProductCreditSold = Transaction::where('status', 0)
-                            ->where('table_type', 'Income')
-                            ->whereNotNull('order_id')
-                            ->where('branch_id', auth()->user()->branch_id)
-                            ->where('transaction_type', 'Current')
-                            ->where('payment_type', 'Account Receivable')
-                            ->where('date', '<=', $yest)
-                            ->sum('at_amount');
+            ->where('table_type', 'Income')
+            ->whereNotNull('order_id')
+            ->where('branch_id', auth()->user()->branch_id)
+            ->where('transaction_type', 'Current')
+            ->where('payment_type', 'Account Receivable')
+            ->where('date', '<=', $yest)
+            ->sum('at_amount');
 
+        //Yesterday's return Account Receivable    
         $yesReturnAR = Transaction::where('status', 0)
-                            ->where('table_type', 'Income')
-                            ->whereNotNull('order_id')
-                            ->where('branch_id', auth()->user()->branch_id)
-                            ->where('transaction_type', 'Return')
-                            ->where('payment_type', 'Account Receivable')
-                            ->where('date', '<=', $yest)
-                            ->sum('at_amount');             
+            ->where('table_type', 'Income')
+            ->whereNotNull('order_id')
+            ->where('branch_id', auth()->user()->branch_id)
+            ->where('transaction_type', 'Return')
+            ->where('payment_type', 'Account Receivable')
+            ->where('date', '<=', $yest)
+            ->sum('at_amount');
 
+        //Total Yesterday's account receivable    
         $yesAccountReceiveable = $yesAccountReceiveablesDebit + $yesAssetSoldAR - $yesAccountReceiveablesCredit + $yesProductCreditSold - $yesReturnAR;
-        
-        
+
+        //Account Payable
         $accountPayableIds = ChartOfAccount::where('sub_account_head', 'Account Payable')
             ->where('branch_id', auth()->user()->branch_id)
             ->pluck('id');
 
-
+        //Todays Account Payable
         $todaysAccountPayableCredit = Transaction::whereIn('chart_of_account_id', $accountPayableIds)
-                ->where('status', 0)
-                ->where('branch_id', auth()->user()->branch_id)
-                ->where('transaction_type', 'Payment')
-                ->whereDate('date', $today)
-                ->sum('at_amount');
+            ->where('status', 0)
+            ->where('branch_id', auth()->user()->branch_id)
+            ->where('transaction_type', 'Payment')
+            ->whereDate('date', $today)
+            ->sum('at_amount');
+        //Todays Purchase Return Account Payable
+        $todaysPurchaseReturnAP = Transaction::where('table_type', 'Cogs')
+            ->where('transaction_type', 'Return')
+            ->where('status', 0)
+            ->where('payment_type', 'Account Payable')
+            ->whereDate('date', $today)
+            ->where('branch_id', auth()->user()->branch_id)
+            ->sum('at_amount');
 
-         $todaysPurchaseReturnAP = Transaction::where('table_type', 'Cogs')
-                    ->where('transaction_type', 'Return')
-                    ->where('status', 0)
-                    ->where('payment_type', 'Account Payable')
-                    ->whereDate('date', $today)
-                    ->where('branch_id', auth()->user()->branch_id)
-                    ->sum('at_amount'); 
-
-         $todaysPurchaseReturnAP = Transaction::where('table_type', 'Cogs')
-                    ->where('transaction_type', 'Return')
-                    ->where('status', 0)
-                    ->where('payment_type', 'Account Payable')
-                    ->whereDate('date', $today)
-                    ->where('branch_id', auth()->user()->branch_id)
-                    ->sum('at_amount');    
-
-
-          $totalTodaysAccountPayableCredit = $todaysAccountPayableCredit + $todaysPurchaseReturnAP;      
+        //Todays total Account Payable Credit
+        $totalTodaysAccountPayableCredit = $todaysAccountPayableCredit + $todaysPurchaseReturnAP;
 
         //Today's account payable debit
         $todaysAccountPayableDebit = Transaction::whereIn('chart_of_account_id', $accountPayableIds)
@@ -286,8 +289,7 @@ class FinancialStatementController extends Controller
             ->where('branch_id', auth()->user()->branch_id)
             ->sum('at_amount');
 
-
-         //Todays due account payable debit   
+        //Todays due account payable debit   
         $todaysDueAccountPayableDebit = Transaction::whereIn('liability_id', $accountPayableIds)
             ->where('status', 0)
             ->where('branch_id', auth()->user()->branch_id)
@@ -319,15 +321,15 @@ class FinancialStatementController extends Controller
             ->where('branch_id', auth()->user()->branch_id)
             ->where('transaction_type', 'Received')
             ->where('date', '<=', $yest)
-            ->sum('at_amount'); 
+            ->sum('at_amount');
 
-         //Yesterday's Asset expense and due   
+        //Yesterday's Asset expense and due   
         $yesAssetExpenseDue = Transaction::whereIn('liability_id', $accountPayableIds)
             ->where('status', 0)
             ->where('branch_id', auth()->user()->branch_id)
             ->whereIn('transaction_type', ['Due', 'Purchase'])
             ->where('date', '<=', $yest)
-            ->sum('at_amount'); 
+            ->sum('at_amount');
 
         //Yesterday's product purchse by credit
         $yesProductCreditPurchase = Transaction::where('status', 0)
@@ -345,10 +347,10 @@ class FinancialStatementController extends Controller
             ->where('payment_type', 'Account Payable')
             ->where('date', '<=', $yest)
             ->where('branch_id', auth()->user()->branch_id)
-            ->sum('at_amount'); 
-            
+            ->sum('at_amount');
+
         //Total yesterday's account payable
-        $yesAccountPayable = $yesAccountPayableDebit + $yesProductCreditPurchase + $yesAssetExpenseDue - $yesAccountPayableCredit - $yesPurchaseReturnAP;  
+        $yesAccountPayable = $yesAccountPayableDebit + $yesProductCreditPurchase + $yesAssetExpenseDue - $yesAccountPayableCredit - $yesPurchaseReturnAP;
 
         //Short Term Liabilities
         $shortTermLiabilities = ChartOfAccount::where('sub_account_head', 'Short Term Liabilities')
@@ -360,6 +362,7 @@ class FinancialStatementController extends Controller
             }], 'at_amount')
             ->get();
 
+        //Yesterday credit   
         $shortTermLiabilities->each(function ($liability) use ($yest) {
             $liability->total_debit_yesterday = $liability->transactions()
                 ->where('branch_id', auth()->user()->branch_id)
@@ -368,7 +371,8 @@ class FinancialStatementController extends Controller
                 ->where('status', 0)
                 ->sum('at_amount');
         });
-    
+
+        //Yesterday debit
         $shortTermLiabilities->each(function ($liability) use ($yest) {
             $liability->total_credit_yesterday = $liability->transactions()
                 ->where('branch_id', auth()->user()->branch_id)
@@ -378,6 +382,7 @@ class FinancialStatementController extends Controller
                 ->sum('at_amount');
         });
 
+        //Today credit
         $shortTermLiabilities->each(function ($liability) use ($today) {
             $liability->total_debit_today = $liability->transactions()
                 ->where('branch_id', auth()->user()->branch_id)
@@ -387,6 +392,7 @@ class FinancialStatementController extends Controller
                 ->sum('at_amount');
         });
 
+        //Today debit
         $shortTermLiabilities->each(function ($liability) use ($today) {
             $liability->total_credit_today = $liability->transactions()
                 ->where('branch_id', auth()->user()->branch_id)
@@ -396,7 +402,7 @@ class FinancialStatementController extends Controller
                 ->sum('at_amount');
         });
 
-        //Long Term Liabilities yesterday to today
+        //Long Term Liabilities
         $longTermLiabilities = ChartOfAccount::where('sub_account_head', 'Long Term Liabilities')
             ->where('branch_id', auth()->user()->branch_id)
             ->withSum(['transactions' => function ($query) use ($yest) {
@@ -406,6 +412,7 @@ class FinancialStatementController extends Controller
             }], 'at_amount')
             ->get();
 
+        //Yesterday credit    
         $longTermLiabilities->each(function ($liability) use ($yest) {
             $liability->total_debit_yesterday = $liability->transactions()
                 ->where('branch_id', auth()->user()->branch_id)
@@ -415,6 +422,7 @@ class FinancialStatementController extends Controller
                 ->sum('at_amount');
         });
 
+        //Yesterday debit
         $longTermLiabilities->each(function ($liability) use ($yest) {
             $liability->total_credit_yesterday = $liability->transactions()
                 ->where('branch_id', auth()->user()->branch_id)
@@ -424,6 +432,7 @@ class FinancialStatementController extends Controller
                 ->sum('at_amount');
         });
 
+        //Today credit
         $longTermLiabilities->each(function ($liability) use ($today) {
             $liability->total_debit_today = $liability->transactions()
                 ->where('branch_id', auth()->user()->branch_id)
@@ -433,6 +442,7 @@ class FinancialStatementController extends Controller
                 ->sum('at_amount');
         });
 
+        //Today debit
         $longTermLiabilities->each(function ($liability) use ($today) {
             $liability->total_credit_today = $liability->transactions()
                 ->where('branch_id', auth()->user()->branch_id)
@@ -452,6 +462,27 @@ class FinancialStatementController extends Controller
             }], 'at_amount')
             ->get();
 
+        //Yesterday debit
+        $currentLiabilities->each(function ($liability) use ($yest) {
+            $liability->total_debit_yesterday = $liability->transactions()
+                ->where('branch_id', auth()->user()->branch_id)
+                ->where('transaction_type', 'Received')
+                ->whereDate('date', '<=', $yest)
+                ->where('status', 0)
+                ->sum('at_amount');
+        });
+
+        //Yesterday credit
+        $currentLiabilities->each(function ($liability) use ($yest) {
+            $liability->total_credit_yesterday = $liability->transactions()
+                ->where('branch_id', auth()->user()->branch_id)
+                ->where('transaction_type', 'Payment')
+                ->whereDate('date', '<=', $yest)
+                ->where('status', 0)
+                ->sum('at_amount');
+        });
+
+        //Today credit    
         $currentLiabilities->each(function ($liability) use ($today) {
             $liability->total_debit_today = $liability->transactions()
                 ->where('branch_id', auth()->user()->branch_id)
@@ -461,6 +492,7 @@ class FinancialStatementController extends Controller
                 ->sum('at_amount');
         });
 
+        //Today debit
         $currentLiabilities->each(function ($liability) use ($today) {
             $liability->total_credit_today = $liability->transactions()
                 ->where('branch_id', auth()->user()->branch_id)
@@ -470,25 +502,7 @@ class FinancialStatementController extends Controller
                 ->sum('at_amount');
         });
 
-        $currentLiabilities->each(function ($liability) use ($yest) {
-            $liability->total_debit_yesterday = $liability->transactions()
-                ->where('branch_id', auth()->user()->branch_id)
-                ->where('transaction_type', 'Received')
-                ->whereDate('date','<=', $yest)
-                ->where('status', 0)
-                ->sum('at_amount');
-        });
-
-        $currentLiabilities->each(function ($liability) use ($yest) {
-            $liability->total_credit_yesterday = $liability->transactions()
-                ->where('branch_id', auth()->user()->branch_id)
-                ->where('transaction_type', 'Payment')
-                ->whereDate('date','<=', $yest)
-                ->where('status', 0)
-                ->sum('at_amount');
-        });
-
-        //Equity Capital yesterday to today
+        //Equity Capital
         $equityCapitals = ChartOfAccount::where('sub_account_head', 'Equity Capital')
             ->where('branch_id', $branchId)
             ->withSum(['transactions' => function ($query) use ($branchId, $today) {
@@ -498,22 +512,25 @@ class FinancialStatementController extends Controller
             }], 'at_amount')
             ->get();
 
+        //yesterday credit
         $equityCapitals->each(function ($equity) use ($branchId, $yest) {
             $equity->total_previous_payment = $equity->transactions()
                 ->where('branch_id', $branchId)->where('status', 0)
                 ->where('transaction_type', 'Payment')
-                ->whereDate('date','<=', $yest)
+                ->whereDate('date', '<=', $yest)
                 ->sum('at_amount');
         });
 
+        //yesterday debit
         $equityCapitals->each(function ($equity) use ($branchId, $yest) {
             $equity->total_previous_receive = $equity->transactions()
                 ->where('branch_id', $branchId)->where('status', 0)
                 ->where('transaction_type', 'Received')
-                ->whereDate('date','<=', $yest)
+                ->whereDate('date', '<=', $yest)
                 ->sum('at_amount');
         });
 
+        //Today debit
         $equityCapitals->each(function ($equity) use ($branchId, $today) {
             $equity->total_debit_today = $equity->transactions()
                 ->where('branch_id', $branchId)->where('status', 0)
@@ -522,13 +539,14 @@ class FinancialStatementController extends Controller
                 ->sum('at_amount');
         });
 
+        //Today credit
         $equityCapitals->each(function ($equity) use ($branchId, $today) {
             $equity->total_credit_today = $equity->transactions()
                 ->where('branch_id', $branchId)->where('status', 0)
                 ->where('transaction_type', 'Payment')
                 ->whereDate('date', $today)
                 ->sum('at_amount');
-        }); 
+        });
 
         //Retained Earnings
         $retainedEarnings = ChartOfAccount::where('sub_account_head', 'Retained Earnings')
@@ -540,6 +558,7 @@ class FinancialStatementController extends Controller
             }], 'at_amount')
             ->get();
 
+        //yesterday debit    
         $retainedEarnings->each(function ($liability) use ($yest) {
             $liability->total_debit_yesterday = $liability->transactions()
                 ->where('branch_id', auth()->user()->branch_id)
@@ -549,6 +568,7 @@ class FinancialStatementController extends Controller
                 ->sum('at_amount');
         });
 
+        //yesterday credit
         $retainedEarnings->each(function ($liability) use ($yest) {
             $liability->total_credit_yesterday = $liability->transactions()
                 ->where('branch_id', auth()->user()->branch_id)
@@ -558,6 +578,7 @@ class FinancialStatementController extends Controller
                 ->sum('at_amount');
         });
 
+        //Today debit
         $retainedEarnings->each(function ($liability) use ($today) {
             $liability->total_debit_today = $liability->transactions()
                 ->where('branch_id', auth()->user()->branch_id)
@@ -567,6 +588,7 @@ class FinancialStatementController extends Controller
                 ->sum('at_amount');
         });
 
+        //Today credit
         $retainedEarnings->each(function ($liability) use ($today) {
             $liability->total_credit_today = $liability->transactions()
                 ->where('branch_id', auth()->user()->branch_id)
@@ -576,24 +598,25 @@ class FinancialStatementController extends Controller
                 ->sum('at_amount');
         });
 
-
         //All current assets
         $currentAssetIds = ChartOfAccount::where('sub_account_head', 'Current Asset')
             ->pluck('id');
-    
+
+        //Current Bank Asset    
         $currentBankAsset = Transaction::whereIn('chart_of_account_id', $currentAssetIds)
             ->where('status', 0)
             ->where('payment_type', 'Bank')
             ->where('branch_id', auth()->user()->branch_id)
             ->sum('at_amount');
+
+        //Current Cash Asset    
         $currentCashAsset = Transaction::whereIn('chart_of_account_id', $currentAssetIds)
             ->where('status', 0)
             ->where('payment_type', 'Cash')
             ->where('branch_id', auth()->user()->branch_id)
             ->sum('at_amount');
 
-        //Account Payable date to date
-        
+        //Account Payable
         $accountPayables = Transaction::whereIn('chart_of_account_id', $accountPayableIds)
             ->where('status', 0)
             ->where('branch_id', auth()->user()->branch_id);
@@ -602,15 +625,13 @@ class FinancialStatementController extends Controller
             $accountPayables->whereBetween('date', [request()->input('startDate'), request()->input('endDate')]);
         }
 
-        //Inventory date to date
+        //Inventory 
         $inventory = PurchaseHistoryLog::when($request->has('startDate') && $request->has('endDate'), function ($query) use ($request) {
             $query->whereBetween('log_date', [$request->input('startDate'), $request->input('endDate')]);
         })
-        ->sum('total_amount');
+            ->sum('total_amount');
 
-        $yester = Carbon::yesterday()->format('Y-m-d');
-
-        $yesInventory = PurchaseHistoryLog::whereDate('log_date', $yester)->sum('total_amount');
+        $yesInventory = PurchaseHistoryLog::whereDate('log_date', $yest)->sum('total_amount');
 
         $purchaseDues = Purchase::where('branch_id', auth()->user()->branch_id);
 
@@ -621,10 +642,10 @@ class FinancialStatementController extends Controller
         //Total account payable
         $accountPayable = $accountPayables->sum('at_amount') + $purchaseDues->sum('due_amount');
 
-
         //All current liabilities
         $currentLiabilityIds = ChartOfAccount::where('sub_account_head', 'Current Liabilities')
             ->pluck('id');
+
         $currentLiability = Transaction::whereIn('chart_of_account_id', $currentLiabilityIds)
             ->where('status', 0)
             ->where('branch_id', auth()->user()->branch_id)
@@ -633,6 +654,7 @@ class FinancialStatementController extends Controller
         //All long term liabilities
         $longTermLiabilityIds = ChartOfAccount::where('sub_account_head', 'Long Term Liabilities')
             ->pluck('id');
+
         $longTermLiability = Transaction::whereIn('chart_of_account_id', $longTermLiabilityIds)
             ->where('status', 0)
             ->where('branch_id', auth()->user()->branch_id)
@@ -641,6 +663,7 @@ class FinancialStatementController extends Controller
         //All equity capital
         $equityCapitalIds = ChartOfAccount::where('sub_account_head', 'Equity Capital')
             ->pluck('id');
+
         $equityCapital = Transaction::whereIn('chart_of_account_id', $equityCapitalIds)
             ->where('status', 0)
             ->where('branch_id', auth()->user()->branch_id)
@@ -649,470 +672,472 @@ class FinancialStatementController extends Controller
         //All retained earnings
         $retainedEarningIds = ChartOfAccount::where('sub_account_head', 'Retained Earnings')
             ->pluck('id');
+
         $retainedEarning = Transaction::whereIn('chart_of_account_id', $retainedEarningIds)
             ->where('status', 0)
             ->where('branch_id', auth()->user()->branch_id)
             ->sum('at_amount');
-        //All retained earnings end
 
-            //Cash Increment
-            //Cash Income Increment today
-            $CashIncomeIncrementToday = Transaction::where('table_type', 'Income')
-                ->whereIn('transaction_type', ['Current', 'Advance'])
-                ->where('status', 0)
-                ->where('payment_type', 'Cash')
-                ->whereDate('date', $today)
-                ->where('branch_id', auth()->user()->branch_id)
-                ->sum('at_amount');
+        //Cash Income Increment today
+        $CashIncomeIncrementToday = Transaction::where('table_type', 'Income')
+            ->whereIn('transaction_type', ['Current', 'Advance'])
+            ->where('status', 0)
+            ->where('payment_type', 'Cash')
+            ->whereDate('date', $today)
+            ->where('branch_id', auth()->user()->branch_id)
+            ->sum('at_amount');
 
-            
-            
-            //Cash Asset Increment today
-            $CashAssetIncrementToday = Transaction::where('table_type', 'Assets')
-                ->whereIn('transaction_type', ['Sold', 'Received'])
-                ->where('status', 0)
-                ->where('payment_type', 'Cash')
-                ->whereDate('date', $today)
-                ->where('branch_id', auth()->user()->branch_id)
-                ->sum('at_amount');
+        //Cash Asset Increment today
+        $CashAssetIncrementToday = Transaction::where('table_type', 'Assets')
+            ->whereIn('transaction_type', ['Sold', 'Received'])
+            ->where('status', 0)
+            ->where('payment_type', 'Cash')
+            ->whereDate('date', $today)
+            ->where('branch_id', auth()->user()->branch_id)
+            ->sum('at_amount');
 
-            //Cash Liabilities Increment today
-            $CashLiabilitiesIncrementToday = Transaction::where('table_type', 'Liabilities')
-                ->where('transaction_type', 'Received')
-                ->where('status', 0)
-                ->where('payment_type', 'Cash')
-                ->whereDate('date', $today)
-                ->where('branch_id', auth()->user()->branch_id)
-                ->sum('at_amount');
+        //Cash Liabilities Increment today
+        $CashLiabilitiesIncrementToday = Transaction::where('table_type', 'Liabilities')
+            ->where('transaction_type', 'Received')
+            ->where('status', 0)
+            ->where('payment_type', 'Cash')
+            ->whereDate('date', $today)
+            ->where('branch_id', auth()->user()->branch_id)
+            ->sum('at_amount');
 
-            //Cash Equity Increment today
-            $CashEquityIncrementToday = Transaction::where('table_type', 'Equity')
-                ->where('transaction_type', 'Received')
-                ->where('status', 0)
-                ->where('payment_type', 'Cash')
-                ->whereDate('date', $today)
-                ->where('branch_id', auth()->user()->branch_id)
-                ->sum('at_amount');
-                
-            $PurchaseReturnCashIncrementToday = Transaction::where('table_type', 'Cogs')
-                ->where('transaction_type', 'Return')
-                ->where('status', 0)
-                ->where('payment_type', 'Cash')
-                ->whereDate('date', $today)
-                ->where('branch_id', auth()->user()->branch_id)
-                ->sum('at_amount');
+        //Cash Equity Increment today
+        $CashEquityIncrementToday = Transaction::where('table_type', 'Equity')
+            ->where('transaction_type', 'Received')
+            ->where('status', 0)
+            ->where('payment_type', 'Cash')
+            ->whereDate('date', $today)
+            ->where('branch_id', auth()->user()->branch_id)
+            ->sum('at_amount');
 
-            //Total Cash Increment today
-            $totalTodayCashIncrements = $CashIncomeIncrementToday + $CashAssetIncrementToday + $CashLiabilitiesIncrementToday + $CashEquityIncrementToday + $PurchaseReturnCashIncrementToday;
+        $PurchaseReturnCashIncrementToday = Transaction::where('table_type', 'Cogs')
+            ->where('transaction_type', 'Return')
+            ->where('status', 0)
+            ->where('payment_type', 'Cash')
+            ->whereDate('date', $today)
+            ->where('branch_id', auth()->user()->branch_id)
+            ->sum('at_amount');
 
-            //Bank Increment
-            //Bank Income Increment today
-            $todayBankIncomeIncrement = Transaction::where('table_type', 'Income')
-                ->whereIn('transaction_type', ['Current', 'Advance'])
-                ->where('status', 0)
-                ->where('payment_type', 'Bank')
-                ->whereDate('date', $today)
-                ->where('branch_id', auth()->user()->branch_id)->sum('at_amount');
+        //Total Cash Increment today
+        $totalTodayCashIncrements = $CashIncomeIncrementToday + $CashAssetIncrementToday + $CashLiabilitiesIncrementToday + $CashEquityIncrementToday + $PurchaseReturnCashIncrementToday;
 
+        //Bank Income Increment today
+        $todayBankIncomeIncrement = Transaction::where('table_type', 'Income')
+            ->whereIn('transaction_type', ['Current', 'Advance'])
+            ->where('status', 0)
+            ->where('payment_type', 'Bank')
+            ->whereDate('date', $today)
+            ->where('branch_id', auth()->user()->branch_id)->sum('at_amount');
 
-            //Bank Asset Increment today
-            $todayBankAssetIncrement = Transaction::where('table_type', 'Assets')
-                ->where('transaction_type', 'Sold')
-                ->where('status', 0)
-                ->where('payment_type', 'Bank')
-                ->whereDate('date', $today)
-                ->where('branch_id', auth()->user()->branch_id)->sum('at_amount');
+        //Bank Asset Increment today
+        $todayBankAssetIncrement = Transaction::where('table_type', 'Assets')
+            ->where('transaction_type', 'Sold')
+            ->where('status', 0)
+            ->where('payment_type', 'Bank')
+            ->whereDate('date', $today)
+            ->where('branch_id', auth()->user()->branch_id)->sum('at_amount');
 
+        //Bank Liabilities Increment today
+        $todayBankLiabilitiesIncrement = Transaction::where('table_type', 'Liabilities')
+            ->where('transaction_type', 'Received')
+            ->where('status', 0)
+            ->where('payment_type', 'Bank')
+            ->whereDate('date', $today)
+            ->where('branch_id', auth()->user()->branch_id)->sum('at_amount');
 
-            //Bank Liabilities Increment today
-            $todayBankLiabilitiesIncrement = Transaction::where('table_type', 'Liabilities')
-                ->where('transaction_type', 'Received')
-                ->where('status', 0)
-                ->where('payment_type', 'Bank')
-                ->whereDate('date', $today)
-                ->where('branch_id', auth()->user()->branch_id)->sum('at_amount');
+        //Bank Equity Increment today
+        $todayBankEquityIncrement = Transaction::where('table_type', 'Equity')
+            ->where('transaction_type', 'Received')
+            ->where('status', 0)
+            ->where('payment_type', 'Bank')
+            ->whereDate('date', $today)
+            ->where('branch_id', auth()->user()->branch_id)->sum('at_amount');
 
+        //Purchase Return Bank Increment
+        $PurchaseReturnBankIncrementToday = Transaction::where('table_type', 'Cogs')
+            ->where('transaction_type', 'Return')
+            ->where('status', 0)
+            ->where('payment_type', 'Bank')
+            ->whereDate('date', $today)
+            ->where('branch_id', auth()->user()->branch_id)
+            ->sum('at_amount');
 
-            //Bank Equity Increment today
-            $todayBankEquityIncrement = Transaction::where('table_type', 'Equity')
-                ->where('transaction_type', 'Received')
-                ->where('status', 0)
-                ->where('payment_type', 'Bank')
-                ->whereDate('date', $today)
-                ->where('branch_id', auth()->user()->branch_id)->sum('at_amount');
+        //Total Today Bank Increment
+        $totalTodayBankIncrements = $todayBankIncomeIncrement + $todayBankAssetIncrement + $todayBankLiabilitiesIncrement + $todayBankEquityIncrement + $PurchaseReturnBankIncrementToday;
 
-            $PurchaseReturnBankIncrementToday = Transaction::where('table_type', 'Cogs')
-                ->where('transaction_type', 'Return')
-                ->where('status', 0)
-                ->where('payment_type', 'Bank')
-                ->whereDate('date', $today)
-                ->where('branch_id', auth()->user()->branch_id)
-                ->sum('at_amount');
+        //Cash Expense Decrement today
+        $expenseCashDecrement = Transaction::where('table_type', 'Expenses')
+            ->whereIn('transaction_type', ['Current', 'Prepaid'])
+            ->where('status', 0)
+            ->where('payment_type', 'Cash')
+            ->whereDate('date', $today)
+            ->where('branch_id', auth()->user()->branch_id)
+            ->sum('at_amount');
 
-            //Total Today Bank Increment
-            $totalTodayBankIncrements = $todayBankIncomeIncrement + $todayBankAssetIncrement + $todayBankLiabilitiesIncrement + $todayBankEquityIncrement + $PurchaseReturnBankIncrementToday;
+        //Cash Asset Decrement today
+        $assetCashDecrement = Transaction::where('table_type', 'Assets')
+            ->whereIn('transaction_type', ['Payment', 'Purchase'])
+            ->where('status', 0)
+            ->where('payment_type', 'Cash')
+            ->whereDate('date', $today)
+            ->where('branch_id', auth()->user()->branch_id)
+            ->sum('at_amount');
 
-            //Cash Decrement
+        //Cash Liabilities Decrement today
+        $liabilitiesCashDecrement = Transaction::where('table_type', 'Liabilities')
+            ->where('transaction_type', 'Payment')
+            ->where('status', 0)
+            ->where('payment_type', 'Cash')
+            ->whereDate('date', $today)
+            ->where('branch_id', auth()->user()->branch_id)
+            ->sum('at_amount');
 
-            //Cash Expense Decrement today
-            $expenseCashDecrement = Transaction::where('table_type', 'Expenses')
-                ->whereIn('transaction_type', ['Current','Prepaid'])
-                ->where('status', 0)
-                ->where('payment_type', 'Cash')
-                ->whereDate('date', $today)
-                ->where('branch_id', auth()->user()->branch_id)
-                ->sum('at_amount');
-            
-            //Cash Asset Decrement today
-            $assetCashDecrement = Transaction::where('table_type', 'Assets')
-                ->whereIn('transaction_type', ['Payment', 'Purchase'])
-                ->where('status', 0)
-                ->where('payment_type', 'Cash')
-                ->whereDate('date', $today)
-                ->where('branch_id', auth()->user()->branch_id)
-                ->sum('at_amount');
+        //Cash Equity Decrement today
+        $equityCashDecrement = Transaction::where('table_type', 'Equity')
+            ->where('transaction_type', 'Payment')
+            ->where('status', 0)
+            ->where('payment_type', 'Cash')
+            ->whereDate('date', $today)
+            ->where('branch_id', auth()->user()->branch_id)
+            ->sum('at_amount');
 
-            //Cash Liabilities Decrement today
-            $liabilitiesCashDecrement = Transaction::where('table_type', 'Liabilities')
-                ->where('transaction_type', 'Payment')
-                ->where('status', 0)
-                ->where('payment_type', 'Cash')
-                ->whereDate('date', $today)
-                ->where('branch_id', auth()->user()->branch_id)
-                ->sum('at_amount');
+        //Cash Income Decrement today
+        $incomeCashDecrement = Transaction::where('table_type', 'Income')
+            ->where('transaction_type', 'Refund')
+            ->where('status', 0)
+            ->where('payment_type', 'Cash')
+            ->whereDate('date', $today)
+            ->where('branch_id', auth()->user()->branch_id)
+            ->sum('at_amount');
 
-                
+        //Cash Purchase Decrement today
+        $purchaseCashDecrement = Transaction::where('table_type', 'Cogs')
+            ->where('status', 0)
+            ->where('payment_type', 'Cash')
+            ->where('transaction_type', 'Current')
+            ->whereDate('date', $today)
+            ->where('branch_id', auth()->user()->branch_id)
+            ->sum('at_amount');
 
-            //Cash Equity Decrement today
-            $equityCashDecrement = Transaction::where('table_type', 'Equity')
-                ->where('transaction_type', 'Payment')
-                ->where('status', 0)
-                ->where('payment_type', 'Cash')
-                ->whereDate('date', $today)
-                ->where('branch_id', auth()->user()->branch_id)
-                ->sum('at_amount');
+        //Cash Sales Return Decrement today    
+        $salesReturnCashDecrement = Transaction::where('table_type', 'Income')
+            ->where('status', 0)
+            ->where('payment_type', 'Cash')
+            ->where('transaction_type', 'Return')
+            ->whereDate('date', $today)
+            ->where('branch_id', auth()->user()->branch_id)
+            ->sum('at_amount');
 
-                
+        //Total Today Cash Decrement
+        $totalTodayCashDecrements = $expenseCashDecrement + $assetCashDecrement + $liabilitiesCashDecrement + $equityCashDecrement + $incomeCashDecrement + $purchaseCashDecrement + $salesReturnCashDecrement;
 
-            //Cash Income Decrement today
-            $incomeCashDecrement = Transaction::where('table_type', 'Income')
-                ->where('transaction_type', 'Refund')
-                ->where('status', 0)
-                ->where('payment_type', 'Cash')
-                ->whereDate('date', $today)
-                ->where('branch_id', auth()->user()->branch_id)
-                ->sum('at_amount');
+        //Bank Expense Decrement today
+        $todayExpenseBankDecrement = Transaction::where('table_type', 'Expenses')
+            ->whereIn('transaction_type', ['Current', 'Prepaid'])
+            ->where('status', 0)
+            ->where('payment_type', 'Bank')
+            ->whereDate('date', $today)
+            ->where('branch_id', auth()->user()->branch_id)->sum('at_amount');
 
-             $purchaseCashDecrement = Transaction::where('table_type', 'Cogs')
-                ->where('status', 0)
-                -> where('payment_type', 'Cash')
-                ->where('transaction_type', 'Current')
-                ->whereDate('date', $today)
-                ->where('branch_id', auth()->user()->branch_id)
-                ->sum('at_amount');
-
-             $salesReturnCashDecrement = Transaction::where('table_type', 'Income')
-                ->where('status', 0)
-                ->where('payment_type', 'Cash')
-                ->where('transaction_type', 'Return')
-                ->whereDate('date', $today)
-                ->where('branch_id', auth()->user()->branch_id)
-                ->sum('at_amount');
-
-            //Total Today Cash Decrement
-            $totalTodayCashDecrements = $expenseCashDecrement + $assetCashDecrement + $liabilitiesCashDecrement + $equityCashDecrement + $incomeCashDecrement + $purchaseCashDecrement + $salesReturnCashDecrement;
-            
-            //Bank Decrement
-
-            //Bank Expense Decrement today
-            $todayExpenseBankDecrement = Transaction::where('table_type', 'Expenses')
-                ->whereIn('transaction_type', ['Current','Prepaid'])
-                ->where('status', 0)
-                ->where('payment_type', 'Bank')
-                ->whereDate('date', $today)
-                ->where('branch_id', auth()->user()->branch_id)->sum('at_amount');
+        //Bank Asset Decrement today
+        $todayAssetBankDecrement = Transaction::where('table_type', 'Assets')
+            ->whereIn('transaction_type', ['Payment', 'Purchase'])
+            ->where('status', 0)
+            ->where('payment_type', 'Bank')
+            ->whereDate('date', $today)
+            ->where('branch_id', auth()->user()->branch_id)->sum('at_amount');
 
 
-            //Bank Asset Decrement today
-            $todayAssetBankDecrement = Transaction::where('table_type', 'Assets')
-                ->whereIn('transaction_type', ['Payment', 'Purchase'])
-                ->where('status', 0)
-                ->where('payment_type', 'Bank')
-                ->whereDate('date', $today)
-                ->where('branch_id', auth()->user()->branch_id)->sum('at_amount');
+        //Bank Liabilities Decrement today
+        $todayLiabilitiesBankDecrement = Transaction::where('table_type', 'Liabilities')
+            ->where('transaction_type', 'Payment')
+            ->where('status', 0)
+            ->where('payment_type', 'Bank')
+            ->whereDate('date', $today)
+            ->where('branch_id', auth()->user()->branch_id)->sum('at_amount');
 
 
-            //Bank Liabilities Decrement today
-            $todayLiabilitiesBankDecrement = Transaction::where('table_type', 'Liabilities')
-                ->where('transaction_type', 'Payment')
-                ->where('status', 0)
-                ->where('payment_type', 'Bank')
-                ->whereDate('date', $today)
-                ->where('branch_id', auth()->user()->branch_id)->sum('at_amount');
+        //Bank Equity Decrement today
+        $todayEquityBankDecrement = Transaction::where('table_type', 'Equity')
+            ->where('transaction_type', 'Payment')
+            ->where('status', 0)
+            ->where('payment_type', 'Bank')
+            ->whereDate('date', $today)
+            ->where('branch_id', auth()->user()->branch_id)->sum('at_amount');
 
 
-            //Bank Equity Decrement today
-            $todayEquityBankDecrement = Transaction::where('table_type', 'Equity')
-                ->where('transaction_type', 'Payment')
-                ->where('status', 0)
-                ->where('payment_type', 'Bank')
-                ->whereDate('date', $today)
-                ->where('branch_id', auth()->user()->branch_id)->sum('at_amount');
+        //Bank Income Decrement today
+        $todayIncomeBankDecrement = Transaction::where('table_type', 'Income')
+            ->where('transaction_type', 'Refund')
+            ->where('status', 0)
+            ->where('payment_type', 'Bank')
+            ->whereDate('date', $today)
+            ->where('branch_id', auth()->user()->branch_id)->sum('at_amount');
+
+        //Bank Purchase Decrement today    
+        $purchaseBankDecrement = Transaction::where('table_type', 'Cogs')
+            ->where('status', 0)
+            ->where('payment_type', 'Bank')
+            ->where('transaction_type', 'Current')
+            ->whereDate('date', $today)
+            ->where('branch_id', auth()->user()->branch_id)
+            ->sum('at_amount');
+
+        //Bank Sales Return Decrement today         
+        $salesReturnBankDecrement = Transaction::where('table_type', 'Income')
+            ->where('status', 0)
+            ->where('payment_type', 'Bank')
+            ->where('transaction_type', 'Return')
+            ->whereDate('date', $today)
+            ->where('branch_id', auth()->user()->branch_id)
+            ->sum('at_amount');
 
 
-            //Bank Income Decrement today
-            $todayIncomeBankDecrement = Transaction::where('table_type', 'Income')
-                ->where('transaction_type', 'Refund')
-                ->where('status', 0)
-                ->where('payment_type', 'Bank')
-                ->whereDate('date', $today)
-                ->where('branch_id', auth()->user()->branch_id)->sum('at_amount');
+        //Total Today Bank Decrement
+        $totalTodayBankDecrements = $todayExpenseBankDecrement + $todayAssetBankDecrement + $todayLiabilitiesBankDecrement + $todayEquityBankDecrement + $todayIncomeBankDecrement + $purchaseBankDecrement + $salesReturnBankDecrement;
 
-            $purchaseBankDecrement = Transaction::where('table_type', 'Cogs')
-                ->where('status', 0)
-                -> where('payment_type', 'Bank')
-                ->where('transaction_type', 'Current')
-                ->whereDate('date', $today)
-                ->where('branch_id', auth()->user()->branch_id)
-                ->sum('at_amount');
-                
-            $salesReturnBankDecrement = Transaction::where('table_type', 'Income')
-                ->where('status', 0)
-                ->where('payment_type', 'Bank')
-                ->where('transaction_type', 'Return')
-                ->whereDate('date', $today)
-                ->where('branch_id', auth()->user()->branch_id)
-                ->sum('at_amount');
+        //Cash in Hand and Bank
+        $cashInHand = $totalTodayCashIncrements - $totalTodayCashDecrements;
+        $cashInBank = $totalTodayBankIncrements - $totalTodayBankDecrements;
 
+        //Till Yesterday Income Cash Increment
+        $yestCashIncomeIncrement = Transaction::where('table_type', 'Income')
+            ->whereIn('transaction_type', ['Current', 'Advance'])
+            ->where('status', 0)
+            ->where('payment_type', 'Cash')
+            ->where('branch_id', auth()->user()->branch_id)
+            ->where('date', '<=', $yest)
+            ->sum('at_amount');
 
-            //Total Today Bank Decrement
-            $totalTodayBankDecrements = $todayExpenseBankDecrement + $todayAssetBankDecrement + $todayLiabilitiesBankDecrement + $todayEquityBankDecrement + $todayIncomeBankDecrement + $purchaseBankDecrement + $salesReturnBankDecrement;
+        //Till Yesterday Asset Cash Increment    
+        $yestCashAssetIncrement = Transaction::where('table_type', 'Assets')
+            ->whereIn('transaction_type', ['Received', 'Sold'])
+            ->where('status', 0)
+            ->where('payment_type', 'Cash')
+            ->where('branch_id', auth()->user()->branch_id)
+            ->where('date', '<=', $yest)
+            ->sum('at_amount');
 
-            //Cash in Hand and Bank
-            $cashInHand = $totalTodayCashIncrements - $totalTodayCashDecrements;
-            $cashInBank = $totalTodayBankIncrements - $totalTodayBankDecrements;
-            
+        //Till Yesterday Liabilities Cash Increment
+        $yestCashLiabilitiesIncrement = Transaction::where('table_type', 'Liabilities')
+            ->where('transaction_type', 'Received')
+            ->where('status', 0)
+            ->where('payment_type', 'Cash')
+            ->where('branch_id', auth()->user()->branch_id)
+            ->where('date', '<=', $yest)
+            ->sum('at_amount');
 
-            //Total till yesterday Cash in Hand, Cash at Bank start 
-            $yest = Carbon::yesterday();
+        //Till Yesterday Equity Cash Increment
+        $yestCashEquityIncrement = Transaction::where('table_type', 'Equity')
+            ->where('transaction_type', 'Received')
+            ->where('status', 0)
+            ->where('payment_type', 'Cash')
+            ->where('branch_id', auth()->user()->branch_id)
+            ->where('date', '<=', $yest)
+            ->sum('at_amount');
 
-            //Till Yesterday Cash Increment
+        //Till Yesterday Purchase Return Cash Increment
+        $yestpurchaseReturnCashIncrement = Transaction::where('table_type', 'Cogs')
+            ->where('transaction_type', 'Return')
+            ->where('status', 0)
+            ->where('payment_type', 'Cash')
+            ->where('date', '<=', $yest)
+            ->where('branch_id', auth()->user()->branch_id)
+            ->sum('at_amount');
 
-            $yestCashIncomeIncrement = Transaction::where('table_type', 'Income')
-                ->whereIn('transaction_type', ['Current', 'Advance'])
-                ->where('status', 0)
-                ->where('payment_type', 'Cash')
-                ->where('branch_id', auth()->user()->branch_id)
-                ->where('date', '<=', $yest)
-                ->sum('at_amount');
-
-            $yestCashAssetIncrement = Transaction::where('table_type', 'Assets')
-                ->whereIn('transaction_type', ['Received', 'Sold'])
-                ->where('status', 0)
-                ->where('payment_type', 'Cash')
-                ->where('branch_id', auth()->user()->branch_id)
-                ->where('date', '<=', $yest)
-                ->sum('at_amount');
-
-            $yestCashLiabilitiesIncrement = Transaction::where('table_type', 'Liabilities')
-                ->where('transaction_type', 'Received')
-                ->where('status', 0)
-                ->where('payment_type', 'Cash')
-                ->where('branch_id', auth()->user()->branch_id)
-                ->where('date', '<=', $yest)
-                ->sum('at_amount');
-
-            $yestCashEquityIncrement = Transaction::where('table_type', 'Equity')
-                ->where('transaction_type', 'Received')
-                ->where('status', 0)
-                ->where('payment_type', 'Cash')
-                ->where('branch_id', auth()->user()->branch_id)
-                ->where('date', '<=', $yest)
-                ->sum('at_amount');
-
-            $yestpurchaseReturnCashIncrement = Transaction::where('table_type', 'Cogs')
-                ->where('transaction_type', 'Return')
-                ->where('status', 0)
-                ->where('payment_type', 'Cash')
-                ->where('date', '<=', $yest)
-                ->where('branch_id', auth()->user()->branch_id)
-                ->sum('at_amount');
-
+        //Total Till Yesterday Cash Increment
         $totalYestCashIncrement = $yestCashIncomeIncrement  + $yestCashAssetIncrement + $yestCashLiabilitiesIncrement + $yestCashEquityIncrement + $yestpurchaseReturnCashIncrement;
 
-                // dd($totalYestCashIncrement);
-            //Till Yesterday Cash Decrement
+        //Till Yesterday Expense Cash Decrement
+        $yestExpenseCashDecrement = Transaction::where('table_type', 'Expenses')
+            ->whereIn('transaction_type', ['Current', 'Prepaid'])
+            ->where('status', 0)
+            ->where('payment_type', 'Cash')
+            ->where('branch_id', auth()->user()->branch_id)
+            ->where('date', '<=', $yest)
+            ->sum('at_amount');
 
-            $yestExpenseCashDecrement = Transaction::where('table_type', 'Expenses')
-                ->whereIn('transaction_type', ['Current','Prepaid'])
-                ->where('status', 0)
-                ->where('payment_type', 'Cash')
-                ->where('branch_id', auth()->user()->branch_id)
-                ->where('date','<=', $yest)
-                ->sum('at_amount');
-                
+        //Till Yesterday Asset Cash Decrement
+        $yestAssetCashDecrement = Transaction::where('table_type', 'Assets')
+            ->whereIn('transaction_type', ['Payment', 'Purchase'])
+            ->where('status', 0)
+            ->where('payment_type', 'Cash')
+            ->where('branch_id', auth()->user()->branch_id)
+            ->where('date', '<=', $yest)
+            ->sum('at_amount');
 
-            $yestAssetCashDecrement = Transaction::where('table_type', 'Assets')
-                ->whereIn('transaction_type', ['Payment', 'Purchase'])
-                ->where('status', 0)
-                ->where('payment_type', 'Cash')
-                ->where('branch_id', auth()->user()->branch_id)
-                ->where('date','<=', $yest)
-                ->sum('at_amount');
+        //Till Yesterday Liabilities Cash Decrement
+        $yestLiabilitiesCashDecrement = Transaction::where('table_type', 'Liabilities')
+            ->where('transaction_type', 'Payment')
+            ->where('status', 0)
+            ->where('payment_type', 'Cash')
+            ->where('branch_id', auth()->user()->branch_id)
+            ->where('date', '<=', $yest)
+            ->sum('at_amount');
 
-            $yestLiabilitiesCashDecrement = Transaction::where('table_type', 'Liabilities')
-                ->where('transaction_type', 'Payment')
-                ->where('status', 0)
-                ->where('payment_type', 'Cash')
-                ->where('branch_id', auth()->user()->branch_id)
-                ->where('date','<=', $yest)
-                ->sum('at_amount');
+        //Till Yesterday Equity Cash Decrement
+        $yestEquityCashDecrement = Transaction::where('table_type', 'Equity')
+            ->where('transaction_type', 'Payment')
+            ->where('status', 0)
+            ->where('payment_type', 'Cash')
+            ->where('branch_id', auth()->user()->branch_id)
+            ->where('date', '<=', $yest)
+            ->sum('at_amount');
 
-            $yestEquityCashDecrement = Transaction::where('table_type', 'Equity')
-                ->where('transaction_type', 'Payment')
-                ->where('status', 0)
-                ->where('payment_type', 'Cash')
-                ->where('branch_id', auth()->user()->branch_id)
-                ->where('date','<=', $yest)
-                ->sum('at_amount');
+        //Till Yesterday Income Cash Decrement
+        $yestIncomeCashDecrement = Transaction::where('table_type', 'Income')
+            ->where('transaction_type', 'Refund')
+            ->where('status', 0)
+            ->where('payment_type', 'Cash')
+            ->where('branch_id', auth()->user()->branch_id)
+            ->where('date', '<=', $yest)
+            ->sum('at_amount');
 
-            $yestIncomeCashDecrement = Transaction::where('table_type', 'Income')
-                ->where('transaction_type', 'Refund')
-                ->where('status', 0)
-                ->where('payment_type', 'Cash')
-                ->where('branch_id', auth()->user()->branch_id)
-                ->where('date','<=', $yest)
-                ->sum('at_amount');
+        //Till Yesterday Purchase Cash Decrement
+        $yestPurchaseCashDecrement = Transaction::where('table_type', 'Cogs')
+            ->where('transaction_type', 'Current')
+            ->where('status', 0)
+            ->where('payment_type', 'Cash')
+            ->where('branch_id', auth()->user()->branch_id)
+            ->where('date', '<=', $yest)
+            ->sum('at_amount');
 
-            $yestPurchaseCashDecrement = Transaction::where('table_type', 'Cogs')
-                ->where('transaction_type', 'Current')
-                ->where('status', 0)
-                ->where('payment_type', 'Cash')
-                ->where('branch_id', auth()->user()->branch_id)
-                ->where('date','<=', $yest)
-                ->sum('at_amount');
-
-                // dd($yestPurchaseCashDecrement);
-
+        //Total Till Yesterday Cash Decrement
         $totalYestCashDecrement = $yestExpenseCashDecrement + $yestAssetCashDecrement + $yestLiabilitiesCashDecrement + $yestEquityCashDecrement + $yestIncomeCashDecrement + $yestPurchaseCashDecrement;
 
-            //Till Today Bank Increment
+        //Till Yesterday Bank Increment
+        //Till Yesterday Asset Bank Increment
+        $yestAssetBankIncrement = Transaction::where('table_type', 'Assets')
+            ->where('transaction_type', 'Sold')
+            ->where('status', 0)
+            ->where('payment_type', 'Bank')
+            ->where('branch_id', auth()->user()->branch_id)
+            ->where('date', '<=', $yest)
+            ->sum('at_amount');
 
-            $yestAssetBankIncrement = Transaction::where('table_type', 'Assets')
-                ->where('transaction_type', 'Sold')
-                ->where('status', 0)
-                ->where('payment_type', 'Bank')
-                ->where('branch_id', auth()->user()->branch_id)
-                ->where('date', '<=', $yest)
-                ->sum('at_amount');
+        //Till Yesterday Liabilities Bank Increment
+        $yestLiabilitiesBankIncrement = Transaction::where('table_type', 'Liabilities')
+            ->where('transaction_type', 'Received')
+            ->where('status', 0)
+            ->where('payment_type', 'Bank')
+            ->where('branch_id', auth()->user()->branch_id)
+            ->where('date', '<=', $yest)
+            ->sum('at_amount');
 
-            $yestLiabilitiesBankIncrement = Transaction::where('table_type', 'Liabilities')
-                ->where('transaction_type', 'Received')
-                ->where('status', 0)
-                ->where('payment_type', 'Bank')
-                ->where('branch_id', auth()->user()->branch_id)
-                ->where('date', '<=', $yest)
-                ->sum('at_amount');
+        //Till Yesterday Equity Bank Increment
+        $yestEquityBankIncrement = Transaction::where('table_type', 'Equity')
+            ->where('transaction_type', 'Received')
+            ->where('status', 0)
+            ->where('payment_type', 'Bank')
+            ->where('branch_id', auth()->user()->branch_id)
+            ->where('date', '<=', $yest)
+            ->sum('at_amount');
 
-            $yestEquityBankIncrement = Transaction::where('table_type', 'Equity')
-                ->where('transaction_type', 'Received')
-                ->where('status', 0)
-                ->where('payment_type', 'Bank')
-                ->where('branch_id', auth()->user()->branch_id)
-                ->where('date', '<=', $yest)
-                ->sum('at_amount');
+        //Till Yesterday Income Bank Increment
+        $yestIncomeBankIncrement = Transaction::where('table_type', 'Income')
+            ->whereIn('transaction_type', ['Current', 'Advance'])
+            ->where('status', 0)
+            ->where('payment_type', 'Bank')
+            ->where('branch_id', auth()->user()->branch_id)
+            ->where('date', '<=', $yest)
+            ->sum('at_amount');
 
-            $yestIncomeBankIncrement = Transaction::where('table_type', 'Income')
-                ->whereIn('transaction_type', ['Current', 'Advance'])
-                ->where('status', 0)
-                ->where('payment_type', 'Bank')
-                ->where('branch_id', auth()->user()->branch_id)
-                ->where('date', '<=', $yest)
-                ->sum('at_amount');
-                // dd($yestIncomeBankIncrement);
+        //Till Yesterday Purchase Bank Increment
+        $yestpurchaseReturnCashIncrement = Transaction::where('table_type', 'Cogs')
+            ->where('transaction_type', 'Return')
+            ->where('status', 0)
+            ->where('payment_type', 'Bank')
+            ->where('date', '<=', $yest)
+            ->where('branch_id', auth()->user()->branch_id)
+            ->sum('at_amount');
 
-            $yestpurchaseReturnCashIncrement = Transaction::where('table_type', 'Cogs')
-                ->where('transaction_type', 'Return')
-                ->where('status', 0)
-                ->where('payment_type', 'Bank')
-                ->where('date', '<=', $yest)
-                ->where('branch_id', auth()->user()->branch_id)
-                ->sum('at_amount');
-        
-        
+
+        //Total Till Yesterday Bank Increment 
         $totalYestBankIncrement = $yestAssetBankIncrement + $yestLiabilitiesBankIncrement + $yestEquityBankIncrement + $yestIncomeBankIncrement + $yestpurchaseReturnCashIncrement;
 
 
-            //Till Yesterday Bank Decrement
+        //Till Yesterday Bank Decrement
+        //Till Yesterday Expense Bank Decrement
+        $yestExpenseBankDecrement = Transaction::where('table_type', 'Expenses')
+            ->whereIn('transaction_type', ['Current', 'Prepaid'])
+            ->where('status', 0)
+            ->where('payment_type', 'Bank')
+            ->where('branch_id', auth()->user()->branch_id)
+            ->where('date', '<=', $yest)
+            ->sum('at_amount');
 
-            $yestExpenseBankDecrement = Transaction::where('table_type', 'Expenses')
-                ->whereIn('transaction_type', ['Current','Prepaid'])
-                ->where('status', 0)
-                ->where('payment_type', 'Bank')
-                ->where('branch_id', auth()->user()->branch_id)
-                ->where('date','<=', $yest)
-                ->sum('at_amount');
+        //Till Yesterday Asset Bank Decrement
+        $yestAssetBankDecrement = Transaction::where('table_type', 'Assets')
+            ->whereIn('transaction_type', ['Payment', 'Purchase'])
+            ->where('status', 0)
+            ->where('payment_type', 'Bank')
+            ->where('branch_id', auth()->user()->branch_id)
+            ->where('date', '<=', $yest)
+            ->sum('at_amount');
 
-            $yestAssetBankDecrement = Transaction::where('table_type', 'Assets')
-                ->whereIn('transaction_type', ['Payment', 'Purchase'])
-                ->where('status', 0)
-                ->where('payment_type', 'Bank')
-                ->where('branch_id', auth()->user()->branch_id)
-                ->where('date','<=', $yest)
-                ->sum('at_amount');
+        //Till Yesterday Liabilities Bank Decrement
+        $yestLiabilitiesBankDecrement = Transaction::where('table_type', 'Liabilities')
+            ->where('transaction_type', 'Payment')
+            ->where('status', 0)
+            ->where('payment_type', 'Bank')
+            ->where('branch_id', auth()->user()->branch_id)
+            ->where('date', '<=', $yest)
+            ->sum('at_amount');
 
-            $yestLiabilitiesBankDecrement = Transaction::where('table_type', 'Liabilities')
-                ->where('transaction_type', 'Payment')
-                ->where('status', 0)
-                ->where('payment_type', 'Bank')
-                ->where('branch_id', auth()->user()->branch_id)
-                ->where('date','<=', $yest)
-                ->sum('at_amount');
+        //Till Yesterday Equity Bank Decrement
+        $yestEquityBankDecrement = Transaction::where('table_type', 'Equity')
+            ->where('transaction_type', 'Payment')
+            ->where('status', 0)
+            ->where('payment_type', 'Bank')
+            ->where('branch_id', auth()->user()->branch_id)
+            ->where('date', '<=', $yest)
+            ->sum('at_amount');
 
-            $yestEquityBankDecrement = Transaction::where('table_type', 'Equity')
-                ->where('transaction_type', 'Payment')
-                ->where('status', 0)
-                ->where('payment_type', 'Bank')
-                ->where('branch_id', auth()->user()->branch_id)
-                ->where('date','<=', $yest)
-                ->sum('at_amount');
+        //Till Yesterday Income Bank Decrement
+        $yestIncomeBankDecrement = Transaction::where('table_type', 'Income')
+            ->where('transaction_type', 'Refund')
+            ->where('status', 0)
+            ->where('payment_type', 'Bank')
+            ->where('branch_id', auth()->user()->branch_id)
+            ->where('date', '<=', $yest)
+            ->sum('at_amount');
 
-            $yestIncomeBankDecrement = Transaction::where('table_type', 'Income')
-                ->where('transaction_type', 'Refund')
-                ->where('status', 0)
-                ->where('payment_type', 'Bank')
-                ->where('branch_id', auth()->user()->branch_id)
-                ->where('date','<=', $yest)
-                ->sum('at_amount');
+        //Till Yesterday Purchase Bank Decrement
+        $yestPurchaseBankDecrement = Transaction::where('table_type', 'Cogs')
+            ->where('transaction_type', 'Current')
+            ->where('status', 0)
+            ->where('payment_type', 'Bank')
+            ->where('branch_id', auth()->user()->branch_id)
+            ->where('date', '<=', $yest)
+            ->sum('at_amount');
 
-            $yestPurchaseBankDecrement = Transaction::where('table_type', 'Cogs')
-                ->where('transaction_type', 'Current')
-                ->where('status', 0)
-                ->where('payment_type', 'Bank')
-                ->where('branch_id', auth()->user()->branch_id)
-                ->where('date','<=', $yest)
-                ->sum('at_amount');
+        //Till Yesterday Sales Return Bank Decrement
+        $yestSalesRetunBankDecrement = Transaction::where('table_type', 'Income')
+            ->where('transaction_type', 'Return')
+            ->where('status', 0)
+            ->where('payment_type', 'Bank')
+            ->where('branch_id', auth()->user()->branch_id)
+            ->where('date', '<=', $yest)
+            ->sum('at_amount');
 
-            $yestSalesRetunBankDecrement = Transaction::where('table_type', 'Income')
-                ->where('transaction_type', 'Return')
-                ->where('status', 0)
-                ->where('payment_type', 'Bank')
-                ->where('branch_id', auth()->user()->branch_id)
-                ->where('date','<=', $yest)
-                ->sum('at_amount');
+        //Total Till Yesterday Bank Decrement
+        $totalYestBankDecrement = $yestExpenseBankDecrement + $yestAssetBankDecrement + $yestLiabilitiesBankDecrement + $yestEquityBankDecrement + $yestIncomeBankDecrement + $yestPurchaseBankDecrement + $yestSalesRetunBankDecrement;
 
-        $totalYestBankDecrement = $yestExpenseBankDecrement + $yestAssetBankDecrement + $yestLiabilitiesBankDecrement + $yestEquityBankDecrement + $yestIncomeBankDecrement + $yestPurchaseBankDecrement + $yestSalesRetunBankDecrement;  
-
+        //Yesterday Cash In Hand
         $yesCashInHand = $totalYestCashIncrement - $totalYestCashDecrement;
+
+        //Yesterday Bank In Hand
         $yesBankInHand = $totalYestBankIncrement - $totalYestBankDecrement;
-            // dd($totalYestCashIncrement);
-            // $cashInHand = $totalTodayCashIncrements - $totalTodayCashDecrements;
-        return view('admin.balance_sheet.index', compact('currentAssetIds', 'currentBankAsset', 'currentCashAsset', 'currentLiability', 'longTermLiabilities', 'equityCapital', 'retainedEarning','currentAssets', 'fixedAssets', 'fixedAsset', 'shortTermLiabilities', 'currentLiabilities', 'equityCapitals', 'retainedEarnings', 'cashInHand', 'cashInBank', 'inventory', 'netProfit', 'yesCashInHand', 'yesBankInHand', 'yesAccountReceiveable', 'yesInventory', 'netProfitTillYesterday','totalTodayCashIncrements','totalTodayCashDecrements', 'totalTodayBankIncrements', 'totalTodayBankDecrements', 'todaysAccountReceivableDebit','todaysAssetSoldAR', 'yesAccountPayable', 'totalTodaysAccountPayableCredit', 'todaysAccountPayableDebit', 'todaysProductCreditSold','todaysDueAccountPayableDebit', 'todaysCreditPurchaseAP', 'totalTodaysAccountReceivableCredit'));
+
+        return view('admin.balance_sheet.index', compact('currentAssetIds', 'currentBankAsset', 'currentCashAsset', 'currentLiability', 'longTermLiabilities', 'equityCapital', 'retainedEarning', 'currentAssets', 'fixedAssets', 'fixedAsset', 'shortTermLiabilities', 'currentLiabilities', 'equityCapitals', 'retainedEarnings', 'cashInHand', 'cashInBank', 'inventory', 'netProfit', 'yesCashInHand', 'yesBankInHand', 'yesAccountReceiveable', 'yesInventory', 'netProfitTillYesterday', 'totalTodayCashIncrements', 'totalTodayCashDecrements', 'totalTodayBankIncrements', 'totalTodayBankDecrements', 'todaysAccountReceivableDebit', 'todaysAssetSoldAR', 'yesAccountPayable', 'totalTodaysAccountPayableCredit', 'todaysAccountPayableDebit', 'todaysProductCreditSold', 'todaysDueAccountPayableDebit', 'todaysCreditPurchaseAP', 'totalTodaysAccountReceivableCredit'));
     }
 
     public function calculateNetProfit(Request $request)
     {
-        $yesterday = Carbon::yesterday();
         $today = date('Y-m-d');
         $branchId = auth()->user()->branch_id;
 
@@ -1120,7 +1145,7 @@ class FinancialStatementController extends Controller
         $salesSumToday = Transaction::where('table_type', 'Income')
             ->where('status', 0)
             ->whereNull('chart_of_account_id')
-            ->whereNot('transaction_type','Return')
+            ->whereNot('transaction_type', 'Return')
             ->where('branch_id', $branchId)
             ->whereDate('date', $today)
             ->sum('amount');
@@ -1151,28 +1176,28 @@ class FinancialStatementController extends Controller
 
         // Operating Income today
         $operatingIncomeSumToday = Transaction::where('table_type', 'Income')
-                ->where('status', 0)
-                ->whereNotNull('chart_of_account_id')
-                ->where('branch_id', $branchId)
-                ->whereIn('transaction_type', ['Current', 'Advance'])
-                ->whereDate('date', $today)
-                ->sum('amount');
+            ->where('status', 0)
+            ->whereNotNull('chart_of_account_id')
+            ->where('branch_id', $branchId)
+            ->whereIn('transaction_type', ['Current', 'Advance'])
+            ->whereDate('date', $today)
+            ->sum('amount');
 
         $operatingIncomeRefundToday = Transaction::where('table_type', 'Income')
-                ->where('status', 0)
-                ->whereNotNull('chart_of_account_id')
-                ->where('branch_id', $branchId)
-                ->whereIn('transaction_type', ['Refund'])
-                ->whereDate('date', $today)
-                ->sum('amount');
+            ->where('status', 0)
+            ->whereNotNull('chart_of_account_id')
+            ->where('branch_id', $branchId)
+            ->whereIn('transaction_type', ['Refund'])
+            ->whereDate('date', $today)
+            ->sum('amount');
 
         //Purchase return today
         $purchaseReturnToday = Transaction::where('table_type', 'Cogs')
-                ->where('transaction_type', 'Return')
-                ->where('status', 0)
-                ->whereDate('date', $today)
-                ->where('branch_id', auth()->user()->branch_id)
-                ->sum('at_amount');
+            ->where('transaction_type', 'Return')
+            ->where('status', 0)
+            ->whereDate('date', $today)
+            ->where('branch_id', auth()->user()->branch_id)
+            ->sum('at_amount');
 
         // Operating Expenses today
         $operatingExpenseId = ChartOfAccount::where('sub_account_head', 'Operating Expense')->pluck('id');
@@ -1243,12 +1268,14 @@ class FinancialStatementController extends Controller
 
         // Net Profit Calculation
         $taxAndVat = $purchaseVatSum + $salesVatSum + $operatingExpenseVatSum + $administrativeExpenseVatSum;
-        $netSalesToday = $salesSumToday - $salesReturnToday - $salesDiscount;
-        $grossProfit = $netSalesToday + $purchaseReturnToday - $purchaseSumToday ;
-        $profitBeforeTax = $grossProfit + $operatingIncomeSumToday - $operatingIncomeRefundToday - $operatingExpenseSumToday - $administrativeExpenseSumToday - $overHeadExpenseSumToday - $FixedAssetDepriciationToday;
-        $netProfit = $profitBeforeTax - $taxAndVat;
-        return $netProfit;
 
+        $netSalesToday = $salesSumToday - $salesReturnToday - $salesDiscount;
+
+        $profitBeforeTax = $netSalesToday + $purchaseReturnToday - $purchaseSumToday + $operatingIncomeSumToday - $operatingIncomeRefundToday - $operatingExpenseSumToday - $administrativeExpenseSumToday - $overHeadExpenseSumToday - $FixedAssetDepriciationToday;
+
+        $netProfit = $profitBeforeTax - $taxAndVat;
+
+        return $netProfit;
     }
 
     public function calculateNetProfitTillYesterday($yest)
@@ -1259,12 +1286,12 @@ class FinancialStatementController extends Controller
         $yesOperatingIncome = Transaction::where('table_type', 'Income')
             ->where('status', 0)
             ->whereNotNull('chart_of_account_id')
-            ->whereIn('transaction_type', ['Current','Advance'])
+            ->whereIn('transaction_type', ['Current', 'Advance'])
             ->where('branch_id', $branchId)
             ->whereDate('date', '<=', $yest)
             ->sum('amount');
 
-        // Operating Income Refund
+        //Operating Income Refund
         $yesOperatingIncomeRefund = Transaction::where('table_type', 'Income')
             ->where('status', 0)
             ->whereNotNull('chart_of_account_id')
@@ -1273,7 +1300,7 @@ class FinancialStatementController extends Controller
             ->whereDate('date', '<=', $yest)
             ->sum('amount');
 
-        // Sales sum
+        //Sales sum
         $salesSum = Transaction::where('table_type', 'Income')
             ->where('status', 0)
             ->whereNull('chart_of_account_id')
@@ -1290,12 +1317,12 @@ class FinancialStatementController extends Controller
             ->where('branch_id', $branchId)
             ->sum('amount');
 
-        // Sales Discount
+        //Sales Discount
         $salesDiscount = Order::where('branch_id', $branchId)
             ->whereDate('orderdate', '<=', $yest)
             ->sum('discount_amount');
 
-        // Purchase sum (Cost of Goods Sold)
+        //Purchase sum (Cost of Goods Sold)
         $purchaseSum = Transaction::where('table_type', 'Cogs')
             ->where('status', 0)
             ->where('description', 'Purchase')
@@ -1342,7 +1369,7 @@ class FinancialStatementController extends Controller
         //Fixed Assets   
         $FixedAssetId = ChartOfAccount::where('sub_account_head', 'Fixed Asset')->where('account_head', 'Assets')->pluck('id');
 
-        // //Fixed Asset sold depriciation previous
+        //Fixed Asset sold depriciation previous
         $FixedAssetDepriciation = Transaction::whereIn('chart_of_account_id', $FixedAssetId)
             ->where('status', 0)
             ->where('table_type', 'Assets')
@@ -1351,7 +1378,7 @@ class FinancialStatementController extends Controller
             ->whereDate('date', '<=', $yest)
             ->sum('amount');
 
-        // VAT Calculations
+        //VAT Calculations
         $purchaseVatSum = Transaction::where('table_type', 'Cogs')
             ->where('status', 0)
             ->where('description', 'Purchase')
@@ -1360,6 +1387,7 @@ class FinancialStatementController extends Controller
             ->whereDate('date', '<=', $yest)
             ->sum('vat_amount');
 
+        //VAT Calculations    
         $salesVatSum = Transaction::where('table_type', 'Income')
             ->where('status', 0)
             ->where('branch_id', $branchId)
@@ -1380,13 +1408,13 @@ class FinancialStatementController extends Controller
 
         // Net Profit Calculation
         $taxAndVat = $purchaseVatSum + $salesVatSum + $operatingExpenseVatSum + $administrativeExpenseVatSum;
+
         $netSales = $salesSum + $previousPurchaseReturn - $salesReturn - $salesDiscount + $yesOperatingIncome - $yesOperatingIncomeRefund - $FixedAssetDepriciation;
 
-        $grossProfit = $netSales - $purchaseSum;
-        $profitBeforeTax = $grossProfit - $operatingExpenseSum - $administrativeExpenseSum - $overheadExpenseSum;
+        $profitBeforeTax = $netSales - $purchaseSum - $operatingExpenseSum - $administrativeExpenseSum - $overheadExpenseSum;
+
         $netProfitTillYesterday = $profitBeforeTax - $taxAndVat;
-        
+
         return $netProfitTillYesterday;
     }
-
 }
