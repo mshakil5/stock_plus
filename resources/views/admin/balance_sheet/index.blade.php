@@ -61,7 +61,6 @@
                         <!-- Asset Start -->
                         <tr>
                             <td><strong>Asset</strong></td>
-                            <td><strong>Main Asset Type</strong></td>
                             <td><strong>Sub Asset Type</strong></td>
                             <td><strong>Opening Balance</strong></td>
                             <td><strong>Debit Movement</strong></td>
@@ -69,10 +68,9 @@
                             <td><strong>Closing Balance</strong></td>
                         </tr>
                         <tr>
-                            <td colspan="8"></td>
+                            <td colspan="6"></td>
                         </tr>
                         <tr>
-                            <td></td>
                             <td><strong>Current Asset</strong></td>
                             <td></td>
                             <td><strong>Total Till Yesterday</strong></td>
@@ -84,7 +82,7 @@
                         <!-- current assets  -->
 
                         <tr>
-                            <td colspan="2"></td>
+                            <td></td>
                             <td>Cash In Hand</td>
                             <td>
                                 {{ number_format($yesCashInHand, 2) }}
@@ -94,8 +92,8 @@
                             <td>{{ number_format($yesCashInHand + $cashInHand, 2) }}</td>
                         </tr>
 
-                         <tr>
-                            <td colspan="2"></td>
+                        <tr>
+                            <td></td>
                             <td>Cash at Bank</td>
                             <td> 
                                     {{ number_format($yesBankInHand, 2) }}
@@ -110,7 +108,7 @@
                         </tr>
 
                         <tr>
-                            <td colspan="2"></td>
+                            <td></td>
                             <td>Account Receivable</td>
                             <td>         
                                 {{ number_format($yesAccountReceiveable, 2) }}
@@ -124,12 +122,10 @@
                         </tr>
 
                         <tr>
-                            <td colspan="2"></td>
+                            <td></td>
                             <td>Inventory</td>
-                            <td>
-                                
-                                    {{ number_format($yesInventory, 2) }}
-                                
+                            <td>                            
+                                    {{ number_format($yesInventory, 2) }}       
                             </td>
                             <td></td>
                             <td></td>
@@ -138,7 +134,7 @@
 
                         @foreach($currentAssets as $currentAsset)
                         <tr>
-                            <td colspan="2"></td>
+                            <td></td>
                             <td>{{ $currentAsset->account_name }}</td>
                             <td>{{ number_format($currentAsset->total_debit_yesterday - $currentAsset->total_credit_yesterday, 2) }}</td>
                             <td>{{ number_format($currentAsset->total_debit_today, 2) }}</td>
@@ -155,7 +151,6 @@
                         @endforeach
 
                         <tr>
-                            <td></td>
                             <td><strong>Fixed Asset</strong></td>
                             <td colspan="5"></td>
                         </tr>
@@ -182,7 +177,7 @@
 
                         @foreach($fixedAssets as $fixedAsset)
                         <tr>
-                            <td colspan="2"></td>
+                            <td></td>
                             <td>{{ $fixedAsset->account_name }}</td>                            
                             <td>{{ number_format($fixedAsset->total_debit_yesterday - $fixedAsset->total_credit_yesterday, 2) }}</td>
                             <td>{{ number_format($fixedAsset->total_debit_today, 2) }}</td>
@@ -199,7 +194,7 @@
                             <td>
                                 <strong>Total Asset</strong>
                             </td>
-                            <td colspan="2"></td>
+                            <td></td>
                             @php
                             $closingAssetBalance = $yesCashInHand + $cashInHand + $cashInBank + $yesBankInHand + $fixedAssetTotalFinalBalance  + $totalReceivable;
                             @endphp
@@ -215,14 +210,16 @@
 
                         <!-- Liabilities Start -->
                          <tr>
-                            <td colspan="8"></td>
+                            <td colspan="6"></td>
                          </tr>
                         <tr>
                             <td><strong>Liability</strong></td>
-                            <td colspan="7"></td>
+                            <td colspan="5"></td>
                         </tr>
                         <tr>
-                            <td></td>
+                            <td colspan="6"></td>
+                        </tr>
+                        <tr>
                             <td><strong>Short Term Liability</strong></td>
                             <td colspan="5"></td>
                         </tr>
@@ -230,7 +227,7 @@
                         <!-- short term liability  -->
                         @foreach($shortTermLiabilities as $shortTermLiability)
                         <tr>
-                            <td colspan="2"></td>
+                            <td></td>
                             <td>{{ $shortTermLiability->account_name }}</td>
                             <td>{{ number_format($shortTermLiability->total_debit_yesterday - $shortTermLiability->total_credit_yesterday, 2) }}</td>
                             <td>{{ number_format($shortTermLiability->total_debit_today, 2) }}</td>
@@ -242,7 +239,6 @@
                         @endforeach
         
                         <tr>
-                            <td></td>
                             <td><strong>Long Term Liability</strong></td>
                             <td colspan="5"></td>
                         </tr>
@@ -250,7 +246,7 @@
                         <!-- long term liability  -->
                         @foreach($longTermLiabilities as $longTermLiability)
                         <tr>
-                            <td colspan="2"></td>
+                            <td></td>
                             <td>{{ $longTermLiability->account_name }}</td>
                             <td>{{ number_format($longTermLiability->total_debit_yesterday - $longTermLiability->total_credit_yesterday, 2) }}</td>
                             <td>{{ number_format($longTermLiability->total_debit_today, 2) }}</td>
@@ -267,7 +263,6 @@
                         @endforeach
 
                         <tr>
-                            <td></td>
                             <td><strong>Current Liability</strong></td>
                             <td colspan="5"></td>
                         </tr>
@@ -275,7 +270,7 @@
                         <!-- current liability  -->
                         @foreach($currentLiabilities as $currentLiability)
                         <tr>
-                            <td colspan="2"></td>
+                            <td></td>
                             <td>{{ $currentLiability->account_name }}</td>
                             <td>{{ number_format($currentLiability->total_debit_yesterday - $currentLiability->total_credit_yesterday, 2) }}</td>
                             <td>{{ number_format($currentLiability->total_debit_today, 2) }}</td>
@@ -293,7 +288,7 @@
 
                         <!-- Account Payable -->
                         <tr>
-                            <td colspan="2"></td>
+                            <td></td>
                             <td>Account Payable</td>
                             <td>         
                                 {{ number_format($yesAccountPayable, 2) }}
@@ -308,7 +303,7 @@
                             <td>
                                 <strong>Total Liability</strong>
                             </td>
-                            <td colspan="2"></td>
+                            <td></td>
                             @php
                                 $totalLiabilitySum = collect($shortTermLiabilities)->sum('total_debit_yesterday') - collect($shortTermLiabilities)->sum('total_credit_yesterday') +
                                 collect($longTermLiabilities)->sum('total_debit_yesterday') - collect($longTermLiabilities)->sum('total_credit_yesterday') +
@@ -331,18 +326,21 @@
                         </tr>
                         
                         <tr>
-                            <td colspan="8"></td>
+                            <td colspan="6"></td>
                         </tr>
                         <!-- Liabilities End -->
 
                         <!-- Equity Start -->
                         <tr>
                             <td><strong>Equity</strong></td>
-                            <td colspan="7"></td>
+                            <td colspan="5"></td>
                         </tr>
 
                         <tr>
-                            <td></td>
+                            <td colspan="6"></td>
+                        </tr>
+
+                        <tr>
                             <td><strong>Equity Capitals</strong></td>
                             <td colspan="5"></td>
                         </tr>
@@ -350,7 +348,7 @@
                         <!-- Equity Capitals  -->
                         @foreach($equityCapitals as $equityCapital)
                         <tr>
-                            <td colspan="2"></td>
+                            <td></td>
                             <td>{{ $equityCapital->account_name }}</td>
                             <td>{{ number_format($equityCapital->total_previous_receive - $equityCapital->total_previous_payment, 2) }}</td>
                             <td>{{ number_format($equityCapital->total_debit_today, 2) }}</td>
@@ -362,13 +360,12 @@
                         @endforeach
 
                         <tr>
-                            <td></td>
                             <td><strong>Retained Earnings</strong></td>
                             <td colspan="5"></td>
                         </tr>
 
                         <tr>
-                            <td colspan="2"></td>
+                            <td></td>
                             <td>Net Profit</td>
                             <td>
                                 {{ number_format($netProfitTillYesterday, 2) }}
@@ -387,7 +384,7 @@
                         <!-- Retained Earnings  -->
                         @foreach($retainedEarnings as $retainedEarning)
                         <tr>
-                            <td colspan="2"></td>
+                            <td></td>
                             <td>{{ $retainedEarning->account_name }}</td>
                             <td>{{ number_format($retainedEarning->total_debit_yesterday - $retainedEarning->total_credit_yesterday, 2) }}</td>
                             <td>{{ number_format($retainedEarning->total_debit_today, 2) }}</td>
@@ -402,7 +399,7 @@
                             <td>
                                 <strong>Total Equity</strong>
                             </td>
-                            <td colspan="2"></td>
+                            <td></td>
                             @php
                                 $totalEquitySum = collect($equityCapitals)->sum('total_previous_receive') - collect($equityCapitals)->sum('total_previous_payment') +
                                 collect($retainedEarnings)->sum('total_debit_yesterday') - collect($retainedEarnings)->sum('total_credit_yesterday');
@@ -419,14 +416,14 @@
                             <td>{{ number_format($closingEquityBalance, 2) }}</td>
                         </tr>
                         <tr>
-                            <td colspan="8"></td>
+                            <td colspan="6"></td>
                         </tr>
                         <!-- Equity End -->
 
                         <!-- Total Liability and Equity -->
                         <tr>
                             <td><strong>Total Liability and Equity</strong></td> 
-                            <td colspan="2"></td>
+                            <td></td>
                             @php
 
                             
