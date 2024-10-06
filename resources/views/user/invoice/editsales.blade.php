@@ -322,7 +322,7 @@
                                     </div>
                                     <div class="form-group mx-1 flex-fill">
                                         <label for="">Vat Percent(%)</label>
-                                        <input type="number" id="vat_percent" name="vat_percent" value="5"  value="{{$invoices->vatpercentage }}"class="form-control" style="flex: 0.6;">
+                                        <input type="number" id="vat_percent" name="vat_percent" value="5"  value="{{$invoices->vatpercentage }}"class="form-control" style="flex: 0.6;"  min="0">
                                     </div>
                                     <div class="form-group mx-1 flex-fill">
                                         <label for="">Total Vat Amount</label>
@@ -916,7 +916,7 @@
             });
 
             // calculation start 
-			$("#discount_amount, #vat_percent").keyup(function(){
+			$("#discount_amount, #vat_percent").on('input', function(){
 				// var dInput = this.value;
 				var grand_total = $("#grand_total").val();
 				var dInput = $("#discount_amount").val();
