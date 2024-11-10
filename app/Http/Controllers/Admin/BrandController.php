@@ -13,7 +13,7 @@ class BrandController extends Controller
 {
     public function get_all_brand()
     {
-      $brand = Brand::all();
+      $brand = Brand::where('branch_id', Auth::user()->branch_id)->get();
       return Response::json($brand);
 
     }
@@ -32,6 +32,7 @@ class BrandController extends Controller
 
         $brand = new Brand();
         $brand->name = $request->brand;
+        $brand->branch_id = Auth::user()->branch_id;
         $brand->brandid = $request->brandid;
         $brand->status = "1";
         $brand->created_by = Auth::user()->id;
@@ -43,7 +44,7 @@ class BrandController extends Controller
   {
       
       if($request->ajax()){
-          $brand = Brand::all();
+          $brand = Brand::where('branch_id', Auth::user()->branch_id)->get();
           return Datatables::of($brand)->make(true);
       }
       return view("admin.product.brand");
