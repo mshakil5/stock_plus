@@ -32,11 +32,12 @@ Route::get('/clear', function() {
  });
 //  cache clear
   
-Route::get('/', function () {
-    return view('auth.login');
-});
+// Route::get('/', function () {
+//     return view('auth.login');
+// });
   
 Auth::routes();
+Route::get('/', [App\Http\Controllers\FrontendController::class, 'index'])->name('homepage');
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 Route::get('invoice/customer/{id}', [InvoiceController::class, 'customer_invoice_download'])->name('customer.invoice.download');
 Route::get('invoice/print/{id}', [InvoiceController::class, 'customer_invoice_print'])->name('customer.invoice.print');
