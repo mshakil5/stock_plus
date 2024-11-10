@@ -35,6 +35,12 @@
                                 </div>
                             @endif
 
+                            @if ($errors->any())
+                                @foreach ($errors->all() as $error)
+                                    <p class="text-danger">{{$error}}</p>
+                                @endforeach
+                            @endif
+
                                 <div class="card-body">
                                     <form method="POST" action="{{ route('save_admin') }}">
                                         @csrf
@@ -46,7 +52,7 @@
                                                 <input id="name" type="text" class="form-control @error('name') is-invalid @enderror" name="name" value="{{ old('name') }}" required autocomplete="name" autofocus>
 
                                                 @error('name')
-                                                    <span class="invalid-feedback" role="alert">
+                                                    <span class="invalid-feedback text-danger" role="alert">
                                                         <strong>{{ $message }}</strong>
                                                     </span>
                                                 @enderror
@@ -58,7 +64,7 @@
                                             <div class="col-md-6">
                                                 <input id="username" type="text" class="form-control @error('username') is-invalid @enderror" name="username" value="{{ old('username') }}" required autocomplete="username" autofocus>
                                                 @error('username')
-                                                    <span class="invalid-feedback" role="alert">
+                                                    <span class="invalid-feedback text-danger" role="alert">
                                                         <strong>{{ $message }}</strong>
                                                     </span>
                                                 @enderror
@@ -72,7 +78,7 @@
                                                 <input id="email" type="email" class="form-control @error('email') is-invalid @enderror" name="email" value="{{ old('email') }}" required autocomplete="email">
 
                                                 @error('email')
-                                                    <span class="invalid-feedback" role="alert">
+                                                    <span class="invalid-feedback text-danger" role="alert">
                                                         <strong>{{ $message }}</strong>
                                                     </span>
                                                 @enderror
@@ -100,6 +106,11 @@
                                                     <option value="{{$branch->id}}">{{$branch->name}}</option>
                                                     @endforeach
                                                 </select>
+                                                @error('branch_id')
+                                                    <span class="invalid-feedback text-danger" role="alert">
+                                                        <strong>{{ $message }}</strong>
+                                                    </span>
+                                                @enderror
                                             </div>
                                         </div>
 
@@ -113,6 +124,11 @@
                                                     <option value="{{$role->id}}">{{$role->name}}</option>
                                                     @endforeach
                                                 </select>
+                                                @error('role_id')
+                                                    <span class="invalid-feedback text-danger" role="alert">
+                                                        <strong>{{ $message }}</strong>
+                                                    </span>
+                                                @enderror
                                             </div>
                                         </div>
 
@@ -123,7 +139,7 @@
                                                 <input id="password" type="password" class="form-control @error('password') is-invalid @enderror" name="password" required autocomplete="new-password">
 
                                                 @error('password')
-                                                    <span class="invalid-feedback" role="alert">
+                                                    <span class="invalid-feedback text-danger" role="alert">
                                                         <strong>{{ $message }}</strong>
                                                     </span>
                                                 @enderror
@@ -136,7 +152,7 @@
                                             <div class="col-md-6">
                                                 <input id="password-confirm" type="password" class="form-control" name="password_confirmation" required autocomplete="new-password">
                                                 @error('password_confirmation')
-                                                    <span class="invalid-feedback" role="alert">
+                                                    <span class="invalid-feedback text-danger" role="alert">
                                                         <strong>{{ $message }}</strong>
                                                     </span>
                                                 @enderror
