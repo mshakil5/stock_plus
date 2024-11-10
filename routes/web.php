@@ -22,6 +22,8 @@ use App\Http\Controllers\Admin\ProductController;
 
 // cache clear
 Route::get('/clear', function() {
+    Auth::logout();
+    session()->flush();
     Artisan::call('cache:clear');
     Artisan::call('config:clear');
     Artisan::call('config:cache');
