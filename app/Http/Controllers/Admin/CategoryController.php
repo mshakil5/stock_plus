@@ -15,7 +15,7 @@ class CategoryController extends Controller
 
     public function get_all_category()
     {
-      $category = Category::all();
+      $category = Category::where('branch_id', Auth::user()->branch_id)->get();
 
           // return $category;
           // return response()->json($category);
@@ -40,6 +40,7 @@ class CategoryController extends Controller
 
       $category = new Category();
       $category->name = $request->category;
+      $category->branch_id = Auth::user()->branch_id;
       $category->categoryid = $request->categoryid;
       $category->status = "1";
       $category->created_by = Auth::user()->id;
@@ -51,7 +52,7 @@ class CategoryController extends Controller
   {
       
       if($request->ajax()){
-          $category = Category::all();
+          $category = Category::where('branch_id', Auth::user()->branch_id)->get();
           return Datatables::of($category)->make(true);
       }
       return view("admin.product.category");
