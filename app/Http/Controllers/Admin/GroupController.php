@@ -13,7 +13,7 @@ class GroupController extends Controller
 {
     public function get_all_group()
     {
-      $group = Group::all();
+      $group = Group::where('branch_id', Auth::user()->branch_id)->get();
       return Response::json($group);
   
     }
@@ -34,6 +34,7 @@ class GroupController extends Controller
       $group = new Group();
       $group->name = $request->group;
       $group->groupid = $request->groupid;
+      $group->branch_id = Auth::user()->branch_id;
       $group->status = "1";
       $group->created_by = Auth::user()->id;
       $group->save();
@@ -44,7 +45,7 @@ class GroupController extends Controller
     {
         
         if($request->ajax()){
-            $group = Group::all();
+            $group = Group::where('branch_id', Auth::user()->branch_id)->get();
             return Datatables::of($group)->make(true);
         }
         return view("admin.product.group");
