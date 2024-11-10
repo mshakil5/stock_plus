@@ -48,7 +48,7 @@
                                     <label for="supplier_id">Supplier</label>
                                     <select name="supplier_id" id="supplier_id" class="form-control select2">
                                         <option value="">Select</option>
-                                        @foreach (\App\Models\Vendor::where('status','1')->get() as $vendor)
+                                        @foreach (\App\Models\Vendor::where('branch_id', Auth::user()->branch_id)->where('status','1')->get() as $vendor)
                                         <option value="{{ $vendor->id }}">{{ $vendor->name }}</option>
                                         @endforeach
                                     </select>
@@ -97,7 +97,7 @@
                                     <label for="product">Product</label>
                                     <select name="product" id="product" class="form-control select2">
                                         <option value="">Select</option>
-                                            @foreach (\App\Models\Product::select('id','productname','part_no')->get() as $product)
+                                            @foreach (\App\Models\Product::select('id','productname','part_no')->where('branch_id', Auth::user()->branch_id)->get() as $product)
                                             <option value="{{ $product->id }}">{{ $product->productname }}-{{ $product->part_no }}</option>
                                             @endforeach
                                     </select>

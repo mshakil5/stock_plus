@@ -26,12 +26,12 @@ class StockController extends Controller
 
     public function addstock(){
         
-        $products = Product::orderby('id','DESC')->get();
-        $branches = Branch::where('status', 1)->get();
+        $products = Product::where('branch_id', Auth::user()->branch_id)->orderby('id','DESC')->get();
+        $branches = Branch::where('id', Auth::user()->branch_id)->get();
         $producttypes = Type::all();
 
         //vendors are known as suppliers
-        $vendors = Vendor::where('status', 1)->get();
+        $vendors = Vendor::where('branch_id', Auth::user()->branch_id)->where('status', 1)->get();
         // dd($products);
         return view('admin.stock.StockreEntry', compact('products', 'branches', 'producttypes', 'vendors'));
     }
@@ -63,7 +63,7 @@ class StockController extends Controller
         $stocks = DB::table('stocks')
                     ->join('products', 'stocks.product_id', '=', 'products.id')
                     ->select('stocks.id', 'stocks.branch_id', 'stocks.product_id', 'stocks.quantity', 'products.productname', 'products.selling_price', 'products.unit', 'products.location')
-                    ->where('stocks.branch_id', $branchId)
+                    ->where('stocks.branch_id', $defaultBranchId)
                     ->get();
 
         $branches = Branch::where('status', '=', 1)->get();

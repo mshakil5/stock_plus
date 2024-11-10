@@ -14,15 +14,15 @@ class CategoryController extends Controller
 {
 
     public function get_all_category()
-  {
-    $category = Category::all();
+    {
+      $category = Category::all();
 
-        // return $category;
-        // return response()->json($category);
+          // return $category;
+          // return response()->json($category);
 
-        return Response::json($category);
+          return Response::json($category);
 
-  }
+    }
 
 
     public function save_category(Request $request)

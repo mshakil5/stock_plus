@@ -66,20 +66,20 @@ echo Session::put('info', '');
 }
 </style>
 
-<div class="row">
+{{-- <div class="row">
 <div class="conainer-fluid">
     <div class="col-md-12">
         <div class="overview">
-            <div class="alert alert-danger h4"> Manage Stock(All Branch) - Show all products purchase
+            <div class="alert alert-danger h4  d-none"> Manage Stock(All Branch) - Show all products purchase
                 details and transfer products to branches.
             </div>
             <div id="ermsg" class="ermsg"></div>
         </div>
     </div>
 </div>
-</div>
+</div> --}}
 
-<div class="row well">
+{{-- <div class="row well d-none">
     <form class="form-horizontal" role="form" method="POST" action="{{ route('managestock.search') }}">
         {{ csrf_field() }}
 
@@ -99,7 +99,7 @@ echo Session::put('info', '');
             <button type="submit" class="btn btn-primary btn-sm">Search</button>
         </div>
     </form>
-</div>
+</div> --}}
 
 <div class="row">
 <div class="col-md-12">
@@ -109,7 +109,7 @@ echo Session::put('info', '');
                 <thead>
                 <tr>
                     <th><i class="icon-sort"></i>Products</th>
-                    <th><i class="icon-sort"></i>Branch</th>
+                    {{-- <th><i class="icon-sort"></i>Branch</th> --}}
                     <th class="text-center"><i class="icon-sort"></i>Unit</th>
                     <th class="text-center"><i class="icon-sort"></i>Location</th>
                     <th class="text-center"><i class="icon-sort"></i>Stock QTY</th>
@@ -123,7 +123,7 @@ echo Session::put('info', '');
                             <td>
                                 {{ $stock->productname }} ({{ $stock->product_id }})
                             </td>
-                            <td>{{ \App\Models\Branch::where('id',$stock->branch_id)->first()->name }}</td>
+                            {{-- <td>{{ \App\Models\Branch::where('id',$stock->branch_id)->first()->name }}</td> --}}
                             <td class="text-center">{{ $stock->unit }}</td>
                             <td class="text-center">{{ $stock->location }}</td>
                             <td class="text-center stockQuantity">{{ $stock->quantity }}</td>

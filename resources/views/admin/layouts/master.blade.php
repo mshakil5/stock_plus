@@ -47,8 +47,9 @@
             <!-- mini logo for sidebar mini 50x50 pixels -->
 
             <span class="logo-lg">
-                        <img src="{{ asset('admin/demo.png')}}" width="32px" height="32px">SMS
-                    </span>
+                {{-- <img src="{{ asset('admin/demo.png')}}" width="32px" height="32px"> --}}
+                {{Auth::user()->branch->name}}
+            </span>
                     
         </a>
         <!-- Header Navbar: style can be found in header.less -->
@@ -134,7 +135,7 @@
     <!-- Left side column. contains the logo and sidebar -->
     <aside class=" main-sidebar">
         <!-- sidebar: style can be found in sidebar.less -->
-        <h4 style="color:white;font-size:11px" class="text-center">{{Auth::user()->branch->name}}</h4>
+        {{-- <h4 style="color:white;font-size:11px" class="text-center">{{Auth::user()->branch->name}}</h4> --}}
         <section class="sidebar">
             <!-- Sidebar user panel -->
             <div class="user-panel">
@@ -143,7 +144,7 @@
                          alt="User Image">
                 </div>
                 <div class="pull-left info">
-                    <p>Name :{{Auth::user()->name}} </p>
+                    <p>{{Auth::user()->name}} </p>
                     <small>{{Auth::user()->role->name}}</small>
                 </div>
             </div>

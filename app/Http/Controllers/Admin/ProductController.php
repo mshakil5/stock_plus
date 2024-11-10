@@ -21,7 +21,7 @@ class ProductController extends Controller
 {
     public function addProduct()
     {
-        $product = Product::select('id','productname','part_no')->get();
+        $product = Product::select('id','productname','part_no')->where('branch_id', Auth::user()->branch_id)->get();
         return view("admin.product.addproduct", compact('product'));
     }
 
@@ -105,7 +105,7 @@ class ProductController extends Controller
 
   public function view_manage_product()
   {
-    $product = Product::all();
+    $product = Product::where('branch_id', Auth::user()->branch_id)->get();
     return view("admin.product.manageproduct", compact('product'));
   }
 
@@ -113,7 +113,7 @@ class ProductController extends Controller
   {
       $category = request('category');
       $brand = request('brand');
-      $products = Product::with('brand','category');
+      $products = Product::with('brand','category')->where('branch_id', Auth::user()->branch_id);
 
       if($category){
           $products = $products->whereHas('category',function($query) use($category){
@@ -151,7 +151,7 @@ class ProductController extends Controller
     {
         $product = Product::with('brand','size','category','alternativeproduct','group','replacement')->where('id',$id)->first();
         // dd($product);
-        $alternatives = Product::all();
+        $alternatives = Product::where('branch_id', Auth::user()->branch_id)->where('id','!=', $id)->get();
         return view("admin.product.editproduct", compact('product','alternatives'));
     }
 

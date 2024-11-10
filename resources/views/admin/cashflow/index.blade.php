@@ -42,7 +42,7 @@
                 </div>
 
             <div class="table-responsive">
-                <table id="cashIncomingTable" class="table table-striped table-bordered">
+                <table class="table table-striped table-bordered">
                     <thead>
                         <tr>
                             <th>Particulars</th>
@@ -58,7 +58,7 @@
                             </td>
                             <td></td>
                             <td></td>
-                            <td><strong>18000.00</strong></td>
+                            <td><strong>00000.00</strong></td>
                         </tr>
                         <tr>
                             <td colspan="4"></td>
