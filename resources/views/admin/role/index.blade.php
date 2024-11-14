@@ -307,7 +307,7 @@
 
 
         // submit to purchase 
-        // var url = "{{URL::to('/admin/role')}}";
+         var url = "{{URL::to('/admin/role')}}";
         $("body").delegate("#submitBtn","click",function(event){
                 event.preventDefault();
 
