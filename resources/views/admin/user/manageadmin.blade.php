@@ -34,12 +34,6 @@
         {!! \Session::get('error') !!}
     </div>
 @endif
-
-@if ($errors->any())
-    @foreach ($errors->all() as $error)
-        <p class="text-danger d-none">{{$error}}</p>
-    @endforeach
-@endif
   
     <div class="row">
         <div class="col-md-6">
@@ -101,7 +95,22 @@
 
                     <div class="col-sm-12" id="editDiv">
                         <!-- <form class="form-horizontal" action="{{ route('update_admin')}}" method="POST"> -->
-                        <form class="form-horizontal" id="adminForm" method="POST" action="{{ route('save_admin') }}">
+
+                        <form id="adminForm" class="form-horizontal"
+                            @if (old('userid'))
+                                action="{{ route('update_admin')}}"
+                            @else
+                                action="{{ route('save_admin')}}"
+                            @endif method="POST">
+
+                            @if ($errors->any())
+                                <p class="text-danger d-none"> 
+                                    @foreach ($errors->all() as $error)
+                                        {{$error}}
+                                        <br>
+                                    @endforeach
+                                </p>
+                            @endif
                             
                             {{csrf_field()}}
                         
@@ -156,15 +165,16 @@
                             <div class="form-group">
                                 <label for="branch_id" class="col-sm-3 control-label">Branch<span class="text-danger">*</span></label>
                                 <div class="col-sm-9">
-                                    <select name="branch_id[]" id="branch_id" class="form-control" multiple>
-                                        @foreach (\App\Models\Branch::where('status','1')->get() as $branch)
-                                        @if (old('branch_id') == $branch->id)
-                                            <option value="{{$branch->id}}" selected>{{$branch->name}}</option>
-                                        @else
-                                            <option value="{{$branch->id}}">{{$branch->name}}</option>
-                                        @endif
-                                        @endforeach
-                                    </select>
+                                <select name="branch_id[]" id="branch_id" class="form-control" multiple>
+                                    @foreach (\App\Models\Branch::where('status', '1')->get() as $branch)
+                                        <option value="{{ $branch->id }}" 
+                                            @if (is_array(old('branch_id')) && in_array($branch->id, old('branch_id'))) 
+                                                selected 
+                                            @endif>
+                                            {{ $branch->name }}
+                                        </option>
+                                    @endforeach
+                                </select>
                                     @if ($errors->has('branch_id'))
                                         <span class="invalid-feedback text-danger" role="alert">
                                         <strong>{{ $errors->first('branch_id') }}</strong>
@@ -222,7 +232,14 @@
                             <div class="form-group">
                                 <label for="" class="col-sm-3 control-label"></label>
                                 <div class="col-sm-9">
-                                    <button type="submit" class="btn btn-primary text-center" id="submitButton"><i class="fa fa-save"></i> Create</button>
+                                <button type="submit" class="btn btn-primary text-center" id="submitButton"> 
+                                    @if (old('userid')) 
+                                        Update 
+                                    @else 
+                                    <i class="fa fa-save"></i>
+                                        Create 
+                                    @endif
+                                </button>
                                     <input type="button" class="btn btn-warning text-center" id="FormCloseBtn" value="Close">
                                 </div>
                             </div>
@@ -397,7 +414,7 @@
             $('#userid').val(id);
             $('#role_id').val(role_id);
             let branchIds = JSON.parse(branchaccess);
-
+            $('#branch_id').val([]);
             $('#branch_id option').each(function() {
                 if (branchIds.includes($(this).val())) {
                     $(this).prop('selected', true);

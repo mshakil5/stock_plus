@@ -49,6 +49,7 @@ class EmployeeController extends Controller
             'role_id' => 'required',
             'password' => [
               'required',
+              'min:6',
           ],
           'password_confirmation' => 'required|same:password'
         ]);
@@ -102,15 +103,14 @@ class EmployeeController extends Controller
                             ],
               'name' => 'required',
               'password' => [
-                                'required',
-                                Password::min(8)
-                                    ->letters()
-                                    ->mixedCase()
-                                    ->numbers()
-                                    ->symbols()
-                                    ->uncompromised()
+                  'nullable',
+                  'min:6',
               ],
-              'password_confirmation' => 'nullable|same:password',
+              'password_confirmation' => [
+                  'nullable',
+                  'same:password',
+                  'required_with:password',
+              ],
           ]);
       } else {
             $request->validate([

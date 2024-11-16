@@ -61,7 +61,7 @@
                                     <td>{{$data->name}} <br> {{$data->username}}</td>
                                     <td>{{$data->email}} <br> {{$data->phone}}</td>
                                     <td>{{ \App\Models\Branch::where('id',$data->branch_id)->first()->name  }}</td>
-                                    <td>{{$data->role->name}}</td>
+                                    <td>{{ $data->role ? $data->role->name : 'No Role' }}</td>
                                     
                                     @if ($data->status == 1)
                                         <td><label style="margin-bottom:0px" class="switch"><button  onclick='user_status("unpublished-user","{{$data->id}}")' ><input id="switchMenu" type="checkbox" checked><span class="slider round"></span></button></label></td>
@@ -92,7 +92,22 @@
 
                     <div class="col-sm-12" id="editDiv">
                         <!-- <form class="form-horizontal" action="{{ route('update_user')}}" method="POST"> -->
-                        <form class="form-horizontal" id="adminForm" method="POST" action="{{ route('save_employee') }}">
+                        <form id="adminForm" class="form-horizontal"
+                            @if (old('userid'))
+                                action="{{ route('update_employee')}}"
+                            @else
+                                action="{{ route('save_employee')}}"
+                            @endif method="POST">
+
+                            @if ($errors->any())
+                                <p class="text-danger d-none"> 
+                                    @foreach ($errors->all() as $error)
+                                        {{$error}}
+                                        <br>
+                                    @endforeach
+                                </p>
+                            @endif
+
                             {{csrf_field()}}
                         
                             <div class="form-group">
@@ -194,7 +209,14 @@
                             <div class="form-group">
                                 <label for="" class="col-sm-3 control-label"></label>
                                 <div class="col-sm-9">
-                                    <button type="submit" class="btn btn-primary text-center" id="submitButton"><i class="fa fa-save"></i> Save</button>
+                                    <button type="submit" class="btn btn-primary text-center" id="submitButton"> 
+                                        @if (old('userid')) 
+                                            Update 
+                                        @else 
+                                        <i class="fa fa-save"></i>
+                                            Create 
+                                        @endif
+                                    </button>
                                     <input type="button" class="btn btn-warning text-center" id="FormCloseBtn" value="Close">
                                 </div>
                             </div>
