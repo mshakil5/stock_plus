@@ -1,13 +1,10 @@
 <ul class="sidebar-menu" data-widget="tree">
 
-    @if((Auth::user()->type == '1' || Auth::user()->type == '0') && in_array('36', json_decode(Auth::user()->role->permission)))
     <li class="{{ (request()->is('admin/home')) ? 'active' : '' }}">
         <a href="{{URL::to('/home')}}">
             <i class="fa fa-dashboard"></i> <span>Dashboard</span>
         </a>
-    </li>
-    @endif         
-
+    </li>       
 
     @if(
         (Auth::user()->type == '1' && (in_array('1', json_decode(Auth::user()->role->permission)) || in_array('20', json_decode(Auth::user()->role->permission)) || in_array('37', json_decode(Auth::user()->role->permission)))) ||
