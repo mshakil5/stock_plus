@@ -69,7 +69,7 @@
                                 <tr>
                                     <td>{{$data->name}} <br> {{$data->username}}</td>
                                     <td>{{$data->email}} <br> {{$data->phone}}</td>
-                                    <td>{{$data->role->name}}</td>
+                                    <td>{{ $data->role ? $data->role->name : 'No Role' }}</td>
                                     <td>{{$data->branch->name}}</td>
                                     @if ($data->status == 1)
                                         <td><label style="margin-bottom:0px" class="switch"><button  onclick='user_status("unpublished-user","{{$data->id}}")' ><input id="switchMenu" type="checkbox" checked><span class="slider round"></span></button></label></td>

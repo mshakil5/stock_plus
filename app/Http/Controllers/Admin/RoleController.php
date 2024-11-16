@@ -21,6 +21,11 @@ class RoleController extends Controller
             return response()->json(['status'=> 303,'message'=>$message]);
             exit();
         }
+
+        if (empty($request->permission) || !is_array($request->permission) || count($request->permission) === 0) {
+            $message = "<div class='alert alert-warning'><a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a><b>Please select at least one permission..!</b></div>";
+            return response()->json(['status' => 303, 'message' => $message]);
+        }
         
         $role = new Role();
         $role->name = $request->name;
@@ -45,6 +50,11 @@ class RoleController extends Controller
             $message ="<div class='alert alert-warning'><a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a><b>Please fill \"Name \" field..!</b></div>";
             return response()->json(['status'=> 303,'message'=>$message]);
             exit();
+        }
+
+        if (empty($request->permission) || !is_array($request->permission) || count($request->permission) === 0) {
+            $message = "<div class='alert alert-warning'><a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a><b>Please select at least one permission..!</b></div>";
+            return response()->json(['status' => 303, 'message' => $message]);
         }
         
         $role = Role::find($request->id);
