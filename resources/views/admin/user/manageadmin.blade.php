@@ -1,5 +1,3 @@
-
-
 @extends('admin.layouts.master')
 @section('content')
 
@@ -36,6 +34,12 @@
         {!! \Session::get('error') !!}
     </div>
 @endif
+
+@if ($errors->any())
+    @foreach ($errors->all() as $error)
+        <p class="text-danger d-none">{{$error}}</p>
+    @endforeach
+@endif
   
     <div class="row">
         <div class="col-md-6">
@@ -53,7 +57,7 @@
                         @endslot
                         @slot('head')
                             <th>Name</th>
-                            <th>Email</th>
+                            <th>Email/Phone</th>
                             <th>Role</th>
                             <th>Branch</th>
                             <th>Status</th>
@@ -63,8 +67,8 @@
                         @slot('body')
                             @foreach ($users as $data)
                                 <tr>
-                                    <td>{{$data->name}}</td>
-                                    <td>{{$data->email}}</td>
+                                    <td>{{$data->name}} <br> {{$data->username}}</td>
+                                    <td>{{$data->email}} <br> {{$data->phone}}</td>
                                     <td>{{$data->role->name}}</td>
                                     <td>{{$data->branch->name}}</td>
                                     @if ($data->status == 1)
@@ -88,7 +92,7 @@
         <div class="col-md-6">
             @component('components.widget')
                 @slot('title')
-                    User Information
+                    Admin Information
                 @endslot
                 @slot('description')
                 @endslot
@@ -96,7 +100,9 @@
                     <hr/>
 
                     <div class="col-sm-12" id="editDiv">
-                        <form class="form-horizontal" action="{{ route('update_admin')}}" method="POST">
+                        <!-- <form class="form-horizontal" action="{{ route('update_admin')}}" method="POST"> -->
+                        <form class="form-horizontal" id="adminForm" method="POST" action="{{ route('save_admin') }}">
+                            
                             {{csrf_field()}}
                         
                             <div class="form-group">
@@ -123,7 +129,7 @@
                                 </div>
                             </div>
                             <div class="form-group">
-                                <label for="email" class="col-sm-3 control-label">Email</label>
+                                <label for="email" class="col-sm-3 control-label">Email<span class="text-danger">*</span></label>
                                 <div class="col-sm-9">
                                     <input type="email" name="email" class="form-control" id="email"  value="{{ old('email') }}" required autocomplete="email">
                                     @if ($errors->has('email'))
@@ -148,7 +154,7 @@
 
                             
                             <div class="form-group">
-                                <label for="branch_id" class="col-sm-3 control-label">Branch</label>
+                                <label for="branch_id" class="col-sm-3 control-label">Branch<span class="text-danger">*</span></label>
                                 <div class="col-sm-9">
                                     <select name="branch_id[]" id="branch_id" class="form-control" multiple>
                                         @foreach (\App\Models\Branch::where('status','1')->get() as $branch)
@@ -168,7 +174,7 @@
                             </div>
 
                             <div class="form-group">
-                                <label for="role_id" class="col-sm-3 control-label">Role</label>
+                                <label for="role_id" class="col-sm-3 control-label">Role<span class="text-danger">*</span></label>
                                 <div class="col-sm-9">
                                     <select name="role_id" id="role_id" class="form-control">
                                         <option value="">Select</option>
@@ -202,9 +208,21 @@
                             </div>
 
                             <div class="form-group">
+                                <label for="password-confirm" class="col-sm-3 control-label"> Confirm Password<span class="text-danger">*</span></label>
+                                <div class="col-sm-9">
+                                    <input type="password" name="password_confirmation" class="form-control" id="password_confirmation">
+                                    @error('password_confirmation')
+                                        <span class="invalid-feedback" role="alert">
+                                            <strong>{{ $message }}</strong>
+                                        </span>
+                                    @enderror
+                                </div>
+                            </div>
+
+                            <div class="form-group">
                                 <label for="" class="col-sm-3 control-label"></label>
                                 <div class="col-sm-9">
-                                    <button type="submit" class="btn btn-primary text-center"><i class="fa fa-save"></i> Update</button>
+                                    <button type="submit" class="btn btn-primary text-center" id="submitButton"><i class="fa fa-save"></i> Create</button>
                                     <input type="button" class="btn btn-warning text-center" id="FormCloseBtn" value="Close">
                                 </div>
                             </div>
@@ -347,6 +365,22 @@
         $.ajaxSetup({ headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') } });
         // 
 
+        function updateFormAction() {
+            const form = document.getElementById('adminForm');
+            const userIdField = document.getElementById('userid');
+            const submitButton = document.getElementById('submitButton');
+
+            const userId = userIdField.value;
+
+            if (userId) {
+                form.action = `{{ route('update_admin') }}`;
+                submitButton.textContent = 'Update';
+            } else {
+                form.action = `{{ route('save_admin') }}`;
+                submitButton.textContent = 'Create';
+            }
+        }
+
         // return stock
         $("#userTBL").on('click','#editThis', function(){
             $("#editDiv").show();
@@ -357,22 +391,27 @@
             name = $(this).attr('name');
             email = $(this).attr('email');
             branchaccess = $(this).attr('branchaccess');
-            console.log(branchaccess);
             username = $(this).attr('username');
             phone = $(this).attr('phone');
 
             $('#userid').val(id);
             $('#role_id').val(role_id);
-            // $('#branch_id').val(branchaccess);
-            $('#branch_id').val(branch_id);
+            let branchIds = JSON.parse(branchaccess);
+
+            $('#branch_id option').each(function() {
+                if (branchIds.includes($(this).val())) {
+                    $(this).prop('selected', true);
+                }
+            });
             $('#name').val(name);
             $('#email').val(email);
             $('#username').val(username);
             $('#phone').val(phone);
 
+            updateFormAction();
             
             
-            });
+        });
         // return stock end
 
 

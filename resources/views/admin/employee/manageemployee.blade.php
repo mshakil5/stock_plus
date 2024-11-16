@@ -48,9 +48,7 @@
                         @endslot
                         @slot('head')
                             <th>Name</th>
-                            <th>User Name</th>
-                            <th>Phone</th>
-                            <th>Email</th>
+                            <th>Email/Phone</th>
                             <th>Branch</th>
                             <th>Role</th>
                             <th>Status</th>
@@ -60,10 +58,8 @@
                         @slot('body')
                             @foreach ($users as $data)
                                 <tr>
-                                    <td>{{$data->name}}</td>
-                                    <td>{{$data->username}}</td>
-                                    <td>{{$data->phone}}</td>
-                                    <td>{{$data->email}}</td>
+                                    <td>{{$data->name}} <br> {{$data->username}}</td>
+                                    <td>{{$data->email}} <br> {{$data->phone}}</td>
                                     <td>{{ \App\Models\Branch::where('id',$data->branch_id)->first()->name  }}</td>
                                     <td>{{$data->role->name}}</td>
                                     
@@ -87,7 +83,7 @@
         <div class="col-md-6">
             @component('components.widget')
                 @slot('title')
-                    User Information
+                    Employee Information
                 @endslot
                 @slot('description')
                 @endslot
@@ -95,7 +91,8 @@
                     <hr/>
 
                     <div class="col-sm-12" id="editDiv">
-                        <form class="form-horizontal" action="{{ route('update_user')}}" method="POST">
+                        <!-- <form class="form-horizontal" action="{{ route('update_user')}}" method="POST"> -->
+                        <form class="form-horizontal" id="adminForm" method="POST" action="{{ route('save_employee') }}">
                             {{csrf_field()}}
                         
                             <div class="form-group">
@@ -122,7 +119,7 @@
                                 </div>
                             </div>
                             <div class="form-group">
-                                <label for="email" class="col-sm-3 control-label">Email</label>
+                                <label for="email" class="col-sm-3 control-label">Email<span class="text-danger">*</span></label>
                                 <div class="col-sm-9">
                                     <input type="email" name="email" class="form-control" id="email"  value="{{ old('email') }}" required autocomplete="email">
                                     @if ($errors->has('email'))
@@ -147,7 +144,7 @@
 
                             
                             <div class="form-group">
-                                <label for="branch_id" class="col-sm-3 control-label">Branch</label>
+                                <label for="branch_id" class="col-sm-3 control-label">Branch<span class="text-danger">*</span></label>
                                 <div class="col-sm-9">
                                     <select name="branch_id" class="form-control" id="branch_id">
                                         <option value="">Select</option>
@@ -159,7 +156,7 @@
                             </div>
 
                             <div class="form-group">
-                                <label for="role_id" class="col-sm-3 control-label">Role</label>
+                                <label for="role_id" class="col-sm-3 control-label">Role<span class="text-danger">*</span></label>
                                 <div class="col-sm-9">
                                     <select name="role_id" id="role_id" class="form-control">
                                         <option value="">Select</option>
@@ -183,9 +180,21 @@
                             </div>
 
                             <div class="form-group">
+                                <label for="password-confirm" class="col-sm-3 control-label"> Confirm Password<span class="text-danger">*</span></label>
+                                <div class="col-sm-9">
+                                    <input type="password" name="password_confirmation" class="form-control" id="password_confirmation">
+                                    @error('password_confirmation')
+                                        <span class="invalid-feedback" role="alert">
+                                            <strong>{{ $message }}</strong>
+                                        </span>
+                                    @enderror
+                                </div>
+                            </div>
+
+                            <div class="form-group">
                                 <label for="" class="col-sm-3 control-label"></label>
                                 <div class="col-sm-9">
-                                    <button type="submit" class="btn btn-primary text-center"><i class="fa fa-save"></i> Update</button>
+                                    <button type="submit" class="btn btn-primary text-center" id="submitButton"><i class="fa fa-save"></i> Save</button>
                                     <input type="button" class="btn btn-warning text-center" id="FormCloseBtn" value="Close">
                                 </div>
                             </div>
@@ -334,6 +343,21 @@
         // 
 
 
+        function updateFormAction() {
+            const form = document.getElementById('adminForm');
+            const userIdField = document.getElementById('userid');
+            const submitButton = document.getElementById('submitButton');
+
+            const userId = userIdField.value;
+
+            if (userId) {
+                form.action = `{{ route('update_employee') }}`;
+                submitButton.textContent = 'Update';
+            } else {
+                form.action = `{{ route('save_employee') }}`;
+                submitButton.textContent = 'Save';
+            }
+        }
 
 
         // return stock
@@ -355,6 +379,8 @@
             $('#email').val(email);
             $('#username').val(username);
             $('#phone').val(phone);
+
+            updateFormAction();
                 
             });
         // return stock end

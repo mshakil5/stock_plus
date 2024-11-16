@@ -379,13 +379,13 @@
                             </li> -->
                             <!-- <li class="{{ (request()->is('admin/manage-user')) ? 'active' : '' }}"><a href="{{ route('manage_user')}}"><i class="fa fa-adjust"></i>Manage User</a>
                             </li> -->
-                            <li class="{{ (request()->is('admin/create-admin')) ? 'active' : '' }}"><a href="{{ route('create_admin')}}"><i class="fa fa-plus"></i> Add New Admin</a>
+                            <!-- <li class="{{ (request()->is('admin/create-admin')) ? 'active' : '' }}"><a href="{{ route('create_admin')}}"><i class="fa fa-plus"></i> Add New Admin</a> -->
                             
                             <li class="{{ (request()->is('admin/manage-admin')) ? 'active' : '' }}"><a href="{{ route('manage_admin')}}"><i class="fa fa-adjust"></i>Manage Admin</a>
                             </li>
 
-                            <li class="{{ (request()->is('admin/create-employee')) ? 'active' : '' }}"><a href="{{ route('create_employee')}}"><i class="fa fa-plus"></i> Add New Employee</a>
-                            </li>
+                            <!-- <li class="{{ (request()->is('admin/create-employee')) ? 'active' : '' }}"><a href="{{ route('create_employee')}}"><i class="fa fa-plus"></i> Add New Employee</a>
+                            </li> -->
                             <li class="{{ (request()->is('admin/manage-employee')) ? 'active' : '' }}"><a href="{{ route('manage_employee')}}"><i class="fa fa-adjust"></i>Manage Employee</a>
                             </li>
 

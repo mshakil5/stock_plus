@@ -171,6 +171,7 @@ class UserController extends Controller
             'email' => 'required|unique:users,email',
             'username' => 'required|unique:users,username',
             'branch_id' => 'required',
+            'name' => 'required',
             'role_id' => 'required',
             'password' => [
               'required'
@@ -226,6 +227,7 @@ class UserController extends Controller
                                 'unique:users,username,'.$id
                             ],
               'branch_id' => [ 'required' ],
+              'name' => 'required',
               'role_id' => [ 'required' ],
               'password' => [
                                 'required',
@@ -235,7 +237,8 @@ class UserController extends Controller
                                     ->numbers()
                                     ->symbols()
                                     ->uncompromised()
-                            ]
+              ],
+              'password_confirmation' => 'nullable|same:password',
           ]);
       } else {
             $request->validate([
@@ -245,6 +248,7 @@ class UserController extends Controller
                           ],
               'branch_id' => [ 'required' ],
               'role_id' => [ 'required' ],
+              'name' => 'required',
               'username' => [
                                 'required',
                                 'unique:users,username,'.$id

@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rules\Password;
 
 class EmployeeController extends Controller
 {
@@ -44,6 +45,7 @@ class EmployeeController extends Controller
             'email' => 'required|unique:users,email',
             'username' => 'required|unique:users,username',
             'branch_id' => 'required',
+            'name' => 'required',
             'role_id' => 'required',
             'password' => [
               'required',
@@ -98,6 +100,7 @@ class EmployeeController extends Controller
                                 'required',
                                 'unique:users,username,'.$id
                             ],
+              'name' => 'required',
               'password' => [
                                 'required',
                                 Password::min(8)
@@ -106,7 +109,8 @@ class EmployeeController extends Controller
                                     ->numbers()
                                     ->symbols()
                                     ->uncompromised()
-                            ]
+              ],
+              'password_confirmation' => 'nullable|same:password',
           ]);
       } else {
             $request->validate([
@@ -117,7 +121,7 @@ class EmployeeController extends Controller
               'branch_id' => [
                             'required'
                         ],
-                        
+              'name' => 'required',       
               'role_id' => [ 'required' ],
               'username' => [
                                 'required',
