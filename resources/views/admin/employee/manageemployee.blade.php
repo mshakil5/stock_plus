@@ -143,7 +143,7 @@
                             </div>
 
                             
-                            <div class="form-group">
+                            <div class="form-group" style="display: none;">
                                 <label for="branch_id" class="col-sm-3 control-label">Branch<span class="text-danger">*</span></label>
                                 <div class="col-sm-9">
                                     <select name="branch_id" class="form-control" id="branch_id">

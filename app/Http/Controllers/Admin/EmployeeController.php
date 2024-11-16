@@ -44,7 +44,7 @@ class EmployeeController extends Controller
         $request->validate([
             'email' => 'required|unique:users,email',
             'username' => 'required|unique:users,username',
-            'branch_id' => 'required',
+            // 'branch_id' => 'required',
             'name' => 'required',
             'role_id' => 'required',
             'password' => [
@@ -71,7 +71,7 @@ class EmployeeController extends Controller
           $data->email = $request['email'];
           $data->username = $request['username'];
           $data->password = Hash::make($request['password']);
-          $data->branch_id = $request['branch_id'];
+          $data->branch_id = auth()->user()->branch_id;
           $data->role_id = $request['role_id'];
           $data->phone = $request['phone'];
           $data->type = '3';
@@ -92,9 +92,9 @@ class EmployeeController extends Controller
                               'required',
                               'unique:users,email,'.$id
                           ],
-              'branch_id' => [
-                            'required'
-                        ],
+              // 'branch_id' => [
+              //               'required'
+              //           ],
               'role_id' => [ 'required' ],
               'username' => [
                                 'required',
@@ -118,9 +118,9 @@ class EmployeeController extends Controller
                               'required',
                               'unique:users,email,'.$id
                           ],
-              'branch_id' => [
-                            'required'
-                        ],
+              // 'branch_id' => [
+              //               'required'
+              //           ],
               'name' => 'required',       
               'role_id' => [ 'required' ],
               'username' => [
@@ -147,7 +147,7 @@ class EmployeeController extends Controller
           if ($request['password']) {
             $data->password = Hash::make($request['password']);
           }
-          $data->branch_id = $request['branch_id'];
+          // $data->branch_id = $request['branch_id'];
           $data->role_id = $request['role_id'];
           $data->phone = $request['phone'];
           $data->save();
