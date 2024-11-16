@@ -321,15 +321,13 @@ class UserController extends Controller
                                 'unique:users,username,'.$id
                             ],
               'password' => [
-                                'required',
-                                Password::min(8)
-                                    ->letters()
-                                    ->mixedCase()
-                                    ->numbers()
-                                    ->symbols()
-                                    ->uncompromised()
+                  'required',
+                  'min:6',
               ],
-              'password_confirmation' => 'required|same:password'
+              'password_confirmation' => [
+                  'required_with:password',
+                  'same:password',
+              ],
           ]);
       } else {
             $request->validate([

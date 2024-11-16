@@ -4,16 +4,13 @@
 <meta name="csrf-token" content="{{ csrf_token() }}"/>
     <div class="row">
         <div class="col-md-12">
-            <div class="overview">
-                <div class="alert alert-success h4"> You can add new admin from here</div>
-            </div>
         </div>
     </div>
     <div class="row">
         <div class="col-md-8">
             <div class="box box-default box-solid">
                 <div class="box-header with-border">
-                    <h3 class="box-title">Add System Admin</h3>
+                    <h3 class="box-title">Update Profile</h3>
                     <!-- /.box-tools -->
                 </div>
 
@@ -123,7 +120,7 @@
                                         <div class="row mb-0">
                                             <div class="col-md-6 offset-md-4">
                                                 <button type="submit" class="btn btn-primary">
-                                                    {{ __('Register') }}
+                                                    {{ __('Update') }}
                                                 </button>
                                             </div>
                                         </div>

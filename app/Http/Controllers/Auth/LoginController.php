@@ -8,6 +8,7 @@ use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\support\Facades\Auth;
+use App\Models\Branch;
 
   
 class LoginController extends Controller
@@ -57,25 +58,32 @@ class LoginController extends Controller
             $chksts = User::where('email', $input['email'])->first();
             if ($chksts) {
                 if ($chksts->status == 1) {
-                    if(auth()->attempt(array('email' => $input['email'], 'password' => $input['password'])))
-                        {
-                            if (auth()->user()->type == 1) {
-                                return redirect()->route('admin.home');
-                            }else if (auth()->user()->type == 2) {
-                                return redirect()->route('manager.home');
-                            }else if (auth()->user()->type == 0) {
-                                return redirect()->route('user.home');
-                            }else{
-                                return redirect()->route('home');
-                            }
-                        }else{
-                            return view('auth.login')
-                                ->with('message','Email And Password Are Wrong.');
+                    if (auth()->attempt(['email' => $input['email'], 'password' => $input['password']])) {
+                        $user = auth()->user();
+                
+                        $branch = Branch::find($user->branch_id);
+                
+                        if ($branch && $branch->status == 0) {
+                            return view('auth.login')->with('message', 'Your branch is deactivated.');
                         }
-                }else{
+                
+                        if ($user->type == 1) {
+                            return redirect()->route('admin.home');
+                        } else if ($user->type == 2) {
+                            return redirect()->route('manager.home');
+                        } else if ($user->type == 0) {
+                            return redirect()->route('user.home');
+                        } else {
+                            return redirect()->route('home');
+                        }
+                    } else {
+                        return view('auth.login')
+                            ->with('message', 'Email and Password are wrong.');
+                    }
+                } else {
                     return view('auth.login')
-                    ->with('message','Your ID is Deactive.');
-                }
+                        ->with('message', 'Your ID is deactivated.');
+                }                
             }else {
                 return view('auth.login')
                     ->with('message','Credential Error. You are not authenticate user.');
