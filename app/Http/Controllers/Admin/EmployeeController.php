@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules\Password;
+use Illuminate\Support\Facades\Auth;
 
 class EmployeeController extends Controller
 {
@@ -17,7 +18,12 @@ class EmployeeController extends Controller
 
     public function manage_employee()
     {
-        $users = User::where('type','=','3')->get();
+      $users = User::when(Auth::user()->role_id != 1, function($query) {
+            return $query->where('branch_id', Auth::user()->branch_id);
+        })
+        ->where('type', '=', '3')
+        ->get();
+
         return view('admin.employee.manageemployee', compact('users'));
     }
 

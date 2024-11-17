@@ -12,7 +12,7 @@ class LedgerController extends Controller
     public function index(Request $request)
     {
         $chartOfAccounts = ChartOfAccount::with('branch')
-        // ->where('branch_id', auth()->user()->branch_id)
+        ->where('branch_id', auth()->user()->branch_id)
         ->select('id', 'account_head', 'account_name')
         ->get();
         return view('admin.ledger.chart_of_accounts', compact('chartOfAccounts'));

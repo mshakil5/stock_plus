@@ -124,9 +124,23 @@
                                                 </tr>
         
                                                 <tr>
-                                                    <td><label class="control-label">System User</label></td>
+                                                    <td><label class="control-label">Manage Admin</label></td>
                                                     <td>
                                                         <label style="margin-top: -9px" class="switch"><input id="p8" name="permission[]" type="checkbox" value="8" @foreach (json_decode($data->permission) as $permission) @if ($permission == 8) checked @endif @endforeach ><span class="slider round"></span></label>
+                                                    </td>
+                                                </tr>
+
+                                                <tr>
+                                                    <td><label class="control-label">Manage Employee</label></td>
+                                                    <td>
+                                                        <label style="margin-top: -9px" class="switch"><input id="p39" name="permission[]" type="checkbox" value="39" @foreach (json_decode($data->permission) as $permission) @if ($permission == 39) checked @endif @endforeach ><span class="slider round"></span></label>
+                                                    </td>
+                                                </tr>
+
+                                                <tr>
+                                                    <td><label class="control-label">Manage Role</label></td>
+                                                    <td>
+                                                        <label style="margin-top: -9px" class="switch"><input id="p40" name="permission[]" type="checkbox" value="40" @foreach (json_decode($data->permission) as $permission) @if ($permission == 40) checked @endif @endforeach ><span class="slider round"></span></label>
                                                     </td>
                                                 </tr>
         
@@ -186,17 +200,19 @@
                                                     </td>
                                                 </tr>
 
+                                                
+        
+                                            </table>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <table class="table table-hover">
+
                                                 <tr>
                                                     <td><label class="control-label">Sales Module</label></td>
                                                     <td>
                                                         <label style="margin-top: -9px" class="switch"><input id="p17" name="permission[]" type="checkbox" value="17" @foreach (json_decode($data->permission) as $permission) @if ($permission == 17) checked @endif @endforeach><span class="slider round"></span></label>
                                                     </td>
                                                 </tr>
-        
-                                            </table>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <table class="table table-hover">
 
                                                 <tr>
                                                     <td><label class="control-label">Transfer History</label></td>

@@ -160,7 +160,13 @@ class UserController extends Controller
 
     public function manage_admin()
     {
-      $users = User::where('type','=','1')->where('id','>', '4')->get();
+      // $users = User::where('type','=','1')->where('id','>', '4')->get();
+      $users = User::when(Auth::user()->role_id != 1, function($query) {
+        return $query->where('branch_id', Auth::user()->branch_id);
+      })
+      ->where('type', '=', '1')
+      // ->where('id','>', '4')
+      ->get();
       // dd($users );
     	return view('admin.user.manageadmin', compact('users'));
     }

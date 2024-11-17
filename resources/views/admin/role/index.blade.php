@@ -46,7 +46,18 @@
                             </thead>
                             <tbody>
 
-                                @foreach (\App\Models\Role::where('id','!=', '1')->get(); as $data)
+                                @php
+                                $roles = \App\Models\Role::query()
+                                    ->when(Auth::user()->role_id != 1, function ($query) {
+                                        return $query->whereHas('user', function ($userQuery) {
+                                            $userQuery->where('branch_id', Auth::user()->branch_id);
+                                        });
+                                    })
+                                    ->where('id', '!=', 1)
+                                    ->get();
+                                @endphp
+
+                                @foreach ($roles as $data)
                                     <tr>
                                         <td>{{ $data->name }}</td>
                                         <td>
@@ -160,9 +171,23 @@
                                                 </tr>
         
                                                 <tr>
-                                                    <td><label class="control-label">System User</label></td>
+                                                    <td><label class="control-label">Manage Admin</label></td>
                                                     <td>
                                                         <label style="margin-top: -9px" class="switch"><input id="p8" name="permission[]" type="checkbox" value="8" ><span class="slider round"></span></label>
+                                                    </td>
+                                                </tr>
+
+                                                <tr>
+                                                    <td><label class="control-label">Manage Employee</label></td>
+                                                    <td>
+                                                        <label style="margin-top: -9px" class="switch"><input id="p39" name="permission[]" type="checkbox" value="39" ><span class="slider round"></span></label>
+                                                    </td>
+                                                </tr>
+
+                                                <tr>
+                                                    <td><label class="control-label">Manage Role</label></td>
+                                                    <td>
+                                                        <label style="margin-top: -9px" class="switch"><input id="p40" name="permission[]" type="checkbox" value="40" ><span class="slider round"></span></label>
                                                     </td>
                                                 </tr>
 
@@ -222,17 +247,19 @@
                                                     </td>
                                                 </tr>
 
+                                                
+
+                                            </table>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <table class="table table-hover">
+
                                                 <tr>
                                                     <td><label class="control-label">Sales Module</label></td>
                                                     <td>
                                                         <label style="margin-top: -9px" class="switch"><input id="p17" name="permission[]" type="checkbox" value="17" ><span class="slider round"></span></label>
                                                     </td>
                                                 </tr>
-
-                                            </table>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <table class="table table-hover">
 
                                                 <tr>
                                                     <td><label class="control-label">Transfer History</label></td>

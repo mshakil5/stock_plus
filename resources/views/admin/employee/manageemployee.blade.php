@@ -169,13 +169,13 @@
                                     </select>
                                 </div>
                             </div>
-
+                            
                             <div class="form-group">
                                 <label for="role_id" class="col-sm-3 control-label">Role<span class="text-danger">*</span></label>
                                 <div class="col-sm-9">
                                     <select name="role_id" id="role_id" class="form-control">
                                         <option value="">Select</option>
-                                        @foreach (\App\Models\Role::all(); as $role)
+                                        @foreach (\App\Models\Role::where('id', auth()->user()->role_id)->get(); as $role)
                                         <option value="{{ $role->id }}" {{ old('role_id') == $role->id ? 'selected' : '' }}>
                                             {{ $role->name }}
                                         </option>
