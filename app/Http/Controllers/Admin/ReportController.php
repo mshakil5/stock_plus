@@ -37,10 +37,28 @@ class ReportController extends Controller
                 ->when($request->input('customer_id'), function ($query) use ($request) {
                     $query->where("customer_id",$request->input('customer_id'));
                 })
+
+                ->when(auth()->user()->role_id != 1, function ($query) {
+                    $query->where('branch_id', auth()->user()->branch_id);
+                })
         ->get();
 
-        $cashsales = Order::with('orderdetails')->where('salestype','=','Cash')->where('sales_status','=','1')->sum('net_total');
-        $creditsales = Order::with('orderdetails')->where('salestype','=','Credit')->where('sales_status','=','1')->sum('net_total');
+        $cashsales = Order::with('orderdetails')
+            ->when(auth()->user()->role_id != 1, function ($query) {
+                $query->where('branch_id', auth()->user()->branch_id);
+            })
+            ->where('salestype','=','Cash')
+            ->where('sales_status','=','1')
+            ->sum('net_total');
+
+        $creditsales = Order::with('orderdetails')
+            ->when(auth()->user()->role_id != 1, function ($query) {
+                $query->where('branch_id', auth()->user()->branch_id);
+            })
+            ->where('salestype','=','Credit')
+            ->where('sales_status','=','1')
+            ->sum('net_total');
+
         return view("admin.report.sales",compact('sales','cashsales','creditsales'));
     }
 
@@ -55,6 +73,10 @@ class ReportController extends Controller
                 })
                 ->when($request->input('customer_id'), function ($query) use ($request) {
                     $query->where("customer_id",$request->input('customer_id'));
+                })
+
+                ->when(auth()->user()->role_id != 1, function ($query) {
+                    $query->where('branch_id', auth()->user()->branch_id);
                 })
         ->get();
 
@@ -73,14 +95,14 @@ class ReportController extends Controller
                 ->when($request->input('customer_id'), function ($query) use ($request) {
                     $query->where("customer_id",$request->input('customer_id'));
                 })
+
+                ->when(auth()->user()->role_id != 1, function ($query) {
+                    $query->where('branch_id', auth()->user()->branch_id);
+                })
         ->get();
 
         return view("admin.report.deliverynote",compact('sales'));
     }
-
-
-
-
 
 
     public function getPurchaseReport(Request $request)
@@ -99,6 +121,10 @@ class ReportController extends Controller
                     ->when($request->input('vendor_id'), function ($query) use ($request) {
                         $query->where("vendor_id",$request->input('vendor_id'));
                     })
+
+                    ->when(auth()->user()->role_id != 1, function ($query) {
+                        $query->where('branch_id', auth()->user()->branch_id);
+                    })
             ->get();
 
             // dd($purchase);
@@ -111,6 +137,7 @@ class ReportController extends Controller
 
     public function getSalesReturnReport(Request $request)
     {
+
         $salesreturns = SalesReturn::with('salesreturndetail')
                 ->when($request->input('fromdate'), function ($query) use ($request) {
                     $query->whereBetween('returndate', [$request->input('fromdate'), $request->input('todate')]);
@@ -120,6 +147,9 @@ class ReportController extends Controller
                 })
                 ->when($request->input('customer_id'), function ($query) use ($request) {
                     $query->where("customer_id",$request->input('customer_id'));
+                })
+                ->when(auth()->user()->role_id != 1, function ($query) {
+                    $query->where('branch_id', auth()->user()->branch_id);
                 })
         ->get();
 
@@ -139,6 +169,10 @@ class ReportController extends Controller
                 })
                 ->when($request->input('vendor_id'), function ($query) use ($request) {
                     $query->where("vendor_id",$request->input('vendor_id'));
+                })
+
+                ->when(auth()->user()->role_id != 1, function ($query) {
+                    $query->where('branch_id', auth()->user()->branch_id);
                 })
         ->get();
         return view("admin.report.purchasereturn",compact('purchase'));
@@ -169,6 +203,10 @@ class ReportController extends Controller
                 })
                 ->when($request->input('customer_id'), function ($query) use ($request) {
                     $query->where("customer_id",$request->input('customer_id'));
+                })
+
+                ->when(auth()->user()->role_id != 1, function ($query) {
+                    $query->where('branch_id', auth()->user()->branch_id);
                 })
         ->get();
 

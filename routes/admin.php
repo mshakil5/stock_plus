@@ -281,13 +281,13 @@ Route::group(['prefix' =>'admin/', 'middleware' => ['auth', 'is_admin']], functi
     Route::get('ledger/equity-details/{id}', [LedgerController::class, 'equity']);
 
     // Daybook
-    Route::get('cashbook', [DaybookController::class, 'cashbook'])->name('admin.cashbook');
-    Route::post('cashbook', [DaybookController::class, 'cashbookByDate'])->name('admin.cashbook');
-    Route::get('bankbook', [DaybookController::class, 'bankbook'])->name('admin.bankbook');
-    Route::post('bankbook', [DaybookController::class, 'bankbookByDate'])->name('admin.bankbook');
+    Route::get('cashbook', [DaybookController::class, 'cashBook'])->name('admin.cashbook');
+    Route::post('cashbook', [DaybookController::class, 'cashBook'])->name('admin.cashbook');
+    Route::get('bankbook', [DaybookController::class, 'bankBook'])->name('admin.bankbook');
+    Route::post('bankbook', [DaybookController::class, 'bankBook'])->name('admin.bankbook');
 
     //Financial Statement
-    Route::get('cash-flow', [CashflowController::class, 'cashFlow'])->name('admin.cashflow');
+    Route::get('cash-flow', [CashflowController::class, 'cashFlowByDate'])->name('admin.cashflow');
     Route::post('cash-flow', [CashflowController::class, 'cashFlowByDate'])->name('admin.cashflow');
     Route::get('income-statement', [IncomestatementController::class, 'incomeStatement'])->name('admin.incomestatement');
     Route::post('income-statement', [IncomestatementController::class, 'incomeStatement'])->name('admin.incomestatement');

@@ -12,10 +12,12 @@
 
                 <div class="col-md-3">
                     <label class="label label-primary">Branch</label>
-                    <select class="form-control select2" name="branch_id">
-                        <option value="">Select Branch..</option>
+                    <select class="form-control select2" name="branch_id" 
+                        {{ Auth::user()->role_id != 1 ? 'disabled' : '' }}>
+                        <option value="">Select Branch...</option>
                         @foreach ($branches as $branch)
-                            <option value="{{ $branch->id }}" {{ request()->input('branch_id') == $branch->id ? 'selected' : '' }}>
+                            <option value="{{ $branch->id }}" 
+                                {{ request()->input('branch_id') == $branch->id || (Auth::user()->branch_id == $branch->id && Auth::user()->role_id != 1) ? 'selected' : '' }}>
                                 {{ $branch->name }}
                             </option>
                         @endforeach

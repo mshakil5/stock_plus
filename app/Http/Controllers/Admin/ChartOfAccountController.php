@@ -17,7 +17,12 @@ class ChartOfAccountController extends Controller
     public function index(Request $request)
     {
         if ($request->ajax()) {
-            $query = ChartOfAccount::with('branch');
+
+            $user = Auth::user();
+
+            $query = ChartOfAccount::with('branch')->when($user->role_id != 1, function ($query) use ($user) {
+                return $query->where('branch_id', $user->branch_id);
+            });
 
             if ($branchId = $request->input('branch_id')) {
                 $query->where('branch_id', $branchId);

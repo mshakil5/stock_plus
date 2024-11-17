@@ -82,6 +82,10 @@
                                     @php
                                         $balance = $balance + $asset->at_amount;
                                     @endphp
+                                    @else
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
                                     @endif
                                 </tr>
                             @endforeach

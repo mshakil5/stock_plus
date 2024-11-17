@@ -134,10 +134,14 @@ echo Session::put('info', '');
                                             onclick="manageStockPurchaseDetails({{ $stock->id }})">
                                         <i class="fa fa-eye"></i> Details
                                     </button> --}}
-                                    <button class="btn btn-primary btn-sm btn-transfer" data-toggle="modal"
-                                            data-target="#transferModal" pname="{{$stock->productname}}" bid="{{$stock->branch_id}}" pid="{{ $stock->product_id }}" tstock="{{ $stock->quantity }}" value="{{$stock->id}}">
-                                        <i class="fa fa-arrow-up"></i> Transfer
-                                    </button>
+                                    @if((Auth::user()->type == '1' || Auth::user()->type == '0') && in_array('9', json_decode(Auth::user()->role->permission)))
+                                        <button class="btn btn-primary btn-sm btn-transfer" data-toggle="modal"
+                                                data-target="#transferModal" pname="{{ $stock->productname }}" 
+                                                bid="{{ $stock->branch_id }}" pid="{{ $stock->product_id }}" 
+                                                tstock="{{ $stock->quantity }}" value="{{ $stock->id }}">
+                                            <i class="fa fa-arrow-up"></i> Transfer
+                                        </button>
+                                    @endif
                             </td>
                         </tr>
                     @endforeach

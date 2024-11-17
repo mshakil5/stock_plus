@@ -22,31 +22,34 @@ echo Session::put('message', '');
         {{ csrf_field() }}
         <div class="col-md-2">
             <label class="label label-primary">From </label>
-            <input type="date" class="form-control" name="fromdate" required>
+            <input type="date" class="form-control" name="fromdate" value="{{ request('fromdate') }}">
         </div>
         <div class="col-md-2">
             <label class="label label-primary">To </label>
-            <input type="date" class="form-control" name="todate" value="{{date('Y-m-d')}}" required>
+            <input type="date" class="form-control" name="todate" value="{{ request('todate', date('Y-m-d')) }}" required>
         </div>
         <div class="col-md-2">
             <label class="label label-primary">Branch </label>
-            <select class="form-control select2" name="branch_id">
+            <select class="form-control select2" name="branch_id" {{ Auth::user()->role_id != 1 ? 'disabled' : '' }}>
                 @php
                     $branchNames = \App\Models\Branch::where('status','1')->get();
                 @endphp
                 <option value="">Select Branch..</option>
-                @foreach ($branchNames as $branchName)
-                    <option value="{{$branchName->id}}">{{$branchName->name}}</option>
+                @foreach ($branchNames as $branch)
+                    <option value="{{ $branch->id }}" 
+                        {{ (request('branch_id') == $branch->id || (Auth::user()->branch_id == $branch->id && Auth::user()->role_id != 1)) ? 'selected' : '' }}>
+                        {{ $branch->name }}
+                    </option>
                 @endforeach
             </select>
         </div>
         
-        <div class="col-md-2">
-            <label class="label label-primary">Purchase Type </label>
-            <select class="form-control select2" name="purchase_type">
+        <div class="col-md-1">
+            <label class="label label-primary">Sales Type </label>
+            <select class="form-control" name="salestype">
                 <option value="">All</option>
-                <option value="Cash">Cash</option>
-                <option value="Credit">Credit</option>
+                <option value="Cash" {{ request('salestype') == 'Cash' ? 'selected' : '' }}>Cash</option>
+                <option value="Credit" {{ request('salestype') == 'Credit' ? 'selected' : '' }}>Credit</option>
             </select>
         </div>
 
@@ -58,7 +61,9 @@ echo Session::put('message', '');
                 @endphp
                 <option value="">Select Supplier..</option>
                 @foreach ($vendors as $vendor)
-                    <option value="{{$vendor->id}}">{{$vendor->name}}</option>
+                    <option value="{{ $vendor->id }}" {{ request('vendor_id') == $vendor->id ? 'selected' : '' }}>
+                        {{ $vendor->name }}
+                    </option>
                 @endforeach
             </select>
         </div>
@@ -147,58 +152,6 @@ echo Session::put('message', '');
         </div>
 
     </div>
-
-
-{{-- 
-    <div class="col-md-5">
-        <div class="panel panel-primary">
-            <div class="panel-heading"><i class="fa fa-navicon"></i> Summery</div>
-            <p class="label label-info pull-right">
-                Month: <span class="label label-warning">
-                    @if (isset($month))
-                        @php
-                            $today = Carbon\Carbon::create()->day(1)->month($month);
-                            echo $today->format('F');
-                        @endphp
-                    @else
-                        @php
-                            $today = Carbon\Carbon::now();;
-                            echo $today->format('F');
-
-                        @endphp
-                    @endif
-                    </span>
-            </p>
-
-            <div class="panel-body">
-                    <table class="table table-responsive">
-                        <tbody>
-                            
-                            <tr>
-                                <td>Total Purchase:</td>
-                                <td class="">{{$cashpurchase + $creditpurchase}}</td>
-
-                            </tr>
-                            <tr>
-                                <td>Total Cash Purchase:</td>
-                                <td class="">{{$cashpurchase}}</td>
-
-                            </tr>
-                            <tr>
-                                <td>Total Credit Purchase:</td>
-                                <td class="">{{$creditpurchase}}</td>
-
-                            </tr>
-                        </tbody>
-                    </table>
-            </div>
-        </div>
-
-    </div>
- --}}
-
-
-
     
 </div>
 

@@ -22,21 +22,24 @@ echo Session::put('message', '');
         {{ csrf_field() }}
         <div class="col-md-2">
             <label class="label label-primary">From </label>
-            <input type="date" class="form-control" name="fromdate" required>
+            <input type="date" class="form-control" name="fromdate" value="{{ request('fromdate') }}">
         </div>
         <div class="col-md-2">
             <label class="label label-primary">To </label>
-            <input type="date" class="form-control" name="todate" value="{{date('Y-m-d')}}" required>
+            <input type="date" class="form-control" name="todate" value="{{ request('todate', date('Y-m-d')) }}" required>
         </div>
         <div class="col-md-2">
             <label class="label label-primary">Branch </label>
-            <select class="form-control select2" name="branch_id">
+            <select class="form-control select2" name="branch_id" {{ Auth::user()->role_id != 1 ? 'disabled' : '' }}>
                 @php
                     $branchNames = \App\Models\Branch::where('status','1')->get();
                 @endphp
                 <option value="">Select Branch..</option>
-                @foreach ($branchNames as $branchName)
-                    <option value="{{$branchName->id}}">{{$branchName->name}}</option>
+                @foreach ($branchNames as $branch)
+                    <option value="{{ $branch->id }}" 
+                        {{ (request('branch_id') == $branch->id || (Auth::user()->branch_id == $branch->id && Auth::user()->role_id != 1)) ? 'selected' : '' }}>
+                        {{ $branch->name }}
+                    </option>
                 @endforeach
             </select>
         </div>
@@ -58,7 +61,9 @@ echo Session::put('message', '');
                 @endphp
                 <option value="">Select Customer..</option>
                 @foreach ($customers as $customer)
-                    <option value="{{$customer->id}}">{{$customer->name}}</option>
+                    <option value="{{ $customer->id }}" {{ request('customer_id') == $customer->id ? 'selected' : '' }}>
+                        {{ $customer->name }}
+                    </option>
                 @endforeach
             </select>
         </div>

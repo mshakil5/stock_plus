@@ -8,23 +8,14 @@ use App\Models\Transaction;
 
 class DaybookController extends Controller
 {
-    public function cashbook()
-    {
-        $cashbooks = Transaction::where('payment_type', 'Cash')
-        ->select('id', 'date', 'description', 'ref', 'chart_of_account_id', 'transaction_type', 'at_amount')->orderBy('id', 'desc')->whereIn('transaction_type', ['Current', 'Received', 'Sold', 'Advance', 'Purchase', 'Payment', 'Prepaid'])
-        ->get();
-        $totalDrAmount = Transaction::where('payment_type', 'Cash')->whereIn('transaction_type', ['Current', 'Received', 'Sold', 'Advance'])->sum('at_amount');
-        $totalCrAmount = Transaction::where('payment_type', 'Cash')->whereIn('transaction_type', ['Purchase', 'Payment', 'Prepaid'])->sum('at_amount');
-        $totalAmount = $totalDrAmount - $totalCrAmount;
-        return view('admin.daybook.cashbook', compact('cashbooks', 'totalAmount'));
-    }
-
-    public function cashbookByDate(Request $request)
+    public function cashBook(Request $request)
     {
         $startDate = $request->input('start_date');
         $endDate = $request->input('end_date');
+        $branchId = auth()->user()->branch_id;
 
         $cashbooks = Transaction::where('payment_type', 'Cash')
+        ->where('branch_id', $branchId)
         ->select('id', 'date', 'description', 'ref', 'chart_of_account_id', 'transaction_type', 'at_amount')
         ->whereIn('transaction_type', ['Current', 'Received', 'Sold', 'Advance', 'Purchase', 'Payment', 'Prepaid'])
         ->when($startDate, function($query, $startDate) {
@@ -37,6 +28,7 @@ class DaybookController extends Controller
         ->get();
         
         $totalDrAmount = Transaction::where('payment_type', 'Cash')
+        ->where('branch_id', $branchId)
         ->whereIn('transaction_type', ['Current', 'Received', 'Sold', 'Advance'])
         ->when($startDate, function($query, $startDate) {
             return $query->whereDate('date', '>=', $startDate);
@@ -47,6 +39,7 @@ class DaybookController extends Controller
         ->sum('at_amount');
 
         $totalCrAmount = Transaction::where('payment_type', 'Cash')
+        ->where('branch_id', $branchId)
         ->whereIn('transaction_type', ['Purchase', 'Payment', 'Prepaid'])
         ->when($startDate, function($query, $startDate) {
             return $query->whereDate('date', '>=', $startDate);
@@ -60,23 +53,14 @@ class DaybookController extends Controller
         return view('admin.daybook.cashbook', compact('cashbooks', 'totalAmount'));
     }
 
-    public function bankbook()
-    {
-        $bankbooks = Transaction::where('payment_type', 'Bank')
-        ->select('id', 'date', 'description', 'ref', 'chart_of_account_id', 'transaction_type', 'at_amount')->whereIn('transaction_type', ['Current', 'Received', 'Sold', 'Advance', 'Purchase', 'Payment', 'Prepaid'])
-        ->get();
-        $totalDrAmount = Transaction::where('payment_type', 'Bank')->whereIn('transaction_type', ['Current', 'Received', 'Sold', 'Advance'])->sum('at_amount');
-        $totalCrAmount = Transaction::where('payment_type', 'Bank')->whereIn('transaction_type', ['Purchase', 'Payment', 'Prepaid'])->sum('at_amount');
-        $totalAmount = $totalDrAmount - $totalCrAmount;
-        return view('admin.daybook.bankbook', compact('bankbooks', 'totalAmount'));
-    }
-
-    public function bankbookByDate(Request $request)
+    public function bankBook(Request $request)
     {
         $startDate = $request->input('start_date');
         $endDate = $request->input('end_date');
+        $branchId = auth()->user()->branch_id;
 
         $bankbooks = Transaction::where('payment_type', 'Bank')
+            ->where('branch_id', $branchId)
             ->select('id', 'date', 'description', 'ref', 'chart_of_account_id', 'transaction_type', 'at_amount')
             ->whereIn('transaction_type', ['Current', 'Received', 'Sold', 'Advance', 'Purchase', 'Payment', 'Prepaid'])
             ->when($startDate, function($query, $startDate) {
@@ -89,6 +73,7 @@ class DaybookController extends Controller
             ->get();
 
         $totalDrAmount = Transaction::where('payment_type', 'Bank')
+            ->where('branch_id', $branchId)
             ->whereIn('transaction_type', ['Current', 'Received', 'Sold', 'Advance'])
             ->when($startDate, function($query, $startDate) {
                 return $query->whereDate('date', '>=', $startDate);
@@ -99,6 +84,7 @@ class DaybookController extends Controller
             ->sum('at_amount');
 
         $totalCrAmount = Transaction::where('payment_type', 'Bank')
+            ->where('branch_id', $branchId)
             ->whereIn('transaction_type', ['Purchase', 'Payment', 'Prepaid'])
             ->when($startDate, function($query, $startDate) {
                 return $query->whereDate('date', '>=', $startDate);
@@ -112,5 +98,4 @@ class DaybookController extends Controller
 
         return view('admin.daybook.bankbook', compact('bankbooks', 'totalAmount'));
     }
-
 }

@@ -22,11 +22,11 @@ echo Session::put('message', '');
         {{ csrf_field() }}
         <div class="col-md-2">
             <label class="label label-primary">From </label>
-            <input type="date" class="form-control" name="fromdate" required>
+            <input type="date" class="form-control" name="fromdate" value="{{ request('fromdate') }}">
         </div>
         <div class="col-md-2">
             <label class="label label-primary">To </label>
-            <input type="date" class="form-control" name="todate" value="{{date('Y-m-d')}}" required>
+            <input type="date" class="form-control" name="todate" value="{{ request('todate', date('Y-m-d')) }}" required>
         </div>
         
 

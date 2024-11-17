@@ -11,7 +11,14 @@
                             <div class="col-md-12">
                                 <div class="bs-example bs-example-tabs" data-example-id="togglable-tabs">
                                     
-                                    <h5 class="btn btn-success btn-sm center-block px-2">Sales : {{ \App\Models\Order::where('sales_status','=','1')->where('orderdate',date('Y-m-d'))->sum('net_total')}} </h5>
+                                    <h5 class="btn btn-success btn-sm center-block px-2">Sales : {{
+                                        \App\Models\Order::where('sales_status', '=', '1')
+                                        ->where('orderdate', date('Y-m-d'))
+                                        ->when(auth()->user()->role_id != 1, function ($query) {
+                                            return $query->where('branch_id', auth()->user()->branch_id);
+                                        })
+                                        ->sum('net_total')
+                                    }} </h5>
                                 </div>
                             </div>
                         </div>
@@ -27,7 +34,21 @@
                             <div class="col-md-12">
                                 <div class="bs-example bs-example-tabs" data-example-id="togglable-tabs">
                                     
-                                    <h5 class="btn btn-success btn-sm center-block px-2"> {{ \App\Models\Order::where('sales_status','=','1')->where('orderdate',date('Y-m-d'))->sum('net_total') - \App\Models\Order::where('sales_status','=','1')->where('orderdate',date('Y-m-d'))->sum('due')}}</h5>
+                                    <h5 class="btn btn-success btn-sm center-block px-2"> {{
+                                        \App\Models\Order::where('sales_status', '=', '1')
+                                        ->where('orderdate', date('Y-m-d'))
+                                        ->when(auth()->user()->role_id != 1, function ($query) {
+                                            return $query->where('branch_id', auth()->user()->branch_id);
+                                        })
+                                        ->sum('net_total') 
+                                        -
+                                        \App\Models\Order::where('sales_status', '=', '1')
+                                        ->where('orderdate', date('Y-m-d'))
+                                        ->when(auth()->user()->role_id != 1, function ($query) {
+                                            return $query->where('branch_id', auth()->user()->branch_id);
+                                        })
+                                        ->sum('due')
+                                    }}</h5>
                                 </div>
                             </div>
                         </div>
@@ -43,7 +64,14 @@
                             <div class="col-md-12">
                                 <div class="bs-example bs-example-tabs" data-example-id="togglable-tabs">
                                     
-                                    <h5 class="btn btn-success btn-sm center-block px-2"> {{ \App\Models\Order::where('sales_status','=','1')->where('orderdate',date('Y-m-d'))->sum('due')}}</h5>
+                                    <h5 class="btn btn-success btn-sm center-block px-2"> {{
+                                        \App\Models\Order::where('sales_status', '=', '1')
+                                        ->where('orderdate', date('Y-m-d'))
+                                        ->when(auth()->user()->role_id != 1, function ($query) {
+                                            return $query->where('branch_id', auth()->user()->branch_id);
+                                        })
+                                        ->sum('due')
+                                    }}</h5>
                                 </div>
                             </div>
                         </div>
@@ -59,7 +87,11 @@
                             <div class="col-md-12">
                                 <div class="bs-example bs-example-tabs" data-example-id="togglable-tabs">
                                     
-                                    <h5 class="btn btn-success btn-sm center-block px-2"> {{ \App\Models\Product::count() }}</h5>
+                                    <h5 class="btn btn-success btn-sm center-block px-2"> {{
+                                        \App\Models\Product::when(auth()->user()->role_id != 1, function ($query) {
+                                            return $query->where('branch_id', auth()->user()->branch_id);
+                                        })->count()
+                                    }}</h5>
                                 </div>
                             </div>
                         </div>
@@ -75,7 +107,14 @@
                             <div class="col-md-12">
                                 <div class="bs-example bs-example-tabs" data-example-id="togglable-tabs">
                                     
-                                    <h5 class="btn btn-success btn-sm center-block px-2"> {{ \App\Models\Order::where('quotation','=','1')->where('orderdate',date('Y-m-d'))->count() }}</h5>
+                                    <h5 class="btn btn-success btn-sm center-block px-2"> {{
+                                        \App\Models\Order::where('quotation', '=', '1')
+                                        ->where('orderdate', date('Y-m-d'))
+                                        ->when(auth()->user()->role_id != 1, function ($query) {
+                                            return $query->where('branch_id', auth()->user()->branch_id);
+                                        })
+                                        ->count()
+                                    }}</h5>
                                 </div>
                             </div>
                         </div>
@@ -91,7 +130,14 @@
                             <div class="col-md-12">
                                 <div class="bs-example bs-example-tabs" data-example-id="togglable-tabs">
                                     
-                                    <h5 class="btn btn-success btn-sm center-block px-2"> {{ \App\Models\Order::where('delivery_note','=','1')->where('orderdate',date('Y-m-d'))->count() }}</h5>
+                                    <h5 class="btn btn-success btn-sm center-block px-2"> {{
+                                        \App\Models\Order::where('delivery_note', '=', '1')
+                                        ->where('orderdate', date('Y-m-d'))
+                                        ->when(auth()->user()->role_id != 1, function ($query) {
+                                            return $query->where('branch_id', auth()->user()->branch_id);
+                                        })
+                                        ->count()
+                                    }}</h5>
                                 </div>
                             </div>
                         </div>
@@ -107,7 +153,13 @@
                             <div class="col-md-12">
                                 <div class="bs-example bs-example-tabs" data-example-id="togglable-tabs">
                                     
-                                    <h5 class="btn btn-success btn-sm center-block px-2"> {{ \App\Models\Purchase::where('date',date('Y-m-d'))->sum('net_amount') }}</h5>
+                                    <h5 class="btn btn-success btn-sm center-block px-2"> {{
+                                        \App\Models\Purchase::where('date', date('Y-m-d'))
+                                        ->when(auth()->user()->role_id != 1, function ($query) {
+                                            return $query->where('branch_id', auth()->user()->branch_id);
+                                        })
+                                        ->sum('net_amount')
+                                    }}</h5>
                                 </div>
                             </div>
                         </div>
@@ -140,9 +192,14 @@
                             <div class="col-md-12">
                                 <div class="bs-example bs-example-tabs" data-example-id="togglable-tabs">
                                     <h5 class="btn btn-success btn-sm center-block px-2">
-                                        {{ \App\Models\Transaction::where('table_type', 'Expenses')
+                                      {{
+                                            \App\Models\Transaction::where('table_type', 'Expenses')
                                             ->whereDate('created_at', \Carbon\Carbon::today())
-                                            ->sum('at_amount') }}
+                                            ->when(auth()->user()->role_id != 1, function ($query) {
+                                                return $query->where('branch_id', auth()->user()->branch_id);
+                                            })
+                                            ->sum('at_amount')
+                                        }}
                                     </h5>
                                 </div>
                             </div>
@@ -159,9 +216,14 @@
                             <div class="col-md-12">
                                 <div class="bs-example bs-example-tabs" data-example-id="togglable-tabs">
                                     <h5 class="btn btn-success btn-sm center-block px-2">
-                                        {{ \App\Models\Transaction::where('table_type', 'Income')
+                                        {{
+                                            \App\Models\Transaction::where('table_type', 'Income')
                                             ->whereDate('created_at', \Carbon\Carbon::today())
-                                            ->sum('at_amount') }}
+                                            ->when(auth()->user()->role_id != 1, function ($query) {
+                                                return $query->where('branch_id', auth()->user()->branch_id);
+                                            })
+                                            ->sum('at_amount')
+                                        }}
                                     </h5>
                                 </div>
                             </div>
@@ -178,9 +240,14 @@
                             <div class="col-md-12">
                                 <div class="bs-example bs-example-tabs" data-example-id="togglable-tabs">
                                     <h5 class="btn btn-success btn-sm center-block px-2">
-                                        {{ \App\Models\Transaction::where('table_type', 'Liabilities')
+                                        {{
+                                            \App\Models\Transaction::where('table_type', 'Liabilities')
                                             ->whereDate('created_at', \Carbon\Carbon::today())
-                                            ->sum('at_amount') }}
+                                            ->when(auth()->user()->role_id != 1, function ($query) {
+                                                return $query->where('branch_id', auth()->user()->branch_id);
+                                            })
+                                            ->sum('at_amount')
+                                        }}
                                     </h5>
                                 </div>
                             </div>
@@ -197,7 +264,12 @@
                             <div class="col-md-12">
                                 <div class="bs-example bs-example-tabs" data-example-id="togglable-tabs">
                                     <h5 class="btn btn-success btn-sm center-block px-2">
-                                        {{ \App\Models\Customer::count() }}
+                                        {{
+                                            \App\Models\Customer::when(auth()->user()->role_id != 1, function ($query) {
+                                                return $query->where('branch_id', auth()->user()->branch_id);
+                                            })
+                                            ->count()
+                                        }}
                                     </h5>
                                 </div>
                             </div>

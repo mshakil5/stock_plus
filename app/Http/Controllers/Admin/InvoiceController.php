@@ -39,7 +39,9 @@ class InvoiceController extends Controller
     public function filter(Request $request)
     {
         
-        $allInvoice = Order::with('customer','orderdetails')->where('sales_status','1')->get();
+        $allInvoice = Order::with('customer','orderdetails')
+                    ->where('sales_status','1')
+                    ->where('branch_id', auth()->user()->branch_id)->get();
 
         return Datatables::of($allInvoice)
             ->addIndexColumn()
