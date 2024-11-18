@@ -135,7 +135,7 @@
                 </a>
             </li>
             <li class="{{ (request()->is('admin/all-delivery-note')) ? 'active' : '' }}">
-                <a href="{{ route('admin.allreturninvoices')}}"><i class="fa fa-adjust"></i> Delivery Notes
+                <a href="{{ route('admin.alldeliverynote')}}"><i class="fa fa-adjust"></i> Delivery Notes
                 </a>
             </li>
             <li class="{{ (request()->is('admin/all-sales-return')) ? 'active' : '' }}">

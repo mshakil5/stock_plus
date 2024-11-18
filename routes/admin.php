@@ -187,7 +187,11 @@ Route::group(['prefix' =>'admin/', 'middleware' => ['auth', 'is_admin']], functi
     Route::post('quotation-store', [SalesController::class, 'quotationStore'])->name('admin.quotation.store');
     Route::post('delivery-note-store', [SalesController::class, 'deliveryNoteStore'])->name('admin.deliverynote.store');
     Route::get('all-quotation', [SalesController::class, 'getAllQuoation'])->name('admin.allquotation');
+    Route::get('filter-quotation', [SalesController::class, 'filterQuotation'])->name('quotation-filter.admin');
+
     Route::get('all-delivery-note', [SalesController::class, 'getAllDeliveryNote'])->name('admin.alldeliverynote');
+    Route::get('filter-delivery-note', [SalesController::class, 'filterDeliveryNote'])->name('delivery-note-filter.admin');
+
     Route::get('all-sales-return', [SalesController::class, 'getAllReturnInvoice'])->name('admin.allreturninvoices');
 
     Route::post('saveCustomer', [SalesController::class, 'saveCustomer'])->name('admin.saveCustomer');

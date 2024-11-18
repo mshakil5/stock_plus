@@ -588,7 +588,7 @@
         // submit to sales end
 
         // submit to quotation 
-        var salesStoreurl = "{{URL::to('/admin/quotation-store')}}";
+        var quotationStoreurl = "{{URL::to('/admin/quotation-store')}}";
 
         $("body").delegate("#quotationBtn", "click", function(event) {
             event.preventDefault();
@@ -621,7 +621,7 @@
 
 
             $.ajax({
-                url: salesStoreurl,
+                url: quotationStoreurl,
                 method: "POST",
                 data: data,
 
@@ -650,8 +650,8 @@
         });
         // submit to quotation end
 
-        // submit to quotation 
-        var salesStoreurl = "{{URL::to('/admin/delivery-note-store')}}";
+        // submit to delivery note 
+        var deliverynoteurl = "{{URL::to('/admin/delivery-note-store')}}";
 
         $("body").delegate("#deliveryBtn", "click", function(event) {
             event.preventDefault();
@@ -686,7 +686,7 @@
 
 
             $.ajax({
-                url: salesStoreurl,
+                url: deliverynoteurl,
                 method: "POST",
                 data: data,
 
@@ -713,7 +713,7 @@
             });
 
         });
-        // submit to quotation end
+        //submit to delivery note  end
 
         // discount calculation
         $("#discount").on('keyup change input', function() {

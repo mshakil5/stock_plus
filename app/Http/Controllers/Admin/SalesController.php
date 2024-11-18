@@ -11,6 +11,8 @@ use App\Models\OrderDetail;
 use App\Models\PurchaseHistory;
 use App\Models\Stock;
 use App\Models\Transaction;
+use Yajra\DataTables\Facades\DataTables;
+use Illuminate\Support\Carbon;
 
 class SalesController extends Controller
 {
@@ -21,13 +23,113 @@ class SalesController extends Controller
 
     public function getAllQuoation()
     {
-        return view('user.invoice.manageallquotation');
+        return view('admin.quotation.index');
+    }
+
+    public function filterQuotation(Request $request)
+    {
+        
+        $allInvoice = Order::with('customer','orderdetails')
+                    ->where('quotation','1')
+                    ->where('branch_id', auth()->user()->branch_id)->get();
+
+        return Datatables::of($allInvoice)
+            ->addIndexColumn()
+            ->editColumn('customer_id', function ($invoice) {
+                return $invoice->customer->name;
+            })
+            ->addColumn('total', function ($invoice) {
+                $total = $invoice->net_total;
+                return $total;
+            })
+            ->addColumn('created_at', function ($invoice) {
+                return "<span data-title='" . Carbon::parse($invoice->created_at)->format('h:m A') . "'>" . Carbon::parse($invoice->created_at)->format('d M Y') . "</span>";
+            })
+            ->addColumn('action', function ($invoice) {
+                $btn = '<div class="table-actions text-right">';
+
+                    $btn = '<a href="' . route('sales.return', $invoice->id) . '" class="btn btn-info btn-xs ms-1">
+                                <i class="fa fa-undo" aria-hidden="true"></i><span title="Return">Return</span>
+                            </a>';
+
+                    $btn .= '<a href="' . route('sales.edit', $invoice->id) . '" class="btn btn-warning btn-xs ms-1">
+                        <i class="fa fa-pencil" aria-hidden="true"></i><span title="Edit">Edit</span>
+                    </a>';
+
+                    $btn .= '<a href="' . route('customer.invoice.print', $invoice->id) . '" class="btn btn-success btn-xs print-window" target="_blank">
+                        <span title="Print Invoice">Print</span>
+                    </a>';
+
+                
+                    $btn .= '<a href="' . route('admin.get_invoice', $invoice->id) . '" class="btn btn-primary btn-xs">
+                        <span title="Download Invoice">
+                            <i class="fa fa-download" aria-hidden="true"></i> Download
+                        </span>
+                    </a>
+                    <button type="button" class="btn btn-primary btn-xs view-btn" data-toggle="modal" data-target="#product-details" value="' . $invoice->id . '">
+                        <i class="fa fa-eye" aria-hidden="true"></i> View
+                    </button>';
+                
+                $btn .= '</div>';
+                return $btn;
+            })
+            ->rawColumns(['created_at', 'action'])
+            ->make(true);
     }
 
     public function getAllDeliveryNote()
     {
-        return view('user.invoice.managealldeliverynote');
+        return view('admin.delivery_note.index');
+    }
 
+    public function filterDeliveryNote(Request $request)
+    {      
+        $allInvoice = Order::with('customer','orderdetails')
+                    ->where('delivery_note','1')
+                    ->where('branch_id', auth()->user()->branch_id)->get();
+
+        return Datatables::of($allInvoice)
+            ->addIndexColumn()
+            ->editColumn('customer_id', function ($invoice) {
+                return $invoice->customer->name;
+            })
+            ->addColumn('total', function ($invoice) {
+                $total = $invoice->net_total;
+                return $total;
+            })
+            ->addColumn('created_at', function ($invoice) {
+                return "<span data-title='" . Carbon::parse($invoice->created_at)->format('h:m A') . "'>" . Carbon::parse($invoice->created_at)->format('d M Y') . "</span>";
+            })
+            ->addColumn('action', function ($invoice) {
+                $btn = '<div class="table-actions text-right">';
+
+                    $btn = '<a href="' . route('sales.return', $invoice->id) . '" class="btn btn-info btn-xs ms-1">
+                                <i class="fa fa-undo" aria-hidden="true"></i><span title="Return">Return</span>
+                            </a>';
+
+                    $btn .= '<a href="' . route('sales.edit', $invoice->id) . '" class="btn btn-warning btn-xs ms-1">
+                        <i class="fa fa-pencil" aria-hidden="true"></i><span title="Edit">Edit</span>
+                    </a>';
+
+                    $btn .= '<a href="' . route('customer.invoice.print', $invoice->id) . '" class="btn btn-success btn-xs print-window" target="_blank">
+                        <span title="Print Invoice">Print</span>
+                    </a>';
+
+                
+                    $btn .= '<a href="' . route('admin.get_invoice', $invoice->id) . '" class="btn btn-primary btn-xs">
+                        <span title="Download Invoice">
+                            <i class="fa fa-download" aria-hidden="true"></i> Download
+                        </span>
+                    </a>
+                    <button type="button" class="btn btn-primary btn-xs view-btn" data-toggle="modal" data-target="#product-details" value="' . $invoice->id . '">
+                        <i class="fa fa-eye" aria-hidden="true"></i> View
+                    </button>';
+                
+                $btn .= '</div>';
+                return $btn;
+            })
+            ->rawColumns(['created_at', 'action'])
+            ->make(true);
     }
 
     public function getAllReturnInvoice()
