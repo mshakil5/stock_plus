@@ -116,14 +116,32 @@
 
 
     @if(Auth::user()->type == '1' && in_array('17', json_decode(Auth::user()->role->permission)) || Auth::user()->type == '0' && in_array('17', json_decode(Auth::user()->role->permission)))
-    <li class="treeview {{ (request()->is('admin/all-sellsinvoice')) ? 'active' : '' }}">
+    <li class="treeview {{ (request()->is('admin/all-sellsinvoice') || request()->is('admin/sales') || request()->is('admin/all-delivery-note') || request()->is('admin/all-quotation') || request()->is('admin/all-sales-return')) ? 'active' : '' }}">
         <a href="#">
             <i class="fa fa-user"></i> <span>Sales</span><span class="pull-right-container">
             <i class="fa fa-angle-left pull-right"></i></span>
         </a>
         <ul class="treeview-menu">
-                <li><a href="{{ route('sales')}}"><i class="fa fa-adjust"></i> Sales</a></li>
-                <li class="{{ (request()->is('admin/all-sellsinvoice')) ? 'active' : '' }}"><a href="{{ route('admin.allsellinvoice')}}"><i class="fa fa-adjust"></i> Manage Sales</a></li>
+            <li class="{{ (request()->is('admin/sales')) ? 'active' : '' }}">
+                <a href="{{ route('admin.sales')}}"><i class="fa fa-adjust"></i>Create Sales
+                </a>
+            </li>
+            <li class="{{ (request()->is('admin/all-sellsinvoice')) ? 'active' : '' }}">
+                <a href="{{ route('admin.allsellinvoice')}}"><i class="fa fa-adjust"></i> Manage Sales
+                </a>
+            </li>
+            <li class="{{ (request()->is('admin/all-quotation')) ? 'active' : '' }}">
+                <a href="{{ route('admin.allquotation')}}"><i class="fa fa-adjust"></i> Quotaions
+                </a>
+            </li>
+            <li class="{{ (request()->is('admin/all-delivery-note')) ? 'active' : '' }}">
+                <a href="{{ route('admin.allreturninvoices')}}"><i class="fa fa-adjust"></i> Delivery Notes
+                </a>
+            </li>
+            <li class="{{ (request()->is('admin/all-sales-return')) ? 'active' : '' }}">
+                <a href="{{ route('admin.allreturninvoices')}}"><i class="fa fa-adjust"></i> Returned Products
+                </a>
+            </li>
         </ul>
     </li>
     @endif
