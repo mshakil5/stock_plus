@@ -204,7 +204,7 @@
                                         <br/>
                                     </table>
                                     <br>
-                                        <button class="btn btn-success btn-md center-block"
+                                        <button class="btn btn-success btn-md center-block btn-submit"
                                                 type="submit"><i class="fa fa-plus-circle"></i> Add Product
                                         </button>
                                 </div>
@@ -293,277 +293,288 @@
             });
         });
 </script>
-    <script>
-        $(document).ready(function () {
-            $('.select2').select2();
-            var categoryTBL = $('.all-category').DataTable({
-                'responsive': true,
-                'paging': true,
-                'lengthChange': true,
-                'searching': true,
-                'ordering': true,
-                'info': true,
-                'autoWidth': true
-            });
-            var brandTBL = $('.all-brand').DataTable({
-                'responsive': true,
-                'paging': true,
-                'lengthChange': true,
-                'searching': true,
-                'ordering': true,
-                'info': true,
-                'autoWidth': true
-            });
-
+<script>
+    $(document).ready(function () {
+        $('.select2').select2();
+        var categoryTBL = $('.all-category').DataTable({
+            'responsive': true,
+            'paging': true,
+            'lengthChange': true,
+            'searching': true,
+            'ordering': true,
+            'info': true,
+            'autoWidth': true
         });
-        var getcaturl = "{{URL::to('/admin/category-all')}}";
-        var getbrdurl = "{{URL::to('/admin/brand-all')}}";
-        var getgroupurl = "{{URL::to('/admin/group-all')}}";
-        category_load();
-        brand_load();
-        group_load();
+        var brandTBL = $('.all-brand').DataTable({
+            'responsive': true,
+            'paging': true,
+            'lengthChange': true,
+            'searching': true,
+            'ordering': true,
+            'info': true,
+            'autoWidth': true
+        });
 
-        
-        function category_load() {
+    });
+    var getcaturl = "{{URL::to('/admin/category-all')}}";
+    var getbrdurl = "{{URL::to('/admin/brand-all')}}";
+    var getgroupurl = "{{URL::to('/admin/group-all')}}";
+    category_load();
+    brand_load();
+    group_load();
+
+    
+    function category_load() {
+        $.ajax({
+            url: getcaturl,
+            type: 'GET',
+            beforeSend: function (request) {
+                return request.setRequestHeader('X-CSRF-Token', $("meta[name='csrf-token']").attr('content'));
+            },
+            success: function (response) {
+                
+                $('#pcategoryselect').append('<option value="">Select</option>');
+                $.each(response, function(){
+                    if (this.status == 0) {
+                        
+                    } else {
+                        $('<option/>', {
+                            'value': this.id,
+                            'text': this.name +' - '+ this.categoryid
+                        }).appendTo('#pcategoryselect');
+                    }
+                });
+
+            },
+            error: function (err) {
+                console.log(err);
+                alert("Something Went Wrong, Please check again");
+            }
+        });
+    }
+
+    
+    function brand_load() {
+        $.ajax({
+            url: getbrdurl,
+            type: 'GET',
+            beforeSend: function (request) {
+                return request.setRequestHeader('X-CSRF-Token', $("meta[name='csrf-token']").attr('content'));
+            },
+            success: function (response) {
+                $('#pbrandselect').append('<option value="">Select</option>');
+                $.each(response, function(){
+                    if (this.status == 0) {
+                        
+                    } else {
+                        $('<option/>', {
+                            'value': this.id,
+                            'text': this.name +' - '+ this.brandid
+                        }).appendTo('#pbrandselect');
+                    }
+                    
+                });
+            },
+            error: function (err) {
+                console.log(err);
+                alert("Something Went Wrong, Please check again");
+            }
+        });
+    }
+
+    function group_load() {
+        $.ajax({
+            url: getgroupurl,
+            type: 'GET',
+            beforeSend: function (request) {
+                return request.setRequestHeader('X-CSRF-Token', $("meta[name='csrf-token']").attr('content'));
+            },
+            success: function (response) {
+                $('#group_id').append('<option value="">Select</option>');
+                $.each(response, function(){
+                    if (this.status == 0) {
+                        
+                    } else {
+                        $('<option/>', {
+                            'value': this.id,
+                            'text': this.name +' - '+ this.groupid
+                        }).appendTo('#group_id');
+                    }
+                });
+            },
+            error: function (err) {
+                console.log(err);
+                alert("Something Went Wrong, Please check again");
+            }
+        });
+    }
+
+    
+    
+
+    let helpers =
+        {
+            buildDropdown: function (result, table, emptyMessage) {
+                // Remove current options
+                table.html('');
+                // Check result isnt empty
+                if (result != '') {
+                    // Loop through each of the results and append the option to the table
+                    $.each(result, function (k, v) {
+                        if (v.status == 1 && emptyMessage == "Select Category")
+                            table.append('<option value="' + v.categoryid + '">' + v.categoryname + '</option>');
+                        else if (v.status == 1 && emptyMessage == "Select Brand")
+                            table.append('<option value="' + v.brandid + '">' + v.brandname + '</option>');
+                    });
+                }
+            }
+        }
+
+    var categoryurl = "{{URL::to('/admin/category')}}";
+    function save_category() {
+        if ($("#category").val() == "") {
+            alert("Please Provide Category Name");
+        }
+        if ($("#categoryid").val() == "") {
+            alert("Please Provide Category ID");
+        } else {
+            
+                var categoryid = $("#categoryid").val();
+                var category = $("#category").val();
             $.ajax({
-                url: getcaturl,
-                type: 'GET',
+                data: {
+                    category:category,categoryid:categoryid
+                },
+                url: categoryurl,
+                type: 'POST',
+                beforeSend: function (request) {
+                    return request.setRequestHeader('X-CSRF-Token', $("meta[name='csrf-token']").attr('content'));
+                },
+                success: function (response) {
+                    if (response.status == 303) {
+                        $(".catermsg").html(response.message);
+                    } else {
+                        
+                    showSnakBar('Saved Successfully');
+                    $('#pcategoryselect').append('<option value="'+response.id+'">'+response.name+'-'+response.categoryid+'</option>');
+                    // category_load();
+                    // brand_load();
+                    $("#category").val("");
+                    $("#categoryid").val("");
+                    $("#pcategoryselect").val(response.id);
+                    }
+                },
+                error: function (err) {
+                    console.log(err);
+                    alert("Something Went Wrong, Please check again");
+                }
+            });
+        }
+    }
+
+    var brandurl = "{{URL::to('/admin/brand')}}";
+    function save_brand() {
+        if ($("#brand").val() == "") {
+            alert("Please Provide Brand Name");
+        }
+        if ($("#brandid").val() == "") {
+            alert("Please Provide Brand ID");
+        } else {
+            
+            var brand = $("#brand").val()
+            var brandid = $("#brandid").val()
+            $.ajax({
+                data: {
+                    brand: brand, brandid:brandid
+                },
+                url: brandurl,
+                type: 'POST',
+                beforeSend: function (request) {
+                    return request.setRequestHeader('X-CSRF-Token', $("meta[name='csrf-token']").attr('content'));
+                },
+                success: function (response) {
+
+                    if (response.status == 303) {
+                        $(".brandermsg").html(response.message);
+                    } else {
+                        
+                        showSnakBar('Saved Successfully');
+                        $('#pbrandselect').append('<option value="'+response.id+'">'+response.name+'-'+response.brandid+'</option>');
+                        // category_load();
+                        $("#brand").val("")
+                        $("#brandid").val("")
+                        $("#pbrandselect").val(response.id)
+                    }
+
+                    
+                },
+                error: function (err) {
+                    console.log(err);
+                    alert("Something Went Wrong, Please check again");
+                }
+            });
+        }
+    }
+
+
+    var groupurl = "{{URL::to('/admin/group')}}";
+    function save_group() {
+        if ($("#group").val() == "") {
+            alert("Please Provide Group Name");
+        }
+        if ($("#groupid").val() == "") {
+            alert("Please Provide Group ID");
+        } else {
+            
+            var group = $("#group").val()
+            var groupid = $("#groupid").val()
+            $.ajax({
+                data: {
+                    group: group, groupid:groupid
+                },
+                url: groupurl,
+                type: 'POST',
                 beforeSend: function (request) {
                     return request.setRequestHeader('X-CSRF-Token', $("meta[name='csrf-token']").attr('content'));
                 },
                 success: function (response) {
                     
-                    $('#pcategoryselect').append('<option value="">Select</option>');
-                    $.each(response, function(){
-                        if (this.status == 0) {
-                            
-                        } else {
-                            $('<option/>', {
-                                'value': this.id,
-                                'text': this.name +' - '+ this.categoryid
-                            }).appendTo('#pcategoryselect');
-                        }
-                    });
 
-                },
-                error: function (err) {
-                    console.log(err);
-                    alert("Something Went Wrong, Please check again");
-                }
-            });
-        }
-
-        
-        function brand_load() {
-            $.ajax({
-                url: getbrdurl,
-                type: 'GET',
-                beforeSend: function (request) {
-                    return request.setRequestHeader('X-CSRF-Token', $("meta[name='csrf-token']").attr('content'));
-                },
-                success: function (response) {
-                    $('#pbrandselect').append('<option value="">Select</option>');
-                    $.each(response, function(){
-                        if (this.status == 0) {
-                            
-                        } else {
-                            $('<option/>', {
-                                'value': this.id,
-                                'text': this.name +' - '+ this.brandid
-                            }).appendTo('#pbrandselect');
-                        }
+                    if (response.status == 303) {
+                        $(".grpermsg").html(response.message);
+                    } else {
                         
-                    });
-                },
-                error: function (err) {
-                    console.log(err);
-                    alert("Something Went Wrong, Please check again");
-                }
-            });
-        }
-
-        function group_load() {
-            $.ajax({
-                url: getgroupurl,
-                type: 'GET',
-                beforeSend: function (request) {
-                    return request.setRequestHeader('X-CSRF-Token', $("meta[name='csrf-token']").attr('content'));
-                },
-                success: function (response) {
-                    $('#group_id').append('<option value="">Select</option>');
-                    $.each(response, function(){
-                        if (this.status == 0) {
-                            
-                        } else {
-                            $('<option/>', {
-                                'value': this.id,
-                                'text': this.name +' - '+ this.groupid
-                            }).appendTo('#group_id');
-                        }
-                    });
-                },
-                error: function (err) {
-                    console.log(err);
-                    alert("Something Went Wrong, Please check again");
-                }
-            });
-        }
-
-        
-        
-
-        let helpers =
-            {
-                buildDropdown: function (result, table, emptyMessage) {
-                    // Remove current options
-                    table.html('');
-                    // Check result isnt empty
-                    if (result != '') {
-                        // Loop through each of the results and append the option to the table
-                        $.each(result, function (k, v) {
-                            if (v.status == 1 && emptyMessage == "Select Category")
-                                table.append('<option value="' + v.categoryid + '">' + v.categoryname + '</option>');
-                            else if (v.status == 1 && emptyMessage == "Select Brand")
-                                table.append('<option value="' + v.brandid + '">' + v.brandname + '</option>');
-                        });
-                    }
-                }
-            }
-
-        var categoryurl = "{{URL::to('/admin/category')}}";
-        function save_category() {
-            if ($("#category").val() == "") {
-                alert("Please Provide Category Name");
-            }
-            if ($("#categoryid").val() == "") {
-                alert("Please Provide Category ID");
-            } else {
-                
-                 var categoryid = $("#categoryid").val();
-                 var category = $("#category").val();
-                $.ajax({
-                    data: {
-                        category:category,categoryid:categoryid
-                    },
-                    url: categoryurl,
-                    type: 'POST',
-                    beforeSend: function (request) {
-                        return request.setRequestHeader('X-CSRF-Token', $("meta[name='csrf-token']").attr('content'));
-                    },
-                    success: function (response) {
-                        if (response.status == 303) {
-                            $(".catermsg").html(response.message);
-                        } else {
-                            
                         showSnakBar('Saved Successfully');
-                        $('#pcategoryselect').append('<option value="'+response.id+'">'+response.name+'-'+response.categoryid+'</option>');
+                        $('#group_id').append('<option value="'+response.id+'">'+response.name+'-'+response.groupid+'</option>');
                         // category_load();
-                        // brand_load();
-                        $("#category").val("");
-                        $("#categoryid").val("");
-                        $("#pcategoryselect").val(response.id);
-                        }
-                    },
-                    error: function (err) {
-                        console.log(err);
-                        alert("Something Went Wrong, Please check again");
+                        $("#group").val("")
+                        $("#groupid").val("")
+                        $("#group_id").val(response.id)
                     }
-                });
-            }
+                },
+                error: function (err) {
+                    console.log(err);
+                    alert("Something Went Wrong, Please check again");
+                }
+            });
         }
+    }
 
-        var brandurl = "{{URL::to('/admin/brand')}}";
-        function save_brand() {
-            if ($("#brand").val() == "") {
-                alert("Please Provide Brand Name");
-            }
-            if ($("#brandid").val() == "") {
-                alert("Please Provide Brand ID");
-            } else {
-                
-                var brand = $("#brand").val()
-                var brandid = $("#brandid").val()
-                $.ajax({
-                    data: {
-                        brand: brand, brandid:brandid
-                    },
-                    url: brandurl,
-                    type: 'POST',
-                    beforeSend: function (request) {
-                        return request.setRequestHeader('X-CSRF-Token', $("meta[name='csrf-token']").attr('content'));
-                    },
-                    success: function (response) {
+    
+    
 
-                        if (response.status == 303) {
-                            $(".brandermsg").html(response.message);
-                        } else {
-                            
-                            showSnakBar('Saved Successfully');
-                            $('#pbrandselect').append('<option value="'+response.id+'">'+response.name+'-'+response.brandid+'</option>');
-                            // category_load();
-                            $("#brand").val("")
-                            $("#brandid").val("")
-                            $("#pbrandselect").val(response.id)
-                        }
+    
+</script>
 
-                        
-                    },
-                    error: function (err) {
-                        console.log(err);
-                        alert("Something Went Wrong, Please check again");
-                    }
-                });
-            }
-        }
+<script>
+  $(function() {
+      $( "form" ).submit(function() {
+          
+        $(".btn-submit").prepend('<i class="fa fa-spinner fa-spin"></i>');
+        $(".btn-submit").attr("disabled", 'disabled');
 
-
-        var groupurl = "{{URL::to('/admin/group')}}";
-        function save_group() {
-            if ($("#group").val() == "") {
-                alert("Please Provide Group Name");
-            }
-            if ($("#groupid").val() == "") {
-                alert("Please Provide Group ID");
-            } else {
-                
-                var group = $("#group").val()
-                var groupid = $("#groupid").val()
-                $.ajax({
-                    data: {
-                        group: group, groupid:groupid
-                    },
-                    url: groupurl,
-                    type: 'POST',
-                    beforeSend: function (request) {
-                        return request.setRequestHeader('X-CSRF-Token', $("meta[name='csrf-token']").attr('content'));
-                    },
-                    success: function (response) {
-                        
-
-                        if (response.status == 303) {
-                            $(".grpermsg").html(response.message);
-                        } else {
-                            
-                            showSnakBar('Saved Successfully');
-                            $('#group_id').append('<option value="'+response.id+'">'+response.name+'-'+response.groupid+'</option>');
-                            // category_load();
-                            $("#group").val("")
-                            $("#groupid").val("")
-                            $("#group_id").val(response.id)
-                        }
-                    },
-                    error: function (err) {
-                        console.log(err);
-                        alert("Something Went Wrong, Please check again");
-                    }
-                });
-            }
-        }
-
-        
-        
-
-        
-    </script>
+      });
+  });
+</script>
 
 @endsection

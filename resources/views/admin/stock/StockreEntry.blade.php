@@ -45,7 +45,7 @@
                                   <input type="date" class="form-control" id="date" name="date" value="{{ date('Y-m-d') }}">
                                 </div>
                                 <div class="form-group col-md-3">
-                                    <label for="supplier_id">Supplier</label>
+                                    <label for="supplier_id">Supplier *</label>
                                     <select name="supplier_id" id="supplier_id" class="form-control select2">
                                         <option value="">Select</option>
                                         @foreach (\App\Models\Vendor::where('branch_id', Auth::user()->branch_id)->where('status','1')->get() as $vendor)
@@ -71,7 +71,7 @@
                                 </div> 
 
                                 <div class="form-group col-md-4">
-                                    <label for="invoiceno">Invoice No</label>
+                                    <label for="invoiceno">Invoice No *</label>
                                     <input type="number" class="form-control" id="invoiceno" name="invoiceno">
                                 </div>
 
@@ -84,7 +84,7 @@
 
                             <div class="form-row">
                                 <div class="form-group col-md-4">
-                                  <label for="date">Payment Type</label>
+                                  <label for="date">Payment Type *</label>
                                   <select name="type" id="type" class="form-control">
                                     <option value="">Select</option>
                                     <option value="Cash">Cash</option>
@@ -94,7 +94,7 @@
                                 </div>
 
                                 <div class="form-group col-md-8">
-                                    <label for="product">Product</label>
+                                    <label for="product">Product *</label>
                                     <select name="product" id="product" class="form-control select2">
                                         <option value="">Select</option>
                                             @foreach (\App\Models\Product::select('id','productname','part_no')->where('branch_id', Auth::user()->branch_id)->get() as $product)
@@ -212,7 +212,7 @@
 
                         <div class="form-group row">
                             <div class="col-sm-12">
-                                <button class="btn btn-success btn-md center-block" id="purchaseBtn" type="submit"><i class="fa fa-plus-circle"></i> Submit </button>
+                                <button class="btn btn-success btn-md center-block btn-submit" id="purchaseBtn" type="submit"><i class="fa fa-plus-circle"></i> Submit </button>
                             </div>
                         </div>
 
@@ -536,6 +536,9 @@
             $("body").delegate("#purchaseBtn","click",function(event){
                 event.preventDefault();
 
+                $(".btn-submit").prepend('<i class="fa fa-spinner fa-spin" id="loader"></i>');
+                $(".btn-submit").attr("disabled", 'disabled');
+
                 var invoiceno = $("#invoiceno").val();
                 var date = $("#date").val();
                 var vendor_id = $("#supplier_id").val();
@@ -570,6 +573,8 @@
                     data: {date,invoiceno,vendor_id,ref,purchase_type,vat_reg,remarks,total_amount,discount,total_vat_amount,net_amount,paid_amount,due_amount,product_id,vat_percent,quantity,unit_price},
 
                     success: function (d) {
+                        $("#loader").removeClass('fa fa-spinner fa-spin');
+                        $(".btn-submit").removeAttr("disabled", true);
                         if (d.status == 303) {
                             $(".ermsg").html(d.message);
                             pagetop();
