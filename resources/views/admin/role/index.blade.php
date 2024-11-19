@@ -162,7 +162,7 @@
         
                                                 @if (in_array(4, $permissions))
                                                 <tr>
-                                                    <td><label class="control-label">Sales Edit</label></td>
+                                                    <td><label class="control-label">Manage Sales</label></td>
                                                     <td>
                                                         <label style="margin-top: -9px" class="switch"><input id="p4" name="permission[]" type="checkbox" value="4" ><span class="slider round"></span></label>
                                                     </td>

@@ -29,7 +29,8 @@ class VendorController extends Controller
         $request->validate([
             'code' => 'unique:vendors,code',
             'name' => 'required',
-            'phone' => 'required|max:14',
+            'email' => 'required',
+            'phone' => 'nullable|max:14',
         ]);
         $data = new Vendor;
         $data['code'] = $request->code;

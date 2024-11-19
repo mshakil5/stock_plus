@@ -184,8 +184,17 @@ Route::group(['prefix' =>'admin/', 'middleware' => ['auth', 'is_admin']], functi
 
     Route::get('sales', [SalesController::class, 'sales'])->name('admin.sales');
     Route::post('sales-store', [SalesController::class, 'salesStore'])->name('admin.sales.store');
+    Route::get('sales-edit/{id}', [SalesController::class, 'salesEdit'])->name('admin.sales.edit');
+    Route::post('sales-update', [SalesController::class, 'salesUpdate'])->name('admin.sales.update');
+
     Route::post('quotation-store', [SalesController::class, 'quotationStore'])->name('admin.quotation.store');
+    Route::get('quotation-edit/{id}', [SalesController::class, 'quotationEdit'])->name('admin.quotation.edit');
+    Route::post('quotation-update', [SalesController::class, 'quotationUpdate'])->name('admin.quotation.update');
+
     Route::post('delivery-note-store', [SalesController::class, 'deliveryNoteStore'])->name('admin.deliverynote.store');
+    Route::get('delivery-note-edit/{id}', [SalesController::class, 'deliveryNoteEdit'])->name('admin.deliverynote.edit');
+    Route::post('delivery-note-update', [SalesController::class, 'deliveryNoteUpdate'])->name('admin.deliverynote.update');
+
     Route::get('all-quotation', [SalesController::class, 'getAllQuoation'])->name('admin.allquotation');
     Route::get('filter-quotation', [SalesController::class, 'filterQuotation'])->name('quotation-filter.admin');
 

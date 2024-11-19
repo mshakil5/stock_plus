@@ -49,6 +49,17 @@
                             <div class="row">
                                 <div class="col-md-6">
                                     <table class="table table-hover">
+
+                                    
+                                        <tr>
+                                            <td><label class="control-label">Part No</label></td>
+                                            <td colspan="2"><input name="part_no" id="part_no" type="text" class="form-control"
+                                                       maxlength="50px" placeholder="Enter Part no" value="{{ $product->part_no }}"/>
+                                                @if ($errors->has('part_no'))
+                                                    <span class="text-danger">{{ $errors->first('part_no') }}</span>
+                                                @endif
+                                            </td>
+                                        </tr>
                                         
                                         <tr>
                                             <td><label class="control-label">Product Name*</label></td>
@@ -59,34 +70,25 @@
                                                 @endif
                                             </td>
                                         </tr>
-                                        <tr>
-                                            <td><label class="control-label">Part No</label></td>
-                                            <td colspan="2"><input name="part_no" id="part_no" type="text" class="form-control"
-                                                       maxlength="50px" placeholder="Enter Part no" required="required" value="{{ $product->part_no }}"/>
-                                                @if ($errors->has('part_no'))
-                                                    <span class="text-danger">{{ $errors->first('part_no') }}</span>
-                                                @endif
-                                            </td>
-                                        </tr>
 
                                         <tr>
-                                            <td><label class="control-label">Code</label></td>
+                                            <td><label class="control-label">Code*</label></td>
                                             <td colspan="2">
                                                 <select name="pcategoryselect" id="pcategoryselect" class="form-control select2">
-                                                    @foreach (\App\Models\Category::select('id','categoryid','name')->get() as $cat)
-                                                    <option value="{{ $cat->id }}" @if ($cat->id == $product->category_id) selected @endif>{{ $cat->name }}-{{ $cat->categoryid}}</option>
+                                                    @foreach (\App\Models\Category::select('id','categoryid','name')->where('branch_id',Auth::user()->branch_id)->get() as $cat)
+                                                    <option value="{{ $cat->id }}" required="required" @if ($cat->id == $product->category_id) selected @endif>{{ $cat->name }}-{{ $cat->categoryid}}</option>
                                                     @endforeach
                                                 </select>
                                             </td>
                                         </tr>
 
                                         <tr>
-                                            <td><label class="control-label">Brand</label></td>
+                                            <td><label class="control-label">Brand*</label></td>
                                             
                                             <td colspan="2">
                                                 <select name="pbrandselect" id="pbrandselect" class="form-control select2">
                                                     @foreach (\App\Models\Brand::select('id','brandid','name')->get() as $brand)
-                                                    <option value="{{ $brand->id }}" @if ($brand->id == $product->brand_id) selected @endif>{{ $brand->name }}-{{ $brand->brandid}}</option>
+                                                    <option value="{{ $brand->id }}" required="required" @if ($brand->id == $product->brand_id) selected @endif>{{ $brand->name }}-{{ $brand->brandid}}</option>
                                                     @endforeach
                                                 </select>
                                             </td>
@@ -217,6 +219,8 @@
                 <!-- /.box-body -->
                 <!-- /.box -->
             </div>
+
+            @if((Auth::user()->type == '1' || Auth::user()->type == '0') && in_array('37', json_decode(Auth::user()->role->permission)))
             <div class="col-md-3">
                 <!-- Widget: user widget style 1 -->
                 <div class="box box-widget widget-user-2">
@@ -267,6 +271,8 @@
                 </div>
                 <!-- /.box -->
             </div>
+            @endif
+
         </div>
     </div>
 
@@ -367,6 +373,7 @@
                     return;
                 } else {
 
+                    // console.log(id,productname,selling_price,category_id,brand_id,part_no,unit,model,location,vat_percent,group,description,replacement,alternative);
 
                     $.ajax({
                         data: {id: id,productname:productname,selling_price:selling_price,category_id:category_id,brand_id:brand_id,part_no:part_no,unit:unit,model:model,location:location,vat_percent:vat_percent,group:group,description:description,replacement:replacement,alternative:alternative,},
@@ -379,9 +386,10 @@
                             console.log(response);
                             showSnakBar();
                         },
-                        error: function (err) {
-                            console.log(err);
-                            alert("Something Went Wrong, Please check again");
+                        error: function (xhr, status, err) {
+                            console.error(xhr, status, err);
+                            // console.log(err);
+                            // alert("Something Went Wrong, Please check again");
                         }
                     });
                 }

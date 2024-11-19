@@ -122,14 +122,18 @@
             <i class="fa fa-angle-left pull-right"></i></span>
         </a>
         <ul class="treeview-menu">
+            @if(Auth::user()->type == '1' && in_array('3', json_decode(Auth::user()->role->permission)) || Auth::user()->type == '0' && in_array('3', json_decode(Auth::user()->role->permission)))
             <li class="{{ (request()->is('admin/sales')) ? 'active' : '' }}">
                 <a href="{{ route('admin.sales')}}"><i class="fa fa-adjust"></i>Create Sales
                 </a>
             </li>
+            @endif
+            @if(Auth::user()->type == '1' && in_array('4', json_decode(Auth::user()->role->permission)) || Auth::user()->type == '0' && in_array('4', json_decode(Auth::user()->role->permission)))
             <li class="{{ (request()->is('admin/all-sellsinvoice')) ? 'active' : '' }}">
                 <a href="{{ route('admin.allsellinvoice')}}"><i class="fa fa-adjust"></i> Manage Sales
                 </a>
             </li>
+            @endif
             <li class="{{ (request()->is('admin/all-quotation')) ? 'active' : '' }}">
                 <a href="{{ route('admin.allquotation')}}"><i class="fa fa-adjust"></i> Quotaions
                 </a>

@@ -62,7 +62,7 @@ class InvoiceController extends Controller
                                 <i class="fa fa-undo" aria-hidden="true"></i><span title="Return">Return</span>
                             </a>';
 
-                    $btn .= '<a href="' . route('sales.edit', $invoice->id) . '" class="btn btn-warning btn-xs ms-1">
+                    $btn .= '<a href="' . route('admin.sales.edit', $invoice->id) . '" class="btn btn-warning btn-xs ms-1">
                         <i class="fa fa-pencil" aria-hidden="true"></i><span title="Edit">Edit</span>
                     </a>';
 

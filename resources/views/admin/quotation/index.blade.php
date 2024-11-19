@@ -36,8 +36,8 @@
                 <th>Customer</th>
                 <th>Ref</th>
                 <th>Due</th>
-                <th>Total</th>
                 <th>Part No Status</th>
+                <th>Total</th>
                 <th>Action</th>
                 @endslot
                 @endcomponent

@@ -48,11 +48,7 @@ class SalesController extends Controller
             ->addColumn('action', function ($invoice) {
                 $btn = '<div class="table-actions text-right">';
 
-                    $btn = '<a href="' . route('sales.return', $invoice->id) . '" class="btn btn-info btn-xs ms-1">
-                                <i class="fa fa-undo" aria-hidden="true"></i><span title="Return">Return</span>
-                            </a>';
-
-                    $btn .= '<a href="' . route('sales.edit', $invoice->id) . '" class="btn btn-warning btn-xs ms-1">
+                    $btn .= '<a href="' . route('admin.quotation.edit', $invoice->id) . '" class="btn btn-warning btn-xs ms-1">
                         <i class="fa fa-pencil" aria-hidden="true"></i><span title="Edit">Edit</span>
                     </a>';
 
@@ -103,11 +99,7 @@ class SalesController extends Controller
             ->addColumn('action', function ($invoice) {
                 $btn = '<div class="table-actions text-right">';
 
-                    $btn = '<a href="' . route('sales.return', $invoice->id) . '" class="btn btn-info btn-xs ms-1">
-                                <i class="fa fa-undo" aria-hidden="true"></i><span title="Return">Return</span>
-                            </a>';
-
-                    $btn .= '<a href="' . route('sales.edit', $invoice->id) . '" class="btn btn-warning btn-xs ms-1">
+                    $btn .= '<a href="' . route('admin.deliverynote.edit', $invoice->id) . '" class="btn btn-warning btn-xs ms-1">
                         <i class="fa fa-pencil" aria-hidden="true"></i><span title="Edit">Edit</span>
                     </a>';
 
@@ -142,7 +134,7 @@ class SalesController extends Controller
     {
         $request->validate([
             'name' => 'required',
-            'email' => 'nullable|email',
+            'email' => 'required|email',
             'phone' => 'nullable|numeric',
             'address' => 'nullable|string',
             'vehicleno' => 'nullable|string',
@@ -178,8 +170,18 @@ class SalesController extends Controller
             return response()->json(['status' => 303, 'message' => $message]);
         }
 
-        if (empty($request->total_amount)) {
-            $message = "<div class='alert alert-warning'><a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a><b>Please provide a total amount.</b></div>";
+        if (empty($request->date)) {
+            $message = "<div class='alert alert-warning'><a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a><b>Please fill Date field.</b></div>";
+            return response()->json(['status' => 303, 'message' => $message]);
+        }
+
+        if (empty($request->customer_id)) {
+            $message = "<div class='alert alert-warning'><a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a><b>Please fill Customer field.</b></div>";
+            return response()->json(['status' => 303, 'message' => $message]);
+        }
+
+        if (empty($request->invoiceno)) {
+            $message = "<div class='alert alert-warning'><a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a><b>Please fill Invoice No field.</b></div>";
             return response()->json(['status' => 303, 'message' => $message]);
         }
 
@@ -191,14 +193,6 @@ class SalesController extends Controller
         if ($request->salestype == "Credit" && empty($request->customer_id)) {
             $message = "<div class='alert alert-warning'><a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a><b>Please select a customer.</b></div>";
             return response()->json(['status' => 303, 'message' => $message]);
-        }
-
-        if (!empty($request->customer_id)) {
-            $customer = Customer::find($request->customer_id);
-            if (($customer->amount + $request->due_amount) > $customer->limitation) {
-                $message = "<div class='alert alert-warning'><a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a><b>Customer credit limitation exceeded. Please pay the full amount.</b></div>";
-                return response()->json(['status' => 303, 'message' => $message]);
-            }
         }
 
         $order = new Order();
@@ -326,6 +320,150 @@ class SalesController extends Controller
         return response()->json(['status' => 303, 'message' => 'Failed to save the order.']);
     }
 
+    public function salesEdit($id)
+    {
+        $order  = Order::with('orderdetails','customer')->where('id', $id)->first();
+        return view('admin.sales.edit', compact('order'));
+    }
+
+    public function salesUpdate(Request $request)
+    {
+        // $request->validate([
+        //     'invoiceno' => 'required',
+        //     'date' => 'required|date',
+        //     'salestype' => 'required',
+        //     'customer_id' => 'nullable|exists:customers,id',
+        //     'product_id' => 'required|array',
+        //     'quantity' => 'required|array',
+        //     'unit_price' => 'required|array',
+        //     'orderdtl_id' => 'nullable|array',
+        // ]);
+
+        $productIDs = $request->input('product_id');
+
+        if (empty($productIDs)) {
+            $message = "<div class='alert alert-warning'><a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a><b>Please fill Product field.</b></div>";
+            return response()->json(['status' => 303, 'message' => $message]);
+        }
+
+        if (empty($request->date)) {
+            $message = "<div class='alert alert-warning'><a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a><b>Please fill Date field.</b></div>";
+            return response()->json(['status' => 303, 'message' => $message]);
+        }
+
+        if (empty($request->customer_id)) {
+            $message = "<div class='alert alert-warning'><a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a><b>Please fill Customer field.</b></div>";
+            return response()->json(['status' => 303, 'message' => $message]);
+        }
+
+        if (empty($request->invoiceno)) {
+            $message = "<div class='alert alert-warning'><a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a><b>Please fill Invoice No field.</b></div>";
+            return response()->json(['status' => 303, 'message' => $message]);
+        }
+
+        if ($request->salestype == "Cash" && empty($request->customer_id) && $request->due_amount > 0) {
+            $message = "<div class='alert alert-warning'><a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a><b>Please pay the full amount.</b></div>";
+            return response()->json(['status' => 303, 'message' => $message]);
+        }
+
+        if ($request->salestype == "Credit" && empty($request->customer_id)) {
+            $message = "<div class='alert alert-warning'><a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a><b>Please select a customer.</b></div>";
+            return response()->json(['status' => 303, 'message' => $message]);
+        }
+
+        $order = Order::find($request->sale_id);
+        if (!$order) {
+            return response()->json(['status' => 303, 'message' => 'Order not found.']);
+        }
+
+        $order->invoiceno = $request->invoiceno;
+        $order->orderdate = $request->date;
+        $order->salestype = $request->salestype;
+        $order->customer_id = $request->customer_id;
+        $order->branch_id = Auth::user()->branch_id;
+        $order->ref = $request->ref; 
+        $order->vatpercentage = $request->vat_percent;
+        $order->vatamount = $request->total_vat_amount;
+        $order->discount_amount = $request->discount;
+        $order->grand_total = $request->grand_total; 
+        $order->net_total = $request->net_amount;
+        $order->customer_paid = $request->paid_amount;
+        $order->due = $request->due_amount;
+        $order->partnoshow = $request->partnoshow;
+        $order->return_amount = $request->return_amount;
+        $order->updated_by = Auth::user()->id;
+
+        if ($order->save()) {
+
+            $transaction = Transaction::where('order_id', '=', $order->id)->first();
+            $transaction->date = $request->date;
+            $transaction->table_type = 'Income';
+            $transaction->description = 'Sales';
+            $transaction->amount = $request->grand_total;
+            $transaction->vat_amount = $request->total_vat_amount;
+            $transaction->at_amount = $request->net_amount;
+            $transaction->updated_by = Auth()->user()->id;
+            $transaction->updated_ip = request()->ip();
+            $transaction->save();
+
+            $existingOrderDetails = $order->orderDetails->pluck('id')->toArray();
+            $requestOrderDetails = $request->input('orderdtl_id', []); 
+        
+            $toDelete = array_diff($existingOrderDetails, $requestOrderDetails);
+            if (!empty($toDelete)) {
+                OrderDetail::whereIn('id', $toDelete)->delete();
+            }
+
+            foreach ($request->input('product_id') as $key => $productId) {
+                $orderDetailId = $request->input('orderdtl_id')[$key] ?? null;
+        
+                if ($orderDetailId) {
+                    $orderDetail = OrderDetail::find($orderDetailId);
+                    if ($orderDetail) {
+                        $orderDetail->quantity = $request->input('quantity')[$key];
+                        $orderDetail->sellingprice = $request->input('unit_price')[$key];
+                        $orderDetail->total_amount = $request->input('quantity')[$key] * $request->input('unit_price')[$key];
+                        $orderDetail->save();
+                    }
+                } else {
+                    $orderDtl = new OrderDetail();
+                    $orderDtl->invoiceno = $order->invoiceno;
+                    $orderDtl->order_id = $order->id;
+                    $orderDtl->product_id = $productId;
+                    $orderDtl->quantity = $request->input('quantity')[$key];
+                    $orderDtl->sellingprice = $request->input('unit_price')[$key];
+                    $orderDtl->total_amount = $request->input('quantity')[$key] * $request->input('unit_price')[$key];
+                    $orderDtl->created_by = Auth::user()->id;
+                    $orderDtl->save();
+                }
+            }
+        
+            foreach ($request->input('product_id') as $key => $productId) {
+                $stock = Stock::where('product_id', $productId)
+                    ->where('branch_id', Auth::user()->branch_id)
+                    ->first();
+        
+                if ($stock) {
+                    $stock->quantity -= $request->input('quantity')[$key];
+                    $stock->save();
+                } else {
+                    $newStock = new Stock();
+                    $newStock->branch_id = Auth::user()->branch_id;
+                    $newStock->product_id = $productId;
+                    $newStock->quantity = 0 - $request->input('quantity')[$key];
+                    $newStock->created_by = Auth::user()->id;
+                    $newStock->save();
+                }
+            }
+        
+            $message = "<div class='alert alert-success'><a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a><b>Order updated successfully.</b></div>";
+            return response()->json(['status' => 300, 'message' => $message, 'id' => $order->id]);
+        }
+        
+
+        return response()->json(['status' => 303, 'message' => 'Failed to update the order.']);
+    }
+
     public function quotationStore(Request $request)
     {
         $productIDs = $request->input('product_id');
@@ -335,8 +473,18 @@ class SalesController extends Controller
             return response()->json(['status' => 303, 'message' => $message]);
         }
 
-        if (empty($request->total_amount)) {
-            $message = "<div class='alert alert-warning'><a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a><b>Please provide a total amount.</b></div>";
+        if (empty($request->date)) {
+            $message = "<div class='alert alert-warning'><a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a><b>Please fill Date field.</b></div>";
+            return response()->json(['status' => 303, 'message' => $message]);
+        }
+
+        if (empty($request->customer_id)) {
+            $message = "<div class='alert alert-warning'><a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a><b>Please fill Customer field.</b></div>";
+            return response()->json(['status' => 303, 'message' => $message]);
+        }
+
+        if (empty($request->invoiceno)) {
+            $message = "<div class='alert alert-warning'><a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a><b>Please fill Invoice No field.</b></div>";
             return response()->json(['status' => 303, 'message' => $message]);
         }
 
@@ -383,6 +531,111 @@ class SalesController extends Controller
 
         return response()->json(['status' => 303, 'message' => 'Failed to save the order.']);
     }
+
+    public function quotationEdit($id)
+    {
+        $order  = Order::with('orderdetails','customer')->where('id', $id)->first();
+        return view('admin.quotation.edit', compact('order'));
+    }
+
+    public function quotationUpdate(Request $request)
+    {
+        // $request->validate([
+        //     'invoiceno' => 'required',
+        //     'date' => 'required|date',
+        //     'salestype' => 'required',
+        //     'customer_id' => 'nullable|exists:customers,id',
+        //     'product_id' => 'required|array',
+        //     'quantity' => 'required|array',
+        //     'unit_price' => 'required|array',
+        //     'orderdtl_id' => 'nullable|array',
+        // ]);
+
+        $productIDs = $request->input('product_id');
+
+        if (empty($productIDs)) {
+            $message = "<div class='alert alert-warning'><a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a><b>Please fill Product field.</b></div>";
+            return response()->json(['status' => 303, 'message' => $message]);
+        }
+
+        if (empty($request->date)) {
+            $message = "<div class='alert alert-warning'><a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a><b>Please fill Date field.</b></div>";
+            return response()->json(['status' => 303, 'message' => $message]);
+        }
+
+        if (empty($request->customer_id)) {
+            $message = "<div class='alert alert-warning'><a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a><b>Please fill Customer field.</b></div>";
+            return response()->json(['status' => 303, 'message' => $message]);
+        }
+
+        if (empty($request->invoiceno)) {
+            $message = "<div class='alert alert-warning'><a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a><b>Please fill Invoice No field.</b></div>";
+            return response()->json(['status' => 303, 'message' => $message]);
+        }
+
+        $order = Order::find($request->sale_id);
+        if (!$order) {
+            return response()->json(['status' => 303, 'message' => 'Order not found.']);
+        }
+
+        $order->invoiceno = $request->invoiceno;
+        $order->orderdate = $request->date;
+        $order->salestype = $request->salestype;
+        $order->customer_id = $request->customer_id;
+        $order->branch_id = Auth::user()->branch_id;
+        $order->ref = $request->ref; 
+        $order->vatpercentage = $request->vat_percent;
+        $order->vatamount = $request->total_vat_amount;
+        $order->discount_amount = $request->discount;
+        $order->grand_total = $request->grand_total; 
+        $order->net_total = $request->net_amount;
+        $order->customer_paid = $request->paid_amount;
+        $order->due = $request->due_amount;
+        $order->partnoshow = $request->partnoshow;
+        $order->return_amount = $request->return_amount;
+        $order->updated_by = Auth::user()->id;
+
+        if ($order->save()) {
+
+            $existingOrderDetails = $order->orderDetails->pluck('id')->toArray();
+            $requestOrderDetails = $request->input('orderdtl_id', []); 
+        
+            $toDelete = array_diff($existingOrderDetails, $requestOrderDetails);
+            if (!empty($toDelete)) {
+                OrderDetail::whereIn('id', $toDelete)->delete();
+            }
+
+            foreach ($request->input('product_id') as $key => $productId) {
+                $orderDetailId = $request->input('orderdtl_id')[$key] ?? null;
+        
+                if ($orderDetailId) {
+                    $orderDetail = OrderDetail::find($orderDetailId);
+                    if ($orderDetail) {
+                        $orderDetail->quantity = $request->input('quantity')[$key];
+                        $orderDetail->sellingprice = $request->input('unit_price')[$key];
+                        $orderDetail->total_amount = $request->input('quantity')[$key] * $request->input('unit_price')[$key];
+                        $orderDetail->save();
+                    }
+                } else {
+                    $orderDtl = new OrderDetail();
+                    $orderDtl->invoiceno = $order->invoiceno;
+                    $orderDtl->order_id = $order->id;
+                    $orderDtl->product_id = $productId;
+                    $orderDtl->quantity = $request->input('quantity')[$key];
+                    $orderDtl->sellingprice = $request->input('unit_price')[$key];
+                    $orderDtl->total_amount = $request->input('quantity')[$key] * $request->input('unit_price')[$key];
+                    $orderDtl->created_by = Auth::user()->id;
+                    $orderDtl->save();
+                }
+            }
+        
+            $message = "<div class='alert alert-success'><a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a><b>Updated successfully.</b></div>";
+            return response()->json(['status' => 300, 'message' => $message, 'id' => $order->id]);
+        }
+        
+
+        return response()->json(['status' => 303, 'message' => 'Failed to update the order.']);
+    }
     
     public function deliveryNoteStore(Request $request)
     {
@@ -393,8 +646,18 @@ class SalesController extends Controller
             return response()->json(['status' => 303, 'message' => $message]);
         }
 
-        if (empty($request->total_amount)) {
-            $message = "<div class='alert alert-warning'><a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a><b>Please provide a total amount.</b></div>";
+        if (empty($request->date)) {
+            $message = "<div class='alert alert-warning'><a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a><b>Please fill Date field.</b></div>";
+            return response()->json(['status' => 303, 'message' => $message]);
+        }
+
+        if (empty($request->customer_id)) {
+            $message = "<div class='alert alert-warning'><a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a><b>Please fill Customer field.</b></div>";
+            return response()->json(['status' => 303, 'message' => $message]);
+        }
+
+        if (empty($request->invoiceno)) {
+            $message = "<div class='alert alert-warning'><a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a><b>Please fill Invoice No field.</b></div>";
             return response()->json(['status' => 303, 'message' => $message]);
         }
 
@@ -484,5 +747,128 @@ class SalesController extends Controller
         }
 
         return response()->json(['status' => 303, 'message' => 'Failed to save the order.']);
+    }
+
+    public function deliveryNoteEdit($id)
+    {
+        $order  = Order::with('orderdetails','customer')->where('id', $id)->first();
+        return view('admin.delivery_note.edit', compact('order'));
+    }
+
+    public function deliveryNoteUpdate(Request $request)
+    {
+        // $request->validate([
+        //     'invoiceno' => 'required',
+        //     'date' => 'required|date',
+        //     'salestype' => 'required',
+        //     'customer_id' => 'nullable|exists:customers,id',
+        //     'product_id' => 'required|array',
+        //     'quantity' => 'required|array',
+        //     'unit_price' => 'required|array',
+        //     'orderdtl_id' => 'nullable|array',
+        // ]);
+
+        $productIDs = $request->input('product_id');
+
+        if (empty($productIDs)) {
+            $message = "<div class='alert alert-warning'><a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a><b>Please fill Product field.</b></div>";
+            return response()->json(['status' => 303, 'message' => $message]);
+        }
+
+        if (empty($request->date)) {
+            $message = "<div class='alert alert-warning'><a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a><b>Please fill Date field.</b></div>";
+            return response()->json(['status' => 303, 'message' => $message]);
+        }
+
+        if (empty($request->customer_id)) {
+            $message = "<div class='alert alert-warning'><a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a><b>Please fill Customer field.</b></div>";
+            return response()->json(['status' => 303, 'message' => $message]);
+        }
+
+        if (empty($request->invoiceno)) {
+            $message = "<div class='alert alert-warning'><a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a><b>Please fill Invoice No field.</b></div>";
+            return response()->json(['status' => 303, 'message' => $message]);
+        }
+
+        $order = Order::find($request->sale_id);
+        if (!$order) {
+            return response()->json(['status' => 303, 'message' => 'Order not found.']);
+        }
+
+        $order->invoiceno = $request->invoiceno;
+        $order->orderdate = $request->date;
+        $order->salestype = $request->salestype;
+        $order->customer_id = $request->customer_id;
+        $order->branch_id = Auth::user()->branch_id;
+        $order->ref = $request->ref; 
+        $order->vatpercentage = $request->vat_percent;
+        $order->vatamount = $request->total_vat_amount;
+        $order->discount_amount = $request->discount;
+        $order->grand_total = $request->grand_total; 
+        $order->net_total = $request->net_amount;
+        $order->customer_paid = $request->paid_amount;
+        $order->due = $request->due_amount;
+        $order->partnoshow = $request->partnoshow;
+        $order->return_amount = $request->return_amount;
+        $order->updated_by = Auth::user()->id;
+
+        if ($order->save()) {
+
+            $existingOrderDetails = $order->orderDetails->pluck('id')->toArray();
+            $requestOrderDetails = $request->input('orderdtl_id', []); 
+        
+            $toDelete = array_diff($existingOrderDetails, $requestOrderDetails);
+            if (!empty($toDelete)) {
+                OrderDetail::whereIn('id', $toDelete)->delete();
+            }
+
+            foreach ($request->input('product_id') as $key => $productId) {
+                $orderDetailId = $request->input('orderdtl_id')[$key] ?? null;
+        
+                if ($orderDetailId) {
+                    $orderDetail = OrderDetail::find($orderDetailId);
+                    if ($orderDetail) {
+                        $orderDetail->quantity = $request->input('quantity')[$key];
+                        $orderDetail->sellingprice = $request->input('unit_price')[$key];
+                        $orderDetail->total_amount = $request->input('quantity')[$key] * $request->input('unit_price')[$key];
+                        $orderDetail->save();
+                    }
+                } else {
+                    $orderDtl = new OrderDetail();
+                    $orderDtl->invoiceno = $order->invoiceno;
+                    $orderDtl->order_id = $order->id;
+                    $orderDtl->product_id = $productId;
+                    $orderDtl->quantity = $request->input('quantity')[$key];
+                    $orderDtl->sellingprice = $request->input('unit_price')[$key];
+                    $orderDtl->total_amount = $request->input('quantity')[$key] * $request->input('unit_price')[$key];
+                    $orderDtl->created_by = Auth::user()->id;
+                    $orderDtl->save();
+                }
+            }
+
+            foreach ($request->input('product_id') as $key => $productId) {
+                $stock = Stock::where('product_id', $productId)
+                    ->where('branch_id', Auth::user()->branch_id)
+                    ->first();
+        
+                if ($stock) {
+                    $stock->quantity -= $request->input('quantity')[$key];
+                    $stock->save();
+                } else {
+                    $newStock = new Stock();
+                    $newStock->branch_id = Auth::user()->branch_id;
+                    $newStock->product_id = $productId;
+                    $newStock->quantity = 0 - $request->input('quantity')[$key];
+                    $newStock->created_by = Auth::user()->id;
+                    $newStock->save();
+                }
+            }
+        
+            $message = "<div class='alert alert-success'><a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a><b>Updated successfully.</b></div>";
+            return response()->json(['status' => 300, 'message' => $message, 'id' => $order->id]);
+        }
+        
+
+        return response()->json(['status' => 303, 'message' => 'Failed to update the order.']);
     }
 }

@@ -8,7 +8,7 @@
         <div class="col-md-9">
             <div class="box box-default box-solid">
                 <div class="box-header with-border">
-                    <h3 class="box-title">Sales</h3>
+                    <h3 class="box-title">Quotation</h3>
                 </div>
                 <div class="ermsg"></div>
                 <div>
@@ -33,23 +33,23 @@
                     <form>
 
                         <div class="form-row">
-
+                            <input type="hidden" id="order_id" value="{{ $order->id }}">
                             <div class="form-group col-md-2">
                                 <label for="date">Invoice Date *</label>
-                                <input type="date" class="form-control" id="date" name="date" value="{{ date('Y-m-d') }}">
+                                <input type="date" class="form-control" id="date" name="date" value="{{ $order->orderdate }}">
                             </div>
 
                             <div class="form-group col-md-3">
                                 <label for="invoiceno">Invoice No *</label>
-                                <input type="number" class="form-control" id="invoiceno" name="invoiceno">
+                                <input type="number" class="form-control" id="invoiceno" name="invoiceno" value="{{ $order->invoiceno }}">
                             </div>
 
                             <div class="form-group col-md-3">
                                 <label for="date">Payment Type *</label>
                                 <select name="salestype" id="salestype" class="form-control">
-                                    <option value="Cash">Cash</option>
-                                    <option value="Bank">Bank</option>
-                                    <option value="Credit">Credit</option>
+                                    <option value="Cash" {{ $order->salestype == 'Cash' ? 'selected' : '' }}>Cash</option>
+                                    <option value="Bank" {{ $order->salestype == 'Bank' ? 'selected' : '' }}>Bank</option>
+                                    <option value="Credit" {{ $order->salestype == 'Credit' ? 'selected' : '' }}>Credit</option>
                                 </select>
                             </div>
 
@@ -58,7 +58,7 @@
                                 <select name="customer_id" id="customer_id" class="form-control select2">
                                     <option value="">Select</option>
                                     @foreach (\App\Models\Customer::where('branch_id', Auth::user()->branch_id)->where('status','1')->get() as $customer)
-                                    <option value="{{ $customer->id }}">{{ $customer->name }}</option>
+                                    <option value="{{ $customer->id }}" {{ $order->customer_id == $customer->id ? 'selected' : '' }}>{{ $customer->name }}</option>
                                     @endforeach
                                 </select>
                             </div>
@@ -82,7 +82,7 @@
 
                             <div class="form-group col-md-4">
                                 <label for="ref">Ref</label>
-                                <input type="text" class="form-control" id="ref" name="ref">
+                                <input type="text" class="form-control" id="ref" name="ref" value="{{ $order->ref }}">
                             </div>
                         </div>
 
@@ -110,6 +110,29 @@
                     </thead>
 
                     <tbody id="inner">
+                        @foreach ($order->orderdetails as $detail)
+                        <tr>
+                            <td class="text-center">
+                                <input type="text" id="pert_no" name="pert_no[]" value="{{ $detail->product->part_no }}" class="form-control" readonly>
+                                <input type="hidden" id="orderdtl_id" name="orderdtl_id[]" value="{{ $detail->id }}" class="form-control" readonly>
+                            </td>
+                            <td class="text-center">
+                                <input type="text" id="productname" name="productname[]" value="{{ $detail->product->productname }}" class="form-control" readonly>
+                                <input type="hidden" id="product_id" name="product_id[]" value="{{ $detail->product_id }}" class="form-control ckproduct_id" readonly>
+                            </td>
+                            <td class="text-center">
+                                <input type="number" id="quantity" name="quantity[]" value="{{ $detail->quantity }}" min="1" class="form-control quantity">
+                            </td>
+                            <td class="text-center">
+                                <input type="number" id="unit_price" name="unit_price[]" value="{{ $detail->sellingprice }}" class="form-control unit-price">
+                            </td>
+                            <td class="text-center">
+                                <input type="text" id="total_amount" name="total_amount[]" value="{{ $detail->total_amount }}" class="form-control total" readonly>
+                            </td>
+                            <td class="text-center">
+                            </td>
+                        </tr>
+                        @endforeach
                     </tbody>
                 </table>
 
@@ -128,78 +151,73 @@
                     <div class="form-group row">
                         <label for="grand_total" class="col-sm-6 col-form-label">Item Total Amount</label>
                         <div class="col-sm-6">
-                            <input type="number" class="form-control" id="grand_total" name="grand_total" readonly>
+                            <input type="number" class="form-control" id="grand_total" name="grand_total" value="{{ $order->grand_total }}" readonly>
                         </div>
                     </div>
 
                     <div class="form-group row">
                         <label for="discount" class="col-sm-6 col-form-label">Discount</label>
                         <div class="col-sm-6">
-                            <input type="number" class="form-control" id="discount" name="discount">
+                            <input type="number" class="form-control" id="discount" name="discount" value="{{ $order->discount_amount }}">
                         </div>
                     </div>
 
                     <div class="form-group row">
                         <label for="vat_percent" class="col-sm-6 col-form-label">Vat Percent</label>
                         <div class="col-sm-6">
-                            <input type="number" class="form-control" id="vat_percent" name="vat_percent" min="0">
+                            <input type="number" class="form-control" id="vat_percent" name="vat_percent" min="0" value="{{ $order->vatpercentage }}">
                         </div>
                     </div>
 
                     <div class="form-group row">
                         <label for="total_vat_amount" class="col-sm-6 col-form-label">Vat Amount</label>
                         <div class="col-sm-6">
-                            <input type="number" class="form-control" id="total_vat_amount" name="total_vat_amount" readonly>
+                            <input type="number" class="form-control" id="total_vat_amount" name="total_vat_amount" readonly value="{{ $order->vatamount }}">
                         </div>
                     </div>
 
                     <div class="form-group row">
                         <label for="net_amount" class="col-sm-6 col-form-label">Net Amount</label>
                         <div class="col-sm-6">
-                            <input type="number" class="form-control" id="net_amount" name="net_amount" readonly>
+                            <input type="number" class="form-control" id="net_amount" name="net_amount" readonly value="{{ $order->net_total }}">
                         </div>
                     </div>
 
                     <div class="form-group row">
                         <label for="paid_amount" class="col-sm-6 col-form-label">Paid Amount</label>
                         <div class="col-sm-6">
-                            <input type="number" class="form-control" id="paid_amount" name="paid_amount">
+                            <input type="number" class="form-control" id="paid_amount" name="paid_amount" value="{{ $order->customer_paid }}">
                         </div>
                     </div>
 
                     <div class="form-group row">
                         <label for="due_amount" class="col-sm-6 col-form-label">Due Amount</label>
                         <div class="col-sm-6">
-                            <input type="number" class="form-control" id="due_amount" name="due_amount" min="0" readonly>
+                            <input type="number" class="form-control" id="due_amount" name="due_amount" min="0" readonly value="{{ $order->due }}">
                         </div>
                     </div>
 
                     <div class="form-group row">
                         <label for="due_amount" class="col-sm-6 col-form-label">Return Amount</label>
                         <div class="col-sm-6">
-                            <input type="number" class="form-control" id="return_amount" name="return_amount" min="0" readonly>
+                            <input type="number" class="form-control" id="return_amount" name="return_amount" min="0" readonly value="{{ $order->return_amount }}">
                         </div>
                     </div>
 
                     <div class="form-group row">
                         <div class="col-sm-12">
-                            <input class="form-check-input" type="checkbox" value="1" id="partnoshow" checked>
+                            <input class="form-check-input" type="checkbox" value="1" id="partnoshow" @if ($order->partnoshow == 1) checked @endif>
                             <label class="form-check-label" for="partnoshow">
                                 Show Part Number in PDF.
                             </label>
                             <div class="button-container" style="display: flex; justify-content: center; gap: 10px; margin-top: 10px;">
-                                <button class="btn btn-success btn-md btn-submit" id="quotationBtn" type="submit">
-                                    <i class="fa fa-plus-circle"></i> Quotation
-                                </button>
-                                <button class="btn btn-success btn-md btn-submit" id="deliveryBtn" type="submit">
-                                    <i class="fa fa-plus-circle"></i> Delivery Note
-                                </button>
+                                <button class="btn btn-success btn-md center-block btn-submit" id="quotation_update" type="submit" style="margin-top: 10px;"><i class="fa fa-plus-circle"></i> Update </button>
+                                <button class="btn btn-success btn-md center-block btn-submit" id="delivery_create" type="submit" style="margin-top: 10px;"><i class="fa fa-plus-circle"></i> Make Delivery Note </button>
                             </div>
                             <div class="button-container" style="display: flex; justify-content: center; gap: 10px; margin-top: 10px;">
-                                <button class="btn btn-success btn-md btn-submit" id="salesBtn" type="submit">
-                                    <i class="fa fa-plus-circle"></i> Sales
-                                </button>
+                                <button class="btn btn-success btn-md center-block btn-submit" id="make_sales" type="submit" style="margin-top: 10px;"><i class="fa fa-plus-circle"></i> Make Sales </button>
                             </div>
+                            
                         </div>
                     </div>
 
@@ -347,20 +365,12 @@
 </script>
 
 <script>
-    $(document).ready(function() {
-        function calculateReturnAmount() {
-            
-            let paidAmount = parseFloat($('#paid_amount').val()) || 0;
-            let netAmount = parseFloat($('#net_amount').val()) || 0;
-
-            let returnAmount = (paidAmount > netAmount) ? -(paidAmount - netAmount) : 0;
-
-            $('#return_amount').val(returnAmount);
-        }
-
-        $('#paid_amount').on('input', calculateReturnAmount);
-
-        calculateReturnAmount();
+    $(document).ready(function () {
+        $('#partnoshow').on('change', function () {
+            var partnoshowsts = $(this).prop('checked');
+            var partnoshow = partnoshowsts ? 1 : 0;
+            $('#partnoshow').val(partnoshow);
+        });
     });
 </script>
 
@@ -374,7 +384,6 @@
     function net_total() {
         var grand_total = 0;
         var total_with_vat = 0;
-        var discount = parseFloat($('#discount').val()) || 0;
         $('.total').each(function() {
             grand_total += ($(this).val() - 0);
         })
@@ -553,11 +562,11 @@
             $('#total_vat_amount').val(total_vat.toFixed(2));
 
             // Calculate the net amount
-            // var net_amount = grand_total + total_vat;
-            $('#net_amount').val((grand_total + total_vat - (parseFloat($('#discount').val()) || 0)).toFixed(2));
+            var net_amount = grand_total + total_vat;
 
             // Update the net amount field
             // $('#net_amount').val(net_amount.toFixed(2));
+            $('#net_amount').val((grand_total + total_vat - (parseFloat($('#discount').val()) || 0)).toFixed(2));
 
             // Update the due amount if necessary
             var paid_amount = parseFloat($("#paid_amount").val()) || 0;
@@ -565,10 +574,10 @@
             $('#due_amount').val((grand_total + total_vat - paid_amount - (parseFloat($('#discount').val()) || 0)).toFixed(2));
         });
 
-        // submit to sales 
-        var salesStoreurl = "{{URL::to('/admin/sales-store')}}";
+        // update qoutation 
+        var quotationUpdateUrl = "{{URL::to('/admin/quotation-update')}}";
 
-        $("body").delegate("#salesBtn", "click", function(event) {
+        $("body").delegate("#quotation_update", "click", function(event) {
             event.preventDefault();
 
             $(this).find('.fa-spinner').remove();
@@ -576,6 +585,7 @@
             $(this).attr("disabled", 'disabled');
 
             var data = {
+                sale_id: $("#order_id").val(),
                 invoiceno: $("#invoiceno").val(),
                 date: $("#date").val(),
                 customer_id: $("#customer_id").val(),
@@ -593,6 +603,9 @@
                 product_id: $("input[name='product_id[]']").map(function() {
                     return $(this).val();
                 }).get(),
+                orderdtl_id: $("input[name='orderdtl_id[]']").map(function(){
+                    return $(this).val();
+                }).get(),
                 quantity: $("input[name='quantity[]']").map(function() {
                     return $(this).val();
                 }).get(),
@@ -605,7 +618,7 @@
 
 
             $.ajax({
-                url: salesStoreurl,
+                url: quotationUpdateUrl,
                 method: "POST",
                 data: data,
 
@@ -632,12 +645,12 @@
             });
 
         });
-        // submit to sales end
+        // update qoutation end
 
-        // submit to quotation 
-        var quotationStoreurl = "{{URL::to('/admin/quotation-store')}}";
+        // make sales 
+        var salesStoreUrl = "{{URL::to('/admin/sales-store')}}";
 
-        $("body").delegate("#quotationBtn", "click", function(event) {
+        $("body").delegate("#make_sales", "click", function(event) {
             event.preventDefault();
 
             $(this).find('.fa-spinner').remove();
@@ -674,7 +687,7 @@
 
 
             $.ajax({
-                url: quotationStoreurl,
+                url: salesStoreUrl,
                 method: "POST",
                 data: data,
 
@@ -701,12 +714,12 @@
             });
 
         });
-        // submit to quotation end
+        // make sales end
 
         // submit to delivery note 
         var deliverynoteurl = "{{URL::to('/admin/delivery-note-store')}}";
 
-        $("body").delegate("#deliveryBtn", "click", function(event) {
+        $("body").delegate("#delivery_create", "click", function(event) {
             event.preventDefault();
 
             // $(".btn-submit").prepend('<i class="fa fa-spinner fa-spin" id="loader"></i>');
@@ -741,7 +754,7 @@
                 }).get()
             };
 
-            // console.log(data);
+            console.log(data);
 
 
             $.ajax({
@@ -782,27 +795,23 @@
             var net_total = grand_total + total_vat_amount - (dInput || 0);
 
             $('#net_amount').val(net_total.toFixed(2));
-            
-            calculateDue();
         });
         // discount calculation end
 
-        $("#paid_amount").on('keyup change input', function() {
-            calculateDue();
-        });
         // due calculation
-        function calculateDue() {
-            var paidInput = parseFloat($("#paid_amount").val()) || 0;
-            var net_amount = parseFloat($("#net_amount").val()) || 0;
+        $("#paid_amount").on('keyup change input', function() {
+            paidInput = this.value;
+            net_amount = parseFloat($("#net_amount").val());
 
-            var due_amount = net_amount - paidInput;
-
+            due_amount = net_amount - paidInput;
             if (paidInput > net_amount) {
                 $('#due_amount').val('');
             } else {
                 $('#due_amount').val(due_amount.toFixed(2));
             }
-        }
+
+
+        });
         // due calculation end
 
         function net_total() {
