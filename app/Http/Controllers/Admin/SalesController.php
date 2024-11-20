@@ -186,15 +186,15 @@ class SalesController extends Controller
             return response()->json(['status' => 303, 'message' => $message]);
         }
 
-        if ($request->salestype == "Cash" && empty($request->customer_id) && $request->due_amount > 0) {
-            $message = "<div class='alert alert-warning'><a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a><b>Please pay the full amount.</b></div>";
-            return response()->json(['status' => 303, 'message' => $message]);
-        }
+        // if ($request->salestype == "Cash" && empty($request->customer_id) && $request->due_amount > 0) {
+        //     $message = "<div class='alert alert-warning'><a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a><b>Please pay the full amount.</b></div>";
+        //     return response()->json(['status' => 303, 'message' => $message]);
+        // }
 
-        if ($request->salestype == "Credit" && empty($request->customer_id)) {
-            $message = "<div class='alert alert-warning'><a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a><b>Please select a customer.</b></div>";
-            return response()->json(['status' => 303, 'message' => $message]);
-        }
+        // if ($request->salestype == "Credit" && empty($request->customer_id)) {
+        //     $message = "<div class='alert alert-warning'><a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a><b>Please select a customer.</b></div>";
+        //     return response()->json(['status' => 303, 'message' => $message]);
+        // }
 
         $order = new Order();
         $order->invoiceno = $request->invoiceno;
@@ -362,15 +362,15 @@ class SalesController extends Controller
             return response()->json(['status' => 303, 'message' => $message]);
         }
 
-        if ($request->salestype == "Cash" && empty($request->customer_id) && $request->due_amount > 0) {
-            $message = "<div class='alert alert-warning'><a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a><b>Please pay the full amount.</b></div>";
-            return response()->json(['status' => 303, 'message' => $message]);
-        }
+        // if ($request->salestype == "Cash" && empty($request->customer_id) && $request->due_amount > 0) {
+        //     $message = "<div class='alert alert-warning'><a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a><b>Please pay the full amount.</b></div>";
+        //     return response()->json(['status' => 303, 'message' => $message]);
+        // }
 
-        if ($request->salestype == "Credit" && empty($request->customer_id)) {
-            $message = "<div class='alert alert-warning'><a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a><b>Please select a customer.</b></div>";
-            return response()->json(['status' => 303, 'message' => $message]);
-        }
+        // if ($request->salestype == "Credit" && empty($request->customer_id)) {
+        //     $message = "<div class='alert alert-warning'><a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a><b>Please select a customer.</b></div>";
+        //     return response()->json(['status' => 303, 'message' => $message]);
+        // }
 
         $order = Order::find($request->sale_id);
         if (!$order) {

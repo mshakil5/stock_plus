@@ -241,7 +241,7 @@
                                     <label for="name">Name: *</label>
                                 </div>
                                 <div class="col-sm-8">
-                                    <input type="text" name="name" class="form-control" id="name" placeholder="ex. John Doe" required style="width: 100%;">
+                                    <input type="text" name="name" class="form-control" id="name" placeholder="" required style="width: 100%;">
                                 </div>
                             </div>
                         </div>
@@ -249,7 +249,7 @@
                         <div class="form-group col-sm-6">
                             <div class="row">
                                 <div class="col-sm-4 text-left">
-                                    <label for="email">Email: *</label>
+                                    <label for="email">Email:</label>
                                 </div>
                                 <div class="col-sm-8">
                                     <input type="email" name="email" class="form-control" id="email" placeholder="" style="width: 100%;" required>
@@ -337,8 +337,8 @@
 </script>
 
 <script>
-    $(document).ready(function () {
-        $('#partnoshow').on('change', function () {
+    $(document).ready(function() {
+        $('#partnoshow').on('change', function() {
             var partnoshowsts = $(this).prop('checked');
             var partnoshow = partnoshowsts ? 1 : 0;
             $('#partnoshow').val(partnoshow);
@@ -346,10 +346,10 @@
     });
 </script>
 
-<script>
+<!-- <script>
     $(document).ready(function() {
         function calculateReturnAmount() {
-            
+
             let paidAmount = parseFloat($('#paid_amount').val()) || 0;
             let netAmount = parseFloat($('#net_amount').val()) || 0;
 
@@ -362,7 +362,7 @@
 
         calculateReturnAmount();
     });
-</script>
+</script> -->
 
 <script>
     function removeRow(event) {
@@ -536,6 +536,9 @@
             // Update due amount if necessary
             var paid_amount = parseFloat($("#paid_amount").val()) || 0;
             $('#due_amount').val((grand_total + total_vat - paid_amount - (parseFloat($('#discount').val()) || 0)).toFixed(2));
+
+            let return_amount = (paid_amount > net_amount) ? -(paid_amount - net_amount) : 0;
+            $('#return_amount').val(return_amount.toFixed(2)); 
         });
 
         // Listen for changes in the VAT percentage input
@@ -563,6 +566,9 @@
             var paid_amount = parseFloat($("#paid_amount").val()) || 0;
             // $('#due_amount').val((net_amount - paid_amount).toFixed(2));
             $('#due_amount').val((grand_total + total_vat - paid_amount - (parseFloat($('#discount').val()) || 0)).toFixed(2));
+
+            let return_amount = (paid_amount > net_amount) ? -(paid_amount - net_amount) : 0;
+            $('#return_amount').val(return_amount.toFixed(2)); 
         });
 
         // submit to sales 
@@ -782,28 +788,41 @@
             var net_total = grand_total + total_vat_amount - (dInput || 0);
 
             $('#net_amount').val(net_total.toFixed(2));
-            
-            calculateDue();
+
+            var paid_amount = parseFloat($("#paid_amount").val()) || 0;
+            // $('#due_amount').val((net_amount - paid_amount).toFixed(2));
+            $('#due_amount').val((grand_total + total_vat_amount - paid_amount - (parseFloat($('#discount').val()) || 0)).toFixed(2));
+
+            let return_amount = (paid_amount > net_total) ? -(paid_amount - net_total) : 0;
+            $('#return_amount').val(return_amount.toFixed(2)); 
+
+            // calculateDue();
         });
         // discount calculation end
 
         $("#paid_amount").on('keyup change input', function() {
-            calculateDue();
+            // calculateDue();
         });
         // due calculation
-        function calculateDue() {
-            var paidInput = parseFloat($("#paid_amount").val()) || 0;
-            var net_amount = parseFloat($("#net_amount").val()) || 0;
+        $("#paid_amount").on('keyup change input', function() {
 
-            var due_amount = net_amount - paidInput;
+            let paidInput = parseFloat(this.value) || 0;
+
+            let net_amount = parseFloat($("#net_amount").val()) || 0;
+
+            let due_amount = net_amount - paidInput;
 
             if (paidInput > net_amount) {
                 $('#due_amount').val('');
             } else {
                 $('#due_amount').val(due_amount.toFixed(2));
             }
-        }
-        // due calculation end
+
+            let returnAmount = (paidInput > net_amount) ? -(paidInput - net_amount) : 0;
+
+            $('#return_amount').val(returnAmount.toFixed(2));
+        });
+            // due calculation end
 
         function net_total() {
             var grand_total = 0;

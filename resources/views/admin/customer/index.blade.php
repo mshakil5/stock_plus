@@ -83,30 +83,30 @@ echo Session::put('info', '');
                         </div>
                     </div>
                     <div class="form-group">
-                        <label for="name" class="col-sm-3 control-label">Name</label>
+                        <label for="name" class="col-sm-3 control-label">Name*</label>
                         <div class="col-sm-9">
                             <input type="text" name="name" class="form-control" id="name"
-                                   placeholder="ex. John Doe" required>
+                                   placeholder="" required>
                         </div>
                     </div>
                     <div class="form-group">
                         <label for="email" class="col-sm-3 control-label">Email</label>
                         <div class="col-sm-9">
                             <input type="email" name="email" class="form-control " id="email"
-                                   placeholder="ex. test@gmail.com">
+                                   placeholder="">
                         </div>
                     </div>
                     <div class="form-group">
                         <label for="phone" class="col-sm-3 control-label">Phone</label>
                         <div class="col-sm-9">
                             <input type="text" name="phone" class="form-control " id="phone"
-                                   placeholder="ex. 0123456789">
+                                   placeholder="">
                         </div>
                     </div>
                     <div class="form-group">
                         <label for="inputPassword3" class="col-sm-3 control-label">Address</label>
                         <div class="col-sm-9">
-                                <textarea class="form-control" id="address" rows="3" placeholder="1355 Market Street, Suite 900 San Francisco, CA 94103 P: (123) 456-7890" name="address"></textarea>
+                                <textarea class="form-control" id="address" rows="3" placeholder="" name="address"></textarea>
                         </div>
                     </div>
                     

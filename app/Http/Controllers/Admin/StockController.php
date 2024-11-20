@@ -109,13 +109,13 @@ class StockController extends Controller
             exit();
         }
 
-        if($request->purchase_type == "Cash"){
-            if($request->due_amount > 0){
-                $message ="<div class='alert alert-warning'><a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a><b>Credit Purchase not accepted! Please Paid Full Amount</b></div>";
-                return response()->json(['status'=> 303,'message'=>$message]);
-                exit();
-            }
-        }
+        // if($request->purchase_type == "Cash"){
+        //     if($request->due_amount > 0){
+        //         $message ="<div class='alert alert-warning'><a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a><b>Please Paid Full Amount</b></div>";
+        //         return response()->json(['status'=> 303,'message'=>$message]);
+        //         exit();
+        //     }
+        // }
 
 
 

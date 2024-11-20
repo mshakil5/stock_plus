@@ -114,7 +114,7 @@
                                             class="text-danger">*</span></label>
                                 <div class="col-sm-9">
                                     <input type="text" name="name" class="form-control" id="inputEmail3"
-                                           placeholder="ex. John Doe">
+                                           placeholder="">
                                 </div>
                                 @if ($errors->has('name'))
                                     <span class="invalid-feedback text-danger" role="alert">

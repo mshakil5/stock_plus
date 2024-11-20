@@ -55,7 +55,7 @@
             <li class="{{ (request()->is('admin/add-stock')) ? 'active' : '' }}"><a href="{{ route('admin.addstock')}}"><i class="fa fa-plus"></i>Purchase </a></li>
             @endif
             @if(Auth::user()->type == '1' && in_array('21', json_decode(Auth::user()->role->permission)) || Auth::user()->type == '0' && in_array('21', json_decode(Auth::user()->role->permission)))
-            <li class="{{ (request()->is('admin/manage-stock')) ? 'active' : '' }}"><a href="{{ route('admin.managestock')}}"><i class="fa fa-truck"></i> Stock List</a></li>
+            <li class="{{ (request()->is('admin/manage-stock') || request()->routeIs('admin.purchasereturn')) ? 'active' : '' }}"><a href="{{ route('admin.managestock')}}"><i class="fa fa-truck"></i> Stock List</a></li>
             @endif
 
             @if(Auth::user()->type == '1' && in_array('5', json_decode(Auth::user()->role->permission)) || Auth::user()->type == '0' && in_array('5', json_decode(Auth::user()->role->permission)))

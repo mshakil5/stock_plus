@@ -449,7 +449,7 @@
                         <label for="name" class="col-sm-3 control-label">Name</label>
                         <div class="col-sm-9">
                             <input type="text" name="name" class="form-control" id="name"
-                                   placeholder="ex. John Doe" required>
+                                   placeholder="" required>
                         </div>
                     </div>
                     <div class="form-group">
