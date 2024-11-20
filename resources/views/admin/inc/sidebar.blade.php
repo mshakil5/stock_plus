@@ -116,7 +116,7 @@
 
 
     @if(Auth::user()->type == '1' && in_array('17', json_decode(Auth::user()->role->permission)) || Auth::user()->type == '0' && in_array('17', json_decode(Auth::user()->role->permission)))
-    <li class="treeview {{ (request()->is('admin/all-sellsinvoice') || request()->is('admin/sales') || request()->is('admin/all-delivery-note') || request()->is('admin/all-quotation') || request()->is('admin/all-sales-return')) ? 'active' : '' }}">
+    <li class="treeview {{ (request()->is('admin/all-sellsinvoice') || request()->is('admin/sales') || request()->is('admin/all-delivery-note') || request()->is('admin/all-quotation') || request()->is('admin/all-sales-return') || request()->routeIs('admin.sales.edit') || request()->routeIs('admin.sales.return') || request()->routeIs('admin.quotation.edit') || request()->routeIs('admin.deliverynote.edit')) ? 'active' : '' }}">
         <a href="#">
             <i class="fa fa-user"></i> <span>Sales</span><span class="pull-right-container">
             <i class="fa fa-angle-left pull-right"></i></span>
@@ -129,19 +129,19 @@
             </li>
             @endif
             @if(Auth::user()->type == '1' && in_array('4', json_decode(Auth::user()->role->permission)) || Auth::user()->type == '0' && in_array('4', json_decode(Auth::user()->role->permission)))
-            <li class="{{ (request()->is('admin/all-sellsinvoice')) ? 'active' : '' }}">
+            <li class="{{ (request()->is('admin/all-sellsinvoice') || request()->routeIs('admin.sales.edit') || request()->routeIs('admin.sales.return')) ? 'active' : '' }}">
                 <a href="{{ route('admin.allsellinvoice')}}"><i class="fa fa-adjust"></i> Manage Sales
                 </a>
             </li>
             @endif
             @if(Auth::user()->type == '1' && in_array('9', json_decode(Auth::user()->role->permission)) || Auth::user()->type == '0' && in_array('9', json_decode(Auth::user()->role->permission)))
-            <li class="{{ (request()->is('admin/all-quotation')) ? 'active' : '' }}">
+            <li class="{{ (request()->is('admin/all-quotation') || request()->routeIs('admin.quotation.edit')) ? 'active' : '' }}">
                 <a href="{{ route('admin.allquotation')}}"><i class="fa fa-adjust"></i> Quotaions
                 </a>
             </li>
             @endif
             @if(Auth::user()->type == '1' && in_array('11', json_decode(Auth::user()->role->permission)) || Auth::user()->type == '0' && in_array('11', json_decode(Auth::user()->role->permission)))
-            <li class="{{ (request()->is('admin/all-delivery-note')) ? 'active' : '' }}">
+            <li class="{{ (request()->is('admin/all-delivery-note') || request()->routeIs('admin.deliverynote.edit')) ? 'active' : '' }}">
                 <a href="{{ route('admin.alldeliverynote')}}"><i class="fa fa-adjust"></i> Delivery Notes
                 </a>
             </li>

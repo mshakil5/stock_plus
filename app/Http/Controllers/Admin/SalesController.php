@@ -871,4 +871,10 @@ class SalesController extends Controller
 
         return response()->json(['status' => 303, 'message' => 'Failed to update the order.']);
     }
+
+    public function salesReturn($id)
+    {
+        $invoices  = Order::with('orderdetails','customer')->where('id', $id)->first();
+        return view('admin.sales_return.create', compact('invoices'));
+    }
 }

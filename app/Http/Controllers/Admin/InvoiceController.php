@@ -58,7 +58,7 @@ class InvoiceController extends Controller
             ->addColumn('action', function ($invoice) {
                 $btn = '<div class="table-actions text-right">';
 
-                    $btn = '<a href="' . route('sales.return', $invoice->id) . '" class="btn btn-info btn-xs ms-1">
+                    $btn = '<a href="' . route('admin.sales.return', $invoice->id) . '" class="btn btn-info btn-xs ms-1">
                                 <i class="fa fa-undo" aria-hidden="true"></i><span title="Return">Return</span>
                             </a>';
 

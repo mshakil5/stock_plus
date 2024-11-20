@@ -373,23 +373,25 @@
                     return;
                 } else {
 
-                    // console.log(id,productname,selling_price,category_id,brand_id,part_no,unit,model,location,vat_percent,group,description,replacement,alternative);
-
                     $.ajax({
-                        data: {id: id,productname:productname,selling_price:selling_price,category_id:category_id,brand_id:brand_id,part_no:part_no,unit:unit,model:model,location:location,vat_percent:vat_percent,group:group,description:description,replacement:replacement,alternative:alternative,},
+                        data: {id: id,productname:productname,selling_price:selling_price,category_id:category_id,brand_id:brand_id,part_no:part_no,unit:unit,model:model,location:location,vat_percent:vat_percent,group:group,description:description,replacement:replacement,alternative:alternative},
                         url: updateurl,
                         type: 'POST',
                         beforeSend: function (request) {
                             return request.setRequestHeader('X-CSRF-Token', $("meta[name='csrf-token']").attr('content'));
                         },
                         success: function (response) {
-                            console.log(response);
                             showSnakBar();
                         },
-                        error: function (xhr, status, err) {
-                            console.error(xhr, status, err);
-                            // console.log(err);
-                            // alert("Something Went Wrong, Please check again");
+                        error: function(xhr) {
+                            if (xhr.status === 422) {
+                                let errors = xhr.responseJSON.errors;
+                                alert("Validation Error: " + Object.values(errors).join(", "));
+                            } else if (xhr.status === 409) {
+                                alert(xhr.responseJSON.message);
+                            } else {
+                                alert("Something Went Wrong, Please check again.");
+                            }
                         }
                     });
                 }

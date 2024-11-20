@@ -167,30 +167,31 @@ class ProductController extends Controller
     public function update_product_details(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'product' => 'required|string',
-            'pcategoryselect' => 'required|integer',
-            'pbrandselect' => 'required|integer',
-            'image' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
+            'id' => 'required|string',
+            'category_id' => 'required|integer',
+            'brand_id' => 'required|integer',
+            'part_no' => 'nullable|string',
         ]);
-
+    
         if ($validator->fails()) {
-            Session::put('warning', 'Please ensure all required fields are filled and image is in the correct format!');
-            return back()->withErrors($validator)->withInput();
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Validation failed. Please ensure all required fields are filled correctly.',
+                'errors' => $validator->errors()
+            ], 422);
         }
-
+    
         $check = Product::where('part_no', $request->part_no)
             ->where('branch_id', Auth::user()->branch_id)
             ->where('id', '!=', $request->id)
             ->first();
-
+    
         if ($check) {
-            Session::put('warning', 'The part number "' . $request->part_no . '" already exists in your branch. Please use a different part number for this branch.');
-            return back();
+            return response()->json([
+                'status' => 'error',
+                'message' => 'The part number "' . $request->part_no . '" already exists in your branch. Please use a different part number.'
+            ], 409);
         }
-
-        $data = $request->data;
-
-        $image = $request->image;
 
         $product = Product::find($request->id);
         $product->productname = $request->productname;
@@ -207,13 +208,6 @@ class ProductController extends Controller
         $product->selling_price = $request->selling_price;
         $product->selling_price_with_vat = $request->selling_price + $request->selling_price * ($request->vat_percent / 100);
         $product->description = $request->description;
-
-        if ($image) {
-            $rand = mt_rand(100000, 999999);
-            $imageName = time() . $rand . '.' . $request->image->extension();
-            $request->image->move(public_path('images/product'), $imageName);
-            $product->image = $imageName;
-        }
 
         if ($product->save()) {
             if ($request->input('alternative')) {
@@ -248,7 +242,7 @@ class ProductController extends Controller
             }
         }
 
-        // return $product;
+        return response()->json(['status' => 200, 'message' => 'Product details updated successfully!']);
     }
 
     public function getproduct(Request $request)

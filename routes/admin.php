@@ -202,6 +202,8 @@ Route::group(['prefix' =>'admin/', 'middleware' => ['auth', 'is_admin']], functi
     Route::get('all-delivery-note', [SalesController::class, 'getAllDeliveryNote'])->name('admin.alldeliverynote');
     Route::get('filter-delivery-note', [SalesController::class, 'filterDeliveryNote'])->name('delivery-note-filter.admin');
 
+    Route::get('/sales-return/{id}', [SalesController::class, 'salesReturn'])->name('admin.sales.return');
+
     Route::get('all-sales-return', [SalesController::class, 'getAllReturnInvoice'])->name('admin.allreturninvoices');
 
     Route::post('saveCustomer', [SalesController::class, 'saveCustomer'])->name('admin.saveCustomer');
