@@ -57,7 +57,7 @@ class SalesController extends Controller
                     </a>';
 
                 
-                    $btn .= '<a href="' . route('admin.get_invoice', $invoice->id) . '" class="btn btn-primary btn-xs">
+                    $btn .= '<a href="' . route('admin.download_invoice', $invoice->id) . '" class="btn btn-primary btn-xs">
                         <span title="Download Invoice">
                             <i class="fa fa-download" aria-hidden="true"></i> Download
                         </span>
@@ -108,7 +108,7 @@ class SalesController extends Controller
                     </a>';
 
                 
-                    $btn .= '<a href="' . route('admin.get_invoice', $invoice->id) . '" class="btn btn-primary btn-xs">
+                    $btn .= '<a href="' . route('admin.download_invoice', $invoice->id) . '" class="btn btn-primary btn-xs">
                         <span title="Download Invoice">
                             <i class="fa fa-download" aria-hidden="true"></i> Download
                         </span>

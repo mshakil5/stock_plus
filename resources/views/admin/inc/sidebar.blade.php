@@ -134,18 +134,24 @@
                 </a>
             </li>
             @endif
+            @if(Auth::user()->type == '1' && in_array('9', json_decode(Auth::user()->role->permission)) || Auth::user()->type == '0' && in_array('9', json_decode(Auth::user()->role->permission)))
             <li class="{{ (request()->is('admin/all-quotation')) ? 'active' : '' }}">
                 <a href="{{ route('admin.allquotation')}}"><i class="fa fa-adjust"></i> Quotaions
                 </a>
             </li>
+            @endif
+            @if(Auth::user()->type == '1' && in_array('11', json_decode(Auth::user()->role->permission)) || Auth::user()->type == '0' && in_array('11', json_decode(Auth::user()->role->permission)))
             <li class="{{ (request()->is('admin/all-delivery-note')) ? 'active' : '' }}">
                 <a href="{{ route('admin.alldeliverynote')}}"><i class="fa fa-adjust"></i> Delivery Notes
                 </a>
             </li>
+            @endif
+            @if((Auth::user()->type == '1' || Auth::user()->type == '0') && in_array('13', json_decode(Auth::user()->role->permission)))
             <li class="{{ (request()->is('admin/all-sales-return')) ? 'active' : '' }}">
                 <a href="{{ route('admin.allreturninvoices')}}"><i class="fa fa-adjust"></i> Returned Products
                 </a>
             </li>
+            @endif
         </ul>
     </li>
     @endif

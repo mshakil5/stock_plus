@@ -153,7 +153,7 @@
         
                                                 @if (in_array(3, $permissions))
                                                 <tr>
-                                                    <td><label class="control-label">Sales Create</label></td>
+                                                    <td><label class="control-label">Create Sales</label></td>
                                                     <td>
                                                         <label style="margin-top: -9px" class="switch"><input id="p3" name="permission[]" type="checkbox" value="3" ><span class="slider round"></span></label>
                                                     </td>

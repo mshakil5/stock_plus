@@ -184,7 +184,7 @@
                     </div>
 
                     <div class="form-group row">
-                        <label for="paid_amount" class="col-sm-6 col-form-label">Paid Amount</label>
+                        <label for="paid_amount" class="col-sm-6 col-form-label">Received Amount</label>
                         <div class="col-sm-6">
                             <input type="number" class="form-control" id="paid_amount" name="paid_amount" value="{{ $order->customer_paid }}">
                         </div>

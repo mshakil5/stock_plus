@@ -168,7 +168,8 @@ Route::group(['prefix' =>'admin/', 'middleware' => ['auth', 'is_admin']], functi
 
     // invoices
     Route::get('all-sellsinvoice', [InvoiceController::class, 'all_sell_invoice'])->name('admin.allsellinvoice');
-    Route::get('invoice/{id}', [InvoiceController::class, 'customer_invoice_download'])->name('admin.get_invoice');
+    Route::get('invoice/{id}', [InvoiceController::class, 'get_invoice'])->name('admin.get_invoice');
+    Route::get('invoice-download/{id}', [InvoiceController::class, 'customer_invoice_download'])->name('admin.download_invoice');
     Route::get('filter', [InvoiceController::class, 'filter'])->name('invoice-filter');
 
     // payment method
