@@ -13,6 +13,7 @@ use App\Models\Stock;
 use App\Models\Transaction;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Carbon;
+use App\Models\SalesReturn;
 
 class SalesController extends Controller
 {
@@ -127,7 +128,7 @@ class SalesController extends Controller
     public function getAllReturnInvoice()
     {
         $invoices  = SalesReturn::with('salesreturndetail')->where('branch_id', Auth::user()->branch_id)->orderby('id','DESC')->get();
-        return view('user.invoice.managereturninvoice', compact('invoices'));
+        return view('admin.sales_return.index', compact('invoices'));
     }  
 
     public function saveCustomer(Request $request)
