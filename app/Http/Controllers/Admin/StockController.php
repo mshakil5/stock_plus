@@ -24,8 +24,8 @@ use App\Models\DamagedProduct;
 class StockController extends Controller
 {
 
-    public function addstock(){
-        
+    public function addstock()
+    {
         $products = Product::where('branch_id', Auth::user()->branch_id)->orderby('id','DESC')->get();
         $branches = Branch::where('id', Auth::user()->branch_id)->get();
         $producttypes = Type::all();

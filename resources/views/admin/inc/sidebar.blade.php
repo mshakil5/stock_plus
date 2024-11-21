@@ -10,7 +10,7 @@
         (Auth::user()->type == '1' && (in_array('1', json_decode(Auth::user()->role->permission)) || in_array('20', json_decode(Auth::user()->role->permission)) || in_array('37', json_decode(Auth::user()->role->permission)))) ||
         (Auth::user()->type == '0' && (in_array('1', json_decode(Auth::user()->role->permission)) || in_array('20', json_decode(Auth::user()->role->permission)) || in_array('37', json_decode(Auth::user()->role->permission))))
     )
-    <li class="treeview {{ (request()->is('admin/add-product')) ? 'active' : '' }}{{ (request()->is('admin/manage-product')) ? 'active' : '' }}{{ (request()->is('admin/product-category')) ? 'active' : '' }}{{ (request()->is('admin/product-brand')) ? 'active' : '' }}{{ (request()->is('admin/product-group')) ? 'active' : '' }}">
+    <li class="treeview {{ (request()->is('admin/add-product')) ? 'active' : '' }}{{ (request()->is('admin/manage-product')) ? 'active' : '' }}{{ (request()->is('admin/product-category')) ? 'active' : '' }}{{ (request()->is('admin/product-brand')) ? 'active' : '' }} {{ (request()->is('admin/product-brand')) ? 'active' : '' }}{{ (request()->is('admin/product-group')) ? 'active' : '' }} {{ request()->routeIs('admin.editproduct') ? 'active' : '' }}">
         <a href="#">
             <i class="fa fa-files-o"></i>
             <span> Products</span>
@@ -23,7 +23,7 @@
             @endif
 
             @if(Auth::user()->type == '1' && in_array('20', json_decode(Auth::user()->role->permission)) || Auth::user()->type == '0' && in_array('20', json_decode(Auth::user()->role->permission)))
-                <li class="{{ (request()->is('admin/manage-product')) ? 'active' : '' }}"><a href="{{ route('admin.manage_product')}}"><i class="fa fa-leaf"></i> Manage product</a> </li>
+                <li class="{{ (request()->is('admin/manage-product') || request()->routeIs('admin.editproduct')) ? 'active' : '' }}"><a href="{{ route('admin.manage_product')}}"><i class="fa fa-leaf"></i> Manage product</a> </li>
             @endif
             @if((Auth::user()->type == '1' || Auth::user()->type == '0') && in_array('37', json_decode(Auth::user()->role->permission)))
                 <li class="{{ (request()->is('admin/product-category')) ? 'active' : '' }}"><a href="{{ route('view_product_category')}}"><i class="fa fa-credit-card"></i>Code</a></li>
@@ -43,7 +43,7 @@
         (Auth::user()->type == '1' && (in_array('5', json_decode(Auth::user()->role->permission)) || in_array('21', json_decode(Auth::user()->role->permission)) || in_array('7', json_decode(Auth::user()->role->permission)) || in_array('18', json_decode(Auth::user()->role->permission)) || in_array('19', json_decode(Auth::user()->role->permission)) || in_array('38', json_decode(Auth::user()->role->permission)))) ||
         (Auth::user()->type == '0' && (in_array('5', json_decode(Auth::user()->role->permission)) || in_array('21', json_decode(Auth::user()->role->permission)) || in_array('7', json_decode(Auth::user()->role->permission)) || in_array('18', json_decode(Auth::user()->role->permission)) || in_array('19', json_decode(Auth::user()->role->permission)) || in_array('38', json_decode(Auth::user()->role->permission))))
     )
-    <li class="treeview {{ (request()->is('admin/add-stock')) ? 'active' : '' }} {{ (request()->is('admin/manage-stock')) ? 'active' : '' }} {{ (request()->is('admin/product-purchase-history')) ? 'active' : '' }} {{ (request()->is('admin/stock-transfer-request')) ? 'active' : '' }} {{ (request()->is('admin/stock-transfer-history')) ? 'active' : '' }} {{ (request()->is('admin/stock-return-history')) ? 'active' : '' }} {{ (request()->is('admin/damaged-products')) ? 'active' : '' }}">
+    <li class="treeview {{ (request()->is('admin/add-stock')) ? 'active' : '' }} {{ (request()->is('admin/manage-stock')) ? 'active' : '' }} {{ (request()->is('admin/product-purchase-history')) ? 'active' : '' }} {{ (request()->is('admin/stock-transfer-request')) ? 'active' : '' }} {{ (request()->is('admin/stock-transfer-history')) ? 'active' : '' }} {{ (request()->is('admin/stock-return-history')) ? 'active' : '' }} {{ (request()->is('admin/damaged-products')) ? 'active' : '' }} {{ request()->routeIs('admin.purchaseedit') ? 'active' : '' }} {{ request()->routeIs('admin.purchasereturn') ? 'active' : '' }}">
         <a href="#">
             <i class="fa fa-clipboard"></i>
             <span>Stocks</span>
@@ -55,11 +55,11 @@
             <li class="{{ (request()->is('admin/add-stock')) ? 'active' : '' }}"><a href="{{ route('admin.addstock')}}"><i class="fa fa-plus"></i>Purchase </a></li>
             @endif
             @if(Auth::user()->type == '1' && in_array('21', json_decode(Auth::user()->role->permission)) || Auth::user()->type == '0' && in_array('21', json_decode(Auth::user()->role->permission)))
-            <li class="{{ (request()->is('admin/manage-stock') || request()->routeIs('admin.purchasereturn')) ? 'active' : '' }}"><a href="{{ route('admin.managestock')}}"><i class="fa fa-truck"></i> Stock List</a></li>
+            <li class="{{ (request()->is('admin/manage-stock')) ? 'active' : '' }}"><a href="{{ route('admin.managestock')}}"><i class="fa fa-truck"></i> Stock List</a></li>
             @endif
 
             @if(Auth::user()->type == '1' && in_array('5', json_decode(Auth::user()->role->permission)) || Auth::user()->type == '0' && in_array('5', json_decode(Auth::user()->role->permission)))
-            <li class="{{ (request()->is('admin/product-purchase-history')) ? 'active' : '' }}"><a href="{{ route('admin.product.purchasehistory')}}"><i class="fa fa-history"></i>Purchase History</a></li>
+            <li class="{{ (request()->is('admin/product-purchase-history') || request()->routeIs('admin.purchaseedit') || request()->routeIs('admin.purchasereturn')) ? 'active' : '' }}"><a href="{{ route('admin.product.purchasehistory')}}"><i class="fa fa-history"></i>Purchase History</a></li>
             @endif
 
             @if(Auth::user()->type == '1' && in_array('7', json_decode(Auth::user()->role->permission)) || Auth::user()->type == '0' && in_array('7', json_decode(Auth::user()->role->permission)))

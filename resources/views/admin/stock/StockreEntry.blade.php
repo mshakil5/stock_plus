@@ -45,7 +45,7 @@
                                 <input type="date" class="form-control" id="date" name="date" value="{{ date('Y-m-d') }}">
                             </div>
                             <div class="form-group col-md-3">
-                                <label for="supplier_id">Supplier *</label>
+                                <label for="supplier_id">Supplier*</label>
                                 <select name="supplier_id" id="supplier_id" class="form-control select2">
                                     <option value="">Select</option>
                                     @foreach (\App\Models\Vendor::where('branch_id', Auth::user()->branch_id)->where('status','1')->get() as $vendor)
@@ -71,7 +71,7 @@
                             </div>
 
                             <div class="form-group col-md-4">
-                                <label for="invoiceno">Invoice No *</label>
+                                <label for="invoiceno">Invoice No*</label>
                                 <input type="number" class="form-control" id="invoiceno" name="invoiceno">
                             </div>
 
@@ -84,17 +84,16 @@
 
                         <div class="form-row">
                             <div class="form-group col-md-4">
-                                <label for="date">Payment Type *</label>
+                                <label for="date">Payment Type</label>
                                 <select name="type" id="type" class="form-control">
-                                    <option value="">Select</option>
                                     <option value="Cash">Cash</option>
                                     <option value="Bank">Bank</option>
                                     <option value="Credit">Credit</option>
                                 </select>
                             </div>
 
-                            <div class="form-group col-md-8">
-                                <label for="product">Product *</label>
+                            <div class="form-group col-md-6">
+                                <label for="product">Product*</label>
                                 <select name="product" id="product" class="form-control select2">
                                     <option value="">Select</option>
                                     @foreach (\App\Models\Product::select('id','productname','part_no')->where('branch_id', Auth::user()->branch_id)->get() as $product)
@@ -112,12 +111,12 @@
 
                         <div class="form-row">
 
-                            <div class="form-group col-md-4">
+                            <div class="form-group col-md-3">
                                 <label for="ref">Ref</label>
                                 <input type="text" class="form-control" id="ref" name="ref">
                             </div>
 
-                            <div class="form-group col-md-4">
+                            <div class="form-group col-md-3">
                                 <label for="remarks">Remarks</label>
                                 <input type="text" class="form-control" id="remarks" name="remarks">
                             </div>
@@ -178,7 +177,7 @@
                     <div class="form-group row">
                         <label for="discount" class="col-sm-6 col-form-label">Discount</label>
                         <div class="col-sm-6">
-                            <input type="number" class="form-control" id="discount" name="discount">
+                            <input type="number" class="form-control" id="discount" name="discount" min="0">
                         </div>
                     </div>
 
@@ -199,7 +198,7 @@
                     <div class="form-group row">
                         <label for="paid_amount" class="col-sm-6 col-form-label">Paid Amount</label>
                         <div class="col-sm-6">
-                            <input type="number" class="form-control" id="paid_amount" name="paid_amount">
+                            <input type="number" class="form-control" id="paid_amount" name="paid_amount" min="0">
                         </div>
                     </div>
 

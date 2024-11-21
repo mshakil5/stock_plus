@@ -29,7 +29,6 @@ class ProductController extends Controller
   {
 
     $validator = Validator::make($request->all(), [
-            'image' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
             'product' => 'required',
             'pcategoryselect' => 'required',
             'pbrandselect' => 'required',
@@ -168,6 +167,7 @@ class ProductController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'id' => 'required|string',
+            'productname' => 'required',
             'category_id' => 'required|integer',
             'brand_id' => 'required|integer',
             'part_no' => 'nullable|string',

@@ -136,17 +136,17 @@ echo Session::put('message', '');
             let categoryName = $("#" + id).val();
             let categoryid = $("#"+"categoryid"+ id).val();
 
-            console.log(categoryid);
+            // console.log(categoryid);
 
 
             if (!categoryName) {
-                alert("Please Provide Category Name");
+                alert("Please Provide Code Name");
                 category_load();
                 return;
             }
 
             if (!categoryid) {
-                alert("Please Provide Category ID");
+                alert("Please Provide Code ID");
                 category_load();
                 return;
             }
@@ -188,10 +188,10 @@ echo Session::put('message', '');
         var categoryurl = "{{URL::to('/admin/category')}}";
         function save_category2() {
             if ($("#category2").val() == "") {
-                alert("Please Provide Category Name");
+                alert("Please Provide Code Name");
             }
             if ($("#categoryid").val() == "") {
-                alert("Please Provide Category ID");
+                alert("Please Provide Code ID");
             } else {
                 var category = $("#category2").val()
                 var categoryid = $("#categoryid").val()

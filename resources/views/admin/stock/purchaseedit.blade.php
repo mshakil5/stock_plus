@@ -46,7 +46,7 @@
                                 <input type="hidden" class="form-control" id="purchase_id" name="purchase_id" value="{{ $purchase->id }}">
                             </div>
                             <div class="form-group col-md-3">
-                                <label for="supplier_id">Supplier *</label>
+                                <label for="supplier_id">Supplier*</label>
                                 <select name="supplier_id" id="supplier_id" class="form-control select2">
                                     <option value="">Select</option>
                                     @foreach (\App\Models\Vendor::where('status', '1')->where('branch_id', auth()->user()->branch_id)->get() as $vendor)
@@ -72,7 +72,7 @@
                             </div>
 
                             <div class="form-group col-md-4">
-                                <label for="invoiceno">Invoice No *</label>
+                                <label for="invoiceno">Invoice No*</label>
                                 <input type="number" class="form-control" id="invoiceno" name="invoiceno" value="{{ $purchase->invoiceno }}">
                             </div>
 
@@ -85,17 +85,16 @@
 
                         <div class="form-row">
                             <div class="form-group col-md-4">
-                                <label for="date">Transaction Type *</label>
+                                <label for="date">Transaction Type</label>
                                 <select name="type" id="type" class="form-control">
-                                    <option value="">Select</option>
                                     <option value="Cash" @if ($purchase->purchase_type == "Cash") selected @endif>Cash</option>
                                     <option value="Bank" @if ($purchase->purchase_type == "Bank") selected @endif>Bank</option>
                                     <option value="Credit" @if ($purchase->purchase_type == "Credit") selected @endif>Credit</option>
                                 </select>
                             </div>
 
-                            <div class="form-group col-md-8">
-                                <label for="product">Product *</label>
+                            <div class="form-group col-md-6">
+                                <label for="product">Product*</label>
                                 <select name="product" id="product" class="form-control select2">
                                     <option value="">Select</option>
                                     @foreach (\App\Models\Product::select('id','productname','part_no')->get() as $product)
@@ -111,12 +110,12 @@
 
                         <div class="form-row">
 
-                            <div class="form-group col-md-4">
+                            <div class="form-group col-md-3">
                                 <label for="ref">Ref</label>
                                 <input type="text" class="form-control" id="ref" name="ref" value="{{ $purchase->ref }}">
                             </div>
 
-                            <div class="form-group col-md-4">
+                            <div class="form-group col-md-3">
                                 <label for="remarks">Remarks</label>
                                 <input type="text" class="form-control" id="remarks" name="remarks" value="{{ $purchase->remarks }}">
                             </div>

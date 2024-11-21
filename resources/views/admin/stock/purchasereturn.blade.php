@@ -39,7 +39,7 @@
 
                             <div class="form-row">
                                 <div class="form-group col-md-4">
-                                  <label for="date">Return Date *</label>
+                                  <label for="date">Return Date</label>
                                   <input type="date" class="form-control" id="date" name="date" value="{{ date('Y-m-d') }}">
                                   <input type="hidden" class="form-control" id="purchase_id" name="purchase_id" value="{{ $purchase->id }}">
                                 </div>
@@ -104,7 +104,7 @@
                                 </div>
 
                                 <div class="form-group col-md-8">
-                                    <label for="reason">Reason *</label>
+                                    <label for="reason">Reason*</label>
                                     <input type="text" class="form-control" id="reason" name="reason" required>
                                 </div>
                             </div>

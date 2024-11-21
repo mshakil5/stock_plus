@@ -53,7 +53,7 @@
                                     <tr>
                                         <td><label class="control-label">Part No</label></td>
                                         <td colspan="2"><input name="part_no" id="part_no" type="text" class="form-control"
-                                                maxlength="50px" placeholder="Enter Part no" value="{{ old('part_no') }}" />
+                                                maxlength="50px" placeholder="" value="{{ old('part_no') }}" />
                                             @if ($errors->has('part_no'))
                                             <span class="text-danger">{{ $errors->first('part_no') }}</span>
                                             @endif
@@ -61,7 +61,7 @@
                                     </tr>
                                     <tr>
                                         <td><label class="control-label">Product Name*</label></td>
-                                        <td colspan="2"><input name="product" id="product" type="text" class="form-control" maxlength="50px" placeholder="Enter Product" required="required" value="{{ old('product') }}" />
+                                        <td colspan="2"><input name="product" id="product" type="text" class="form-control" maxlength="50px" placeholder="" required="required" value="{{ old('product') }}" />
                                             @if ($errors->has('product'))
                                             <span class="text-danger">{{ $errors->first('product') }}</span>
                                             @endif
@@ -88,13 +88,12 @@
                                     <tr>
                                         <td><label class="control-label">Unit</label></td>
                                         <td colspan="2"><input name="unit" id="unit" type="text" class="form-control"
-                                                maxlength="50px" placeholder="pcs,ltr,kg etc" value="{{ old('unit') }}" />
+                                                maxlength="50px" placeholder="" value="{{ old('unit') }}" />
                                             @if ($errors->has('unit'))
                                             <span class="text-danger">{{ $errors->first('unit') }}</span>
                                             @endif
                                         </td>
                                     </tr>
-
 
 
                                     <tr>
@@ -138,7 +137,7 @@
                                     <tr>
                                         <td><label class="control-label">Model</label></td>
                                         <td><input name="model" id="model" type="text" class="form-control"
-                                                maxlength="50px" placeholder="Enter model" value="{{ old('model') }}" />
+                                                maxlength="50px" placeholder="" value="{{ old('model') }}" />
                                             @if ($errors->has('model'))
                                             <span class="text-danger">{{ $errors->first('model') }}</span>
                                             @endif
@@ -237,7 +236,7 @@
                             <br>
 
                             <input type="text" class="" id="categoryid" placeholder="ID">
-                            <input type="text" class="" id="category" placeholder="Type">
+                            <input type="text" class="" id="category" placeholder="Code Name">
                             <br>
                             <button onclick="save_category()" type="submit" class="btn btn-primary mb-2" style="margin-top: 5px;">Save
                             </button>
@@ -247,7 +246,7 @@
                             <label for="brand" class="">Brand</label>
                             <br>
                             <input type="text" class="" id="brandid" placeholder="ID">
-                            <input type="text" class="" id="brand" placeholder="Brandname">
+                            <input type="text" class="" id="brand" placeholder="Brand Name">
                             <br>
                             <button onclick="save_brand()" type="submit" class="btn btn-primary mb-2" style="margin-top: 5px;">Save
                             </button>
@@ -257,7 +256,7 @@
                             <label for="group" class="">Group</label>
                             <br>
                             <input type="text" class="" id="groupid" placeholder="ID">
-                            <input type="text" class="" id="group" placeholder="Groupname">
+                            <input type="text" class="" id="group" placeholder="Group Name">
                             <br>
                             <button onclick="save_group()" type="submit" class="btn btn-primary mb-2" style="margin-top: 5px;">Save
                             </button>
@@ -434,12 +433,11 @@
     var categoryurl = "{{URL::to('/admin/category')}}";
 
     function save_category() {
-        if ($("#category").val() == "") {
-            alert("Please Provide Category Name");
-        }
         if ($("#categoryid").val() == "") {
-            alert("Please Provide Category ID");
-        } else {
+            alert("Please Provide Code ID");
+        }if ($("#category").val() == "") {
+            alert("Please Provide Code Name");
+        }else {
 
             var categoryid = $("#categoryid").val();
             var category = $("#category").val();
@@ -478,11 +476,10 @@
     var brandurl = "{{URL::to('/admin/brand')}}";
 
     function save_brand() {
-        if ($("#brand").val() == "") {
-            alert("Please Provide Brand Name");
-        }
         if ($("#brandid").val() == "") {
             alert("Please Provide Brand ID");
+        }if ($("#brand").val() == "") {
+            alert("Please Provide Brand Name");
         } else {
 
             var brand = $("#brand").val()
@@ -524,13 +521,12 @@
 
     var groupurl = "{{URL::to('/admin/group')}}";
 
-    function save_group() {
-        if ($("#group").val() == "") {
-            alert("Please Provide Group Name");
-        }
+    function save_group() { 
         if ($("#groupid").val() == "") {
             alert("Please Provide Group ID");
-        } else {
+        }if ($("#group").val() == "") {
+            alert("Please Provide Group Name");
+        }else {
 
             var group = $("#group").val()
             var groupid = $("#groupid").val()

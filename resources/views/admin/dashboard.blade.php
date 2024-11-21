@@ -175,7 +175,11 @@
                             <div class="col-md-12">
                                 <div class="bs-example bs-example-tabs" data-example-id="togglable-tabs">
                                     <h5 class="btn btn-success btn-sm center-block px-2">
-                                        {{ \App\Models\Vendor::count() }}
+                                        {{ 
+                                            \App\Models\Vendor::when(auth()->user()->role_id != 1, function ($query) {
+                                                return $query->where('branch_id', auth()->user()->branch_id);
+                                            })->count() 
+                                        }}
                                     </h5>
                                 </div>
                             </div>
