@@ -126,7 +126,7 @@
 
                                                 @if (in_array(1, $permissions))
                                                 <tr>
-                                                    <td><label class="control-label">Product Add</label></td>
+                                                    <td><label class="control-label">Create Product</label></td>
                                                     <td>
                                                         <label style="margin-top: -9px" class="switch"><input id="p1" name="permission[]" type="checkbox" value="1"><span class="slider round"></span></label>
                                                     </td>
@@ -135,7 +135,7 @@
         
                                                 @if (in_array(2, $permissions))
                                                 <tr>
-                                                    <td><label class="control-label">Product Edit</label></td>
+                                                    <td><label class="control-label">Manage Product</label></td>
                                                     <td>
                                                         <label style="margin-top: -9px" class="switch"><input id="p2" name="permission[]" type="checkbox" value="2" ><span class="slider round"></span></label>
                                                     </td>
@@ -151,36 +151,27 @@
                                                 </tr>
                                                 @endif
         
-                                                @if (in_array(3, $permissions))
-                                                <tr>
-                                                    <td><label class="control-label">Create Sales</label></td>
-                                                    <td>
-                                                        <label style="margin-top: -9px" class="switch"><input id="p3" name="permission[]" type="checkbox" value="3" ><span class="slider round"></span></label>
-                                                    </td>
-                                                </tr>
-                                                @endif
-        
-                                                @if (in_array(4, $permissions))
-                                                <tr>
-                                                    <td><label class="control-label">Manage Sales</label></td>
-                                                    <td>
-                                                        <label style="margin-top: -9px" class="switch"><input id="p4" name="permission[]" type="checkbox" value="4" ><span class="slider round"></span></label>
-                                                    </td>
-                                                </tr>
-                                                @endif
-        
                                                 @if (in_array(5, $permissions))
                                                 <tr>
-                                                    <td><label class="control-label">Purchase</label></td>
+                                                    <td><label class="control-label">Create Purchase</label></td>
                                                     <td>
                                                         <label style="margin-top: -9px" class="switch"><input id="p5" name="permission[]" type="checkbox" value="5" ><span class="slider round"></span></label>
+                                                    </td>
+                                                </tr>
+                                                @endif
+
+                                                @if (in_array(21, $permissions))
+                                                <tr>
+                                                    <td><label class="control-label">Stock List</label></td>
+                                                    <td>
+                                                        <label style="margin-top: -9px" class="switch"><input id="p21" name="permission[]" type="checkbox" value="21" ><span class="slider round"></span></label>
                                                     </td>
                                                 </tr>
                                                 @endif
         
                                                 @if (in_array(6, $permissions))
                                                 <tr>
-                                                    <td><label class="control-label">Purchase Edit</label></td>
+                                                    <td><label class="control-label">Edit Purchase</label></td>
                                                     <td>
                                                         <label style="margin-top: -9px" class="switch"><input id="p6" name="permission[]" type="checkbox" value="6" ><span class="slider round"></span></label>
                                                     </td>
@@ -192,121 +183,6 @@
                                                     <td><label class="control-label">Stock Transfer</label></td>
                                                     <td>
                                                         <label style="margin-top: -9px" class="switch"><input id="p7" name="permission[]" type="checkbox" value="7" ><span class="slider round"></span></label>
-                                                    </td>
-                                                </tr>
-                                                @endif
-        
-                                                @if (in_array(8, $permissions))
-                                                <tr>
-                                                    <td><label class="control-label">Manage Admin</label></td>
-                                                    <td>
-                                                        <label style="margin-top: -9px" class="switch"><input id="p8" name="permission[]" type="checkbox" value="8" ><span class="slider round"></span></label>
-                                                    </td>
-                                                </tr>
-                                                @endif
-
-                                                @if (in_array(39, $permissions))
-                                                <tr>
-                                                    <td><label class="control-label">Manage Employee</label></td>
-                                                    <td>
-                                                        <label style="margin-top: -9px" class="switch"><input id="p39" name="permission[]" type="checkbox" value="39" ><span class="slider round"></span></label>
-                                                    </td>
-                                                </tr>
-                                                @endif
-
-                                                @if (in_array(40, $permissions))
-                                                <tr>
-                                                    <td><label class="control-label">Manage Role</label></td>
-                                                    <td>
-                                                        <label style="margin-top: -9px" class="switch"><input id="p40" name="permission[]" type="checkbox" value="40" ><span class="slider round"></span></label>
-                                                    </td>
-                                                </tr>
-                                                @endif
-
-                                                @if (in_array(9, $permissions))
-                                                <tr>
-                                                    <td><label class="control-label">Quotation Create</label></td>
-                                                    <td>
-                                                        <label style="margin-top: -9px" class="switch"><input id="p9" name="permission[]" type="checkbox" value="9" ><span class="slider round"></span></label>
-                                                    </td>
-                                                </tr>
-                                                @endif
-        
-                                                @if (in_array(10, $permissions))
-                                                <tr>
-                                                    <td><label class="control-label">Quotation Edit</label></td>
-                                                    <td>
-                                                        <label style="margin-top: -9px" class="switch"><input id="p10" name="permission[]" type="checkbox" value="10" ><span class="slider round"></span></label>
-                                                    </td>
-                                                </tr>
-                                                @endif
-
-                                                @if (in_array(11, $permissions))
-                                                <tr>
-                                                    <td><label class="control-label">Delivery Note Create</label></td>
-                                                    <td>
-                                                        <label style="margin-top: -9px" class="switch"><input id="p11" name="permission[]" type="checkbox" value="11" ><span class="slider round"></span></label>
-                                                    </td>
-                                                </tr>
-                                                @endif
-        
-                                                @if (in_array(12, $permissions))
-                                                <tr>
-                                                    <td><label class="control-label">Delivery Note Edit</label></td>
-                                                    <td>
-                                                        <label style="margin-top: -9px" class="switch"><input id="p12" name="permission[]" type="checkbox" value="12" ><span class="slider round"></span></label>
-                                                    </td>
-                                                </tr>
-                                                @endif
-
-                                                @if (in_array(13, $permissions))
-                                                <tr>
-                                                    <td><label class="control-label">Sales Return</label></td>
-                                                    <td>
-                                                        <label style="margin-top: -9px" class="switch"><input id="p13" name="permission[]" type="checkbox" value="13" ><span class="slider round"></span></label>
-                                                    </td>
-                                                </tr>
-                                                @endif
-
-                                                @if (in_array(14, $permissions))
-                                                <tr>
-                                                    <td><label class="control-label">Supplier</label></td>
-                                                    <td>
-                                                        <label style="margin-top: -9px" class="switch"><input id="p14" name="permission[]" type="checkbox" value="14" ><span class="slider round"></span></label>
-                                                    </td>
-                                                </tr>
-                                                @endif
-
-                                                @if (in_array(15, $permissions))
-                                                <tr>
-                                                    <td><label class="control-label">Customer</label></td>
-                                                    <td>
-                                                        <label style="margin-top: -9px" class="switch"><input id="p15" name="permission[]" type="checkbox" value="15" ><span class="slider round"></span></label>
-                                                    </td>
-                                                </tr>
-                                                @endif
-
-                                                @if (in_array(16, $permissions))
-                                                <tr>
-                                                    <td><label class="control-label">Branch</label></td>
-                                                    <td>
-                                                        <label style="margin-top: -9px" class="switch"><input id="p16" name="permission[]" type="checkbox" value="16" ><span class="slider round"></span></label>
-                                                    </td>
-                                                </tr>
-                                                @endif
-
-                                                
-
-                                            </table>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <table class="table table-hover">
-
-                                                @if (in_array(17, $permissions))
-                                                <tr>
-                                                    <td><label class="control-label">Sales Module</label></td>
-                                                    <td>
-                                                        <label style="margin-top: -9px" class="switch"><input id="p17" name="permission[]" type="checkbox" value="17" ><span class="slider round"></span></label>
                                                     </td>
                                                 </tr>
                                                 @endif
@@ -329,15 +205,6 @@
                                                 </tr>
                                                 @endif
 
-                                                @if (in_array(20, $permissions))
-                                                <tr>
-                                                    <td><label class="control-label">Manage Product</label></td>
-                                                    <td>
-                                                        <label style="margin-top: -9px" class="switch"><input id="p20" name="permission[]" type="checkbox" value="20" ><span class="slider round"></span></label>
-                                                    </td>
-                                                </tr>
-                                                @endif
-
                                                 @if (in_array(38, $permissions))
                                                 <tr>
                                                     <td><label class="control-label">Damaged Products</label></td>
@@ -347,29 +214,100 @@
                                                 </tr>
                                                 @endif
 
-                                                @if (in_array(21, $permissions))
+                                                @if (in_array(3, $permissions))
                                                 <tr>
-                                                    <td><label class="control-label">Stock List</label></td>
+                                                    <td><label class="control-label">Create Sales</label></td>
                                                     <td>
-                                                        <label style="margin-top: -9px" class="switch"><input id="p21" name="permission[]" type="checkbox" value="21" ><span class="slider round"></span></label>
+                                                        <label style="margin-top: -9px" class="switch"><input id="p3" name="permission[]" type="checkbox" value="3" ><span class="slider round"></span></label>
+                                                    </td>
+                                                </tr>
+                                                @endif
+        
+                                                @if (in_array(4, $permissions))
+                                                <tr>
+                                                    <td><label class="control-label">Edit Sales</label></td>
+                                                    <td>
+                                                        <label style="margin-top: -9px" class="switch"><input id="p4" name="permission[]" type="checkbox" value="4" ><span class="slider round"></span></label>
                                                     </td>
                                                 </tr>
                                                 @endif
 
-                                                @if (in_array(22, $permissions))
+                                                @if (in_array(9, $permissions))
                                                 <tr>
-                                                    <td><label class="control-label">Payment Method</label></td>
+                                                    <td><label class="control-label">Create Quotation</label></td>
                                                     <td>
-                                                        <label style="margin-top: -9px" class="switch"><input id="p22" name="permission[]" type="checkbox" value="22" ><span class="slider round"></span></label>
+                                                        <label style="margin-top: -9px" class="switch"><input id="p9" name="permission[]" type="checkbox" value="9" ><span class="slider round"></span></label>
+                                                    </td>
+                                                </tr>
+                                                @endif
+        
+                                                @if (in_array(10, $permissions))
+                                                <tr>
+                                                    <td><label class="control-label">Edit Quotation</label></td>
+                                                    <td>
+                                                        <label style="margin-top: -9px" class="switch"><input id="p10" name="permission[]" type="checkbox" value="10" ><span class="slider round"></span></label>
                                                     </td>
                                                 </tr>
                                                 @endif
 
-                                                @if (in_array(23, $permissions))
+                                                
+                                                @if (in_array(11, $permissions))
                                                 <tr>
-                                                    <td><label class="control-label">Reports</label></td>
+                                                    <td><label class="control-label">Create Delivery Note</label></td>
                                                     <td>
-                                                        <label style="margin-top: -9px" class="switch"><input id="p23" name="permission[]" type="checkbox" value="23" ><span class="slider round"></span></label>
+                                                        <label style="margin-top: -9px" class="switch"><input id="p11" name="permission[]" type="checkbox" value="11" ><span class="slider round"></span></label>
+                                                    </td>
+                                                </tr>
+                                                @endif
+        
+                                                @if (in_array(12, $permissions))
+                                                <tr>
+                                                    <td><label class="control-label">Edit Delivery Note</label></td>
+                                                    <td>
+                                                        <label style="margin-top: -9px" class="switch"><input id="p12" name="permission[]" type="checkbox" value="12" ><span class="slider round"></span></label>
+                                                    </td>
+                                                </tr>
+                                                @endif
+
+                                                @if (in_array(13, $permissions))
+                                                <tr>
+                                                    <td><label class="control-label">Sales Return</label></td>
+                                                    <td>
+                                                        <label style="margin-top: -9px" class="switch"><input id="p13" name="permission[]" type="checkbox" value="13" ><span class="slider round"></span></label>
+                                                    </td>
+                                                </tr>
+                                                @endif
+
+                                                
+                                                @if (in_array(14, $permissions))
+                                                <tr>
+                                                    <td><label class="control-label">Supplier</label></td>
+                                                    <td>
+                                                        <label style="margin-top: -9px" class="switch"><input id="p14" name="permission[]" type="checkbox" value="14" ><span class="slider round"></span></label>
+                                                    </td>
+                                                </tr>
+                                                @endif
+
+                                            </table>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <table class="table table-hover">
+
+
+                                                @if (in_array(15, $permissions))
+                                                <tr>
+                                                    <td><label class="control-label">Customer</label></td>
+                                                    <td>
+                                                        <label style="margin-top: -9px" class="switch"><input id="p15" name="permission[]" type="checkbox" value="15" ><span class="slider round"></span></label>
+                                                    </td>
+                                                </tr>
+                                                @endif
+
+                                                @if (in_array(16, $permissions))
+                                                <tr>
+                                                    <td><label class="control-label">Branch</label></td>
+                                                    <td>
+                                                        <label style="margin-top: -9px" class="switch"><input id="p16" name="permission[]" type="checkbox" value="16" ><span class="slider round"></span></label>
                                                     </td>
                                                 </tr>
                                                 @endif
@@ -392,7 +330,7 @@
                                                 </tr>
                                                 @endif
 
-                                                @if (in_array(26, $permissions))
+                                            @if (in_array(26, $permissions))
                                                 <tr>
                                                     <td><label class="control-label">Expense</label></td>
                                                     <td>
@@ -463,6 +401,73 @@
                                                     </td>
                                                 </tr>
                                                 @endif
+
+                                                @if (in_array(23, $permissions))
+                                                <tr>
+                                                    <td><label class="control-label">Reports</label></td>
+                                                    <td>
+                                                        <label style="margin-top: -9px" class="switch"><input id="p23" name="permission[]" type="checkbox" value="23" ><span class="slider round"></span></label>
+                                                    </td>
+                                                </tr>
+                                                @endif
+
+                                                @if (in_array(8, $permissions))
+                                                <tr>
+                                                    <td><label class="control-label">Manage Admin</label></td>
+                                                    <td>
+                                                        <label style="margin-top: -9px" class="switch"><input id="p8" name="permission[]" type="checkbox" value="8" ><span class="slider round"></span></label>
+                                                    </td>
+                                                </tr>
+                                                @endif
+
+                                                @if (in_array(39, $permissions))
+                                                <tr>
+                                                    <td><label class="control-label">Manage Employee</label></td>
+                                                    <td>
+                                                        <label style="margin-top: -9px" class="switch"><input id="p39" name="permission[]" type="checkbox" value="39" ><span class="slider round"></span></label>
+                                                    </td>
+                                                </tr>
+                                                @endif
+
+                                                @if (in_array(40, $permissions))
+                                                <tr>
+                                                    <td><label class="control-label">Manage Role</label></td>
+                                                    <td>
+                                                        <label style="margin-top: -9px" class="switch"><input id="p40" name="permission[]" type="checkbox" value="40" ><span class="slider round"></span></label>
+                                                    </td>
+                                                </tr>
+                                                @endif
+
+                                                @if (in_array(17, $permissions))
+                                                <tr style="display: none;">
+                                                    <td><label class="control-label">Sales Module</label></td>
+                                                    <td>
+                                                        <label style="margin-top: -9px" class="switch"><input id="p17" name="permission[]" type="checkbox" value="17" ><span class="slider round"></span></label>
+                                                    </td>
+                                                </tr>
+                                                @endif
+
+                                                @if (in_array(20, $permissions))
+                                                <tr style="display: none;">
+                                                    <td><label class="control-label">Manage Product</label></td>
+                                                    <td>
+                                                        <label style="margin-top: -9px" class="switch"><input id="p20" name="permission[]" type="checkbox" value="20" ><span class="slider round"></span></label>
+                                                    </td>
+                                                </tr>
+                                                @endif
+
+                                                @if (in_array(22, $permissions))
+                                                <tr>
+                                                    <td><label class="control-label">Payment Method</label></td>
+                                                    <td>
+                                                        <label style="margin-top: -9px" class="switch"><input id="p22" name="permission[]" type="checkbox" value="22" ><span class="slider round"></span></label>
+                                                    </td>
+                                                </tr>
+                                                @endif
+
+
+
+                                                
 
                                                 @if (in_array(34, $permissions))
                                                 <tr>

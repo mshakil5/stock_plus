@@ -81,41 +81,6 @@
     </li>
     @endif
 
-
-    @if(Auth::user()->type == '1' && in_array('14', json_decode(Auth::user()->role->permission)) || Auth::user()->type == '0' && in_array('14', json_decode(Auth::user()->role->permission)))
-    <li class="{{ (request()->is('admin/suppliers')) ? 'active' : '' }}">
-        <a href="{{ route('admin.addvendor')}}">
-            <i class="fa fa-users"></i>
-            <span>Supplier</span>
-            <span class="pull-right-container"> </span>
-        </a>
-    </li>
-    @endif
-
-
-    @if(Auth::user()->type == '1' && in_array('15', json_decode(Auth::user()->role->permission)) || Auth::user()->type == '0' && in_array('15', json_decode(Auth::user()->role->permission)))
-    <li class="{{ (request()->is('admin/customers')) ? 'active' : '' }}">
-        <a href="{{ route('admin.addcustomer')}}">
-            <i class="fa fa-users"></i>
-            <span>Customer</span>
-            <span class="pull-right-container"> </span>
-        </a>
-    </li>
-    @endif
-
-
-    @if(Auth::user()->type == '1' && in_array('16', json_decode(Auth::user()->role->permission)) || Auth::user()->type == '0' && in_array('16', json_decode(Auth::user()->role->permission)))
-    <li class="{{ (request()->is('admin/branch')) ? 'active' : '' }}">
-        <a href="{{ route('view_branch')}}">
-            <i class="fa fa-users"></i>
-            <span>Branch</span>
-            <span class="pull-right-container"> </span>
-        </a>
-    </li>
-    @endif
-
-
-    @if(Auth::user()->type == '1' && in_array('17', json_decode(Auth::user()->role->permission)) || Auth::user()->type == '0' && in_array('17', json_decode(Auth::user()->role->permission)))
     <li class="treeview {{ (request()->is('admin/all-sellsinvoice') || request()->is('admin/sales') || request()->is('admin/all-delivery-note') || request()->is('admin/all-quotation') || request()->is('admin/all-sales-return') || request()->routeIs('admin.sales.edit') || request()->routeIs('admin.sales.return') || request()->routeIs('admin.quotation.edit') || request()->routeIs('admin.deliverynote.edit')) ? 'active' : '' }}">
         <a href="#">
             <i class="fa fa-user"></i> <span>Sales</span><span class="pull-right-container">
@@ -153,6 +118,36 @@
             </li>
             @endif
         </ul>
+    </li>
+
+    @if(Auth::user()->type == '1' && in_array('14', json_decode(Auth::user()->role->permission)) || Auth::user()->type == '0' && in_array('14', json_decode(Auth::user()->role->permission)))
+    <li class="{{ (request()->is('admin/suppliers')) ? 'active' : '' }}">
+        <a href="{{ route('admin.addvendor')}}">
+            <i class="fa fa-users"></i>
+            <span>Supplier</span>
+            <span class="pull-right-container"> </span>
+        </a>
+    </li>
+    @endif
+
+    @if(Auth::user()->type == '1' && in_array('15', json_decode(Auth::user()->role->permission)) || Auth::user()->type == '0' && in_array('15', json_decode(Auth::user()->role->permission)))
+    <li class="{{ (request()->is('admin/customers')) ? 'active' : '' }}">
+        <a href="{{ route('admin.addcustomer')}}">
+            <i class="fa fa-users"></i>
+            <span>Customer</span>
+            <span class="pull-right-container"> </span>
+        </a>
+    </li>
+    @endif
+
+
+    @if(Auth::user()->type == '1' && in_array('16', json_decode(Auth::user()->role->permission)) || Auth::user()->type == '0' && in_array('16', json_decode(Auth::user()->role->permission)))
+    <li class="{{ (request()->is('admin/branch')) ? 'active' : '' }}">
+        <a href="{{ route('view_branch')}}">
+            <i class="fa fa-users"></i>
+            <span>Branch</span>
+            <span class="pull-right-container"> </span>
+        </a>
     </li>
     @endif
 

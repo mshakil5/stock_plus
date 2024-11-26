@@ -75,7 +75,7 @@
 
                                                 @if (in_array(1, $permissions))
                                                 <tr>
-                                                    <td><label class="control-label">Product Add</label></td>
+                                                    <td><label class="control-label">Create Product</label></td>
                                                     <td>
                                                         <label style="margin-top: -9px" class="switch"><input id="p1" name="permission[]" type="checkbox" value="1" @foreach (json_decode($data->permission) as $permission) @if ($permission == 1) checked @endif @endforeach ><span class="slider round"></span></label>
                                                     </td>
@@ -84,7 +84,7 @@
         
                                                 @if (in_array(2, $permissions))
                                                 <tr>
-                                                    <td><label class="control-label">Product Edit</label></td>
+                                                    <td><label class="control-label">Manage Product</label></td>
                                                     <td>
                                                         <label style="margin-top: -9px" class="switch"><input id="p2" name="permission[]" type="checkbox" value="2" @foreach (json_decode($data->permission) as $permission) @if ($permission == 2) checked @endif @endforeach ><span class="slider round"></span></label>
                                                     </td>
@@ -99,37 +99,28 @@
                                                     </td>
                                                 </tr>
                                                 @endif
-        
-                                                @if (in_array(3, $permissions))
-                                                <tr>
-                                                    <td><label class="control-label">Sales Create</label></td>
-                                                    <td>
-                                                        <label style="margin-top: -9px" class="switch"><input id="p3" name="permission[]" type="checkbox" value="3" @foreach (json_decode($data->permission) as $permission) @if ($permission == 3) checked @endif @endforeach ><span class="slider round"></span></label>
-                                                    </td>
-                                                </tr>
-                                                @endif
-        
-                                                @if (in_array(4, $permissions))
-                                                <tr>
-                                                    <td><label class="control-label">Manage Sales</label></td>
-                                                    <td>
-                                                        <label style="margin-top: -9px" class="switch"><input id="p4" name="permission[]" type="checkbox" value="4" @foreach (json_decode($data->permission) as $permission) @if ($permission == 4) checked @endif @endforeach ><span class="slider round"></span></label>
-                                                    </td>
-                                                </tr>
-                                                @endif
-        
+
                                                 @if (in_array(5, $permissions))
                                                 <tr>
-                                                    <td><label class="control-label">Purchase</label></td>
+                                                    <td><label class="control-label">Create Purchase</label></td>
                                                     <td>
                                                         <label style="margin-top: -9px" class="switch"><input id="p5" name="permission[]" type="checkbox" value="5" @foreach (json_decode($data->permission) as $permission) @if ($permission == 5) checked @endif @endforeach ><span class="slider round"></span></label>
+                                                    </td>
+                                                </tr>
+                                                @endif
+
+                                                @if (in_array(21, $permissions))
+                                                <tr>
+                                                    <td><label class="control-label">Stock List</label></td>
+                                                    <td>
+                                                        <label style="margin-top: -9px" class="switch"><input id="p21" name="permission[]" type="checkbox" value="21" @foreach (json_decode($data->permission) as $permission) @if ($permission == 21) checked @endif @endforeach><span class="slider round"></span></label>
                                                     </td>
                                                 </tr>
                                                 @endif
         
                                                 @if (in_array(6, $permissions))
                                                 <tr>
-                                                    <td><label class="control-label">Purchase Edit</label></td>
+                                                    <td><label class="control-label">Edit Purchase</label></td>
                                                     <td>
                                                         <label style="margin-top: -9px" class="switch"><input id="p6" name="permission[]" type="checkbox" value="6" @foreach (json_decode($data->permission) as $permission) @if ($permission == 6) checked @endif @endforeach ><span class="slider round"></span></label>
                                                     </td>
@@ -144,37 +135,55 @@
                                                     </td>
                                                 </tr>
                                                 @endif
-        
-                                                @if (in_array(8, $permissions))
+
+                                                @if (in_array(18, $permissions))
                                                 <tr>
-                                                    <td><label class="control-label">Manage Admin</label></td>
+                                                    <td><label class="control-label">Transfer History</label></td>
                                                     <td>
-                                                        <label style="margin-top: -9px" class="switch"><input id="p8" name="permission[]" type="checkbox" value="8" @foreach (json_decode($data->permission) as $permission) @if ($permission == 8) checked @endif @endforeach ><span class="slider round"></span></label>
+                                                        <label style="margin-top: -9px" class="switch"><input id="p18" name="permission[]" type="checkbox" value="18" @foreach (json_decode($data->permission) as $permission) @if ($permission == 18) checked @endif @endforeach><span class="slider round"></span></label>
                                                     </td>
                                                 </tr>
                                                 @endif
 
-                                                @if (in_array(39, $permissions))
+                                                @if (in_array(19, $permissions))
                                                 <tr>
-                                                    <td><label class="control-label">Manage Employee</label></td>
+                                                    <td><label class="control-label">Return History</label></td>
                                                     <td>
-                                                        <label style="margin-top: -9px" class="switch"><input id="p39" name="permission[]" type="checkbox" value="39" @foreach (json_decode($data->permission) as $permission) @if ($permission == 39) checked @endif @endforeach ><span class="slider round"></span></label>
+                                                        <label style="margin-top: -9px" class="switch"><input id="p19" name="permission[]" type="checkbox" value="19" @foreach (json_decode($data->permission) as $permission) @if ($permission == 19) checked @endif @endforeach><span class="slider round"></span></label>
                                                     </td>
                                                 </tr>
                                                 @endif
 
-                                                @if (in_array(40, $permissions))
+                                                @if (in_array(38, $permissions))
                                                 <tr>
-                                                    <td><label class="control-label">Manage Role</label></td>
+                                                    <td><label class="control-label">Damaged Products</label></td>
                                                     <td>
-                                                        <label style="margin-top: -9px" class="switch"><input id="p40" name="permission[]" type="checkbox" value="40" @foreach (json_decode($data->permission) as $permission) @if ($permission == 40) checked @endif @endforeach ><span class="slider round"></span></label>
+                                                        <label style="margin-top: -9px" class="switch"><input id="p38" name="permission[]" type="checkbox" value="38" ><span class="slider round"></span></label>
                                                     </td>
                                                 </tr>
                                                 @endif
         
+                                                @if (in_array(3, $permissions))
+                                                <tr>
+                                                    <td><label class="control-label">Create Sales</label></td>
+                                                    <td>
+                                                        <label style="margin-top: -9px" class="switch"><input id="p3" name="permission[]" type="checkbox" value="3" @foreach (json_decode($data->permission) as $permission) @if ($permission == 3) checked @endif @endforeach ><span class="slider round"></span></label>
+                                                    </td>
+                                                </tr>
+                                                @endif
+        
+                                                @if (in_array(4, $permissions))
+                                                <tr>
+                                                    <td><label class="control-label">Edit Sales</label></td>
+                                                    <td>
+                                                        <label style="margin-top: -9px" class="switch"><input id="p4" name="permission[]" type="checkbox" value="4" @foreach (json_decode($data->permission) as $permission) @if ($permission == 4) checked @endif @endforeach ><span class="slider round"></span></label>
+                                                    </td>
+                                                </tr>
+                                                @endif
+
                                                 @if (in_array(9, $permissions))
                                                 <tr>
-                                                    <td><label class="control-label">Quotation Create</label></td>
+                                                    <td><label class="control-label">Create Quotation</label></td>
                                                     <td>
                                                         <label style="margin-top: -9px" class="switch"><input id="p9" name="permission[]" type="checkbox" value="9" @foreach (json_decode($data->permission) as $permission) @if ($permission == 9) checked @endif @endforeach><span class="slider round"></span></label>
                                                     </td>
@@ -183,7 +192,7 @@
         
                                                 @if (in_array(10, $permissions))
                                                 <tr>
-                                                    <td><label class="control-label">Quotation Edit</label></td>
+                                                    <td><label class="control-label">Edit Quotation</label></td>
                                                     <td>
                                                         <label style="margin-top: -9px" class="switch"><input id="p10" name="permission[]" type="checkbox" value="10" @foreach (json_decode($data->permission) as $permission) @if ($permission == 10) checked @endif @endforeach><span class="slider round"></span></label>
                                                     </td>
@@ -192,7 +201,7 @@
 
                                                 @if (in_array(11, $permissions))
                                                 <tr>
-                                                    <td><label class="control-label">Delivery Note Create</label></td>
+                                                    <td><label class="control-label">Create Delivery Note</label></td>
                                                     <td>
                                                         <label style="margin-top: -9px" class="switch"><input id="p11" name="permission[]" type="checkbox" value="11" @foreach (json_decode($data->permission) as $permission) @if ($permission == 11) checked @endif @endforeach><span class="slider round"></span></label>
                                                     </td>
@@ -201,7 +210,7 @@
         
                                                 @if (in_array(12, $permissions))
                                                 <tr>
-                                                    <td><label class="control-label">Delivery Note Edit</label></td>
+                                                    <td><label class="control-label">Edit Delivery Note</label></td>
                                                     <td>
                                                         <label style="margin-top: -9px" class="switch"><input id="p12" name="permission[]" type="checkbox" value="12" @foreach (json_decode($data->permission) as $permission) @if ($permission == 12) checked @endif @endforeach><span class="slider round"></span></label>
                                                     </td>
@@ -225,8 +234,14 @@
                                                     </td>
                                                 </tr>
                                                 @endif
+             
+        
+                                            </table>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <table class="table table-hover">
 
-                                                @if (in_array(15, $permissions))
+                                            @if (in_array(15, $permissions))
                                                 <tr>
                                                     <td><label class="control-label">Customer</label></td>
                                                     <td>
@@ -244,15 +259,8 @@
                                                 </tr>
                                                 @endif
 
-                                                
-        
-                                            </table>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <table class="table table-hover">
-
                                                 @if (in_array(17, $permissions))
-                                                <tr>
+                                                <tr style="display: none;">
                                                     <td><label class="control-label">Sales Module</label></td>
                                                     <td>
                                                         <label style="margin-top: -9px" class="switch"><input id="p17" name="permission[]" type="checkbox" value="17" @foreach (json_decode($data->permission) as $permission) @if ($permission == 17) checked @endif @endforeach><span class="slider round"></span></label>
@@ -260,65 +268,11 @@
                                                 </tr>
                                                 @endif
 
-                                                @if (in_array(18, $permissions))
-                                                <tr>
-                                                    <td><label class="control-label">Transfer History</label></td>
-                                                    <td>
-                                                        <label style="margin-top: -9px" class="switch"><input id="p18" name="permission[]" type="checkbox" value="18" @foreach (json_decode($data->permission) as $permission) @if ($permission == 18) checked @endif @endforeach><span class="slider round"></span></label>
-                                                    </td>
-                                                </tr>
-                                                @endif
-                                                
-                                                @if (in_array(19, $permissions))
-                                                <tr>
-                                                    <td><label class="control-label">Return History</label></td>
-                                                    <td>
-                                                        <label style="margin-top: -9px" class="switch"><input id="p19" name="permission[]" type="checkbox" value="19" @foreach (json_decode($data->permission) as $permission) @if ($permission == 19) checked @endif @endforeach><span class="slider round"></span></label>
-                                                    </td>
-                                                </tr>
-                                                @endif
-
                                                 @if (in_array(20, $permissions))
-                                                <tr>
+                                                <tr style="display: none;">
                                                     <td><label class="control-label">Manage Product</label></td>
                                                     <td>
                                                         <label style="margin-top: -9px" class="switch"><input id="p20" name="permission[]" type="checkbox" value="20" @foreach (json_decode($data->permission) as $permission) @if ($permission == 20) checked @endif @endforeach><span class="slider round"></span></label>
-                                                    </td>
-                                                </tr>
-                                                @endif
-
-                                                @if (in_array(38, $permissions))
-                                                <tr>
-                                                    <td><label class="control-label">Damaged Products</label></td>
-                                                    <td>
-                                                        <label style="margin-top: -9px" class="switch"><input id="p38" name="permission[]" type="checkbox" value="38" ><span class="slider round"></span></label>
-                                                    </td>
-                                                </tr>
-                                                @endif
-
-                                                @if (in_array(21, $permissions))
-                                                <tr>
-                                                    <td><label class="control-label">Stock List</label></td>
-                                                    <td>
-                                                        <label style="margin-top: -9px" class="switch"><input id="p21" name="permission[]" type="checkbox" value="21" @foreach (json_decode($data->permission) as $permission) @if ($permission == 21) checked @endif @endforeach><span class="slider round"></span></label>
-                                                    </td>
-                                                </tr>
-                                                @endif
-          
-                                                @if (in_array(22, $permissions))
-                                                <tr>
-                                                    <td><label class="control-label">Payment Method</label></td>
-                                                    <td>
-                                                        <label style="margin-top: -9px" class="switch"><input id="p22" name="permission[]" type="checkbox" value="22" @foreach (json_decode($data->permission) as $permission) @if ($permission == 22) checked @endif @endforeach><span class="slider round"></span></label>
-                                                    </td>
-                                                </tr>
-                                                @endif
-
-                                                @if (in_array(23, $permissions))
-                                                <tr>
-                                                    <td><label class="control-label">Reports</label></td>
-                                                    <td>
-                                                        <label style="margin-top: -9px" class="switch"><input id="p23" name="permission[]" type="checkbox" value="23" @foreach (json_decode($data->permission) as $permission) @if ($permission == 23) checked @endif @endforeach><span class="slider round"></span></label>
                                                     </td>
                                                 </tr>
                                                 @endif
@@ -409,6 +363,52 @@
                                                     <td><label class="control-label">Share Holders</label></td>
                                                     <td>
                                                         <label style="margin-top: -9px" class="switch"><input id="p33" name="permission[]" type="checkbox" value="33" @foreach (json_decode($data->permission) as $permission) @if ($permission == 33) checked @endif @endforeach><span class="slider round"></span></label>
+                                                    </td>
+                                                </tr>
+                                                @endif
+
+                                                @if (in_array(23, $permissions))
+                                                <tr>
+                                                    <td><label class="control-label">Reports</label></td>
+                                                    <td>
+                                                        <label style="margin-top: -9px" class="switch"><input id="p23" name="permission[]" type="checkbox" value="23" @foreach (json_decode($data->permission) as $permission) @if ($permission == 23) checked @endif @endforeach><span class="slider round"></span></label>
+                                                    </td>
+                                                </tr>
+                                                @endif
+
+                                                @if (in_array(8, $permissions))
+                                                <tr>
+                                                    <td><label class="control-label">Manage Admin</label></td>
+                                                    <td>
+                                                        <label style="margin-top: -9px" class="switch"><input id="p8" name="permission[]" type="checkbox" value="8" @foreach (json_decode($data->permission) as $permission) @if ($permission == 8) checked @endif @endforeach ><span class="slider round"></span></label>
+                                                    </td>
+                                                </tr>
+                                                @endif
+
+                                                @if (in_array(39, $permissions))
+                                                <tr>
+                                                    <td><label class="control-label">Manage Employee</label></td>
+                                                    <td>
+                                                        <label style="margin-top: -9px" class="switch"><input id="p39" name="permission[]" type="checkbox" value="39" @foreach (json_decode($data->permission) as $permission) @if ($permission == 39) checked @endif @endforeach ><span class="slider round"></span></label>
+                                                    </td>
+                                                </tr>
+                                                @endif
+
+                                                @if (in_array(40, $permissions))
+                                                <tr>
+                                                    <td><label class="control-label">Manage Role</label></td>
+                                                    <td>
+                                                        <label style="margin-top: -9px" class="switch"><input id="p40" name="permission[]" type="checkbox" value="40" @foreach (json_decode($data->permission) as $permission) @if ($permission == 40) checked @endif @endforeach ><span class="slider round"></span></label>
+                                                    </td>
+                                                </tr>
+                                                @endif
+
+                                                          
+                                                @if (in_array(22, $permissions))
+                                                <tr>
+                                                    <td><label class="control-label">Payment Method</label></td>
+                                                    <td>
+                                                        <label style="margin-top: -9px" class="switch"><input id="p22" name="permission[]" type="checkbox" value="22" @foreach (json_decode($data->permission) as $permission) @if ($permission == 22) checked @endif @endforeach><span class="slider round"></span></label>
                                                     </td>
                                                 </tr>
                                                 @endif
