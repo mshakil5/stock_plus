@@ -21,7 +21,7 @@ class EmployeeController extends Controller
       $users = User::when(Auth::user()->role_id != 1, function($query) {
             return $query->where('branch_id', Auth::user()->branch_id);
         })
-        ->where('type', '=', '3')
+        ->where('is_employee', '=', '1')
         ->get();
 
         return view('admin.employee.manageemployee', compact('users'));
@@ -81,7 +81,8 @@ class EmployeeController extends Controller
           $data->branch_id = auth()->user()->branch_id;
           $data->role_id = $request['role_id'];
           $data->phone = $request['phone'];
-          $data->type = '3';
+          $data->type = '1';
+          $data->is_employee = '1';
           $data->save();
            return redirect()->back()->with('success', 'Employee Create Successfully'); 
         }

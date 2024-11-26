@@ -29,7 +29,8 @@ return new class extends Migration
             $table->string('phone')->nullable();
             $table->string('address')->nullable();
             $table->boolean('status')->default(1);
-            /* Users: 0=>User, 1=>Admin, 2=>Manager  3=>Employee*/
+            $table->boolean('is_employee')->default(0);
+            /* Users: 0=>User, 1=>Admin,*/
             $table->rememberToken();
             $table->timestamps();
         });
