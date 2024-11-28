@@ -27,7 +27,7 @@ class VendorController extends Controller
     public function save_vendor(Request $request)
     {
         $request->validate([
-            'code' => 'unique:vendors,code',
+            'code' => 'nullable|unique:vendors,code',
             'name' => 'required',
             'email' => 'required',
             'phone' => 'nullable|max:14',
@@ -52,9 +52,10 @@ class VendorController extends Controller
     {
 
         $request->validate([
-            'vendorcode' => 'required|unique:vendors,code,'.$request->vendorid,
+            'vendorcode' => 'nullable|unique:vendors,code,'.$request->vendorid,
             'vendorname' => 'required',
-            'vendorphone' => 'required|max:14',
+            'vendoremail' => 'required',
+            'vendorphone' => 'nullable|max:14',
         ]);
         $data = Vendor::find($request->vendorid);
         $data['code'] = $request->vendorcode;

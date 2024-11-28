@@ -1146,6 +1146,13 @@
             // new customer Store
             var customerurl = "{{URL::to('/customers')}}";
             $(document).on('click', '.save-btn', function () {
+
+                var name = $('#name').val().trim();
+
+                if (name === '') {
+                    alert("Name field is required.");
+                    return;
+                }
                 let formData = $('#customer-form').serialize();
                 
                 $.ajax({

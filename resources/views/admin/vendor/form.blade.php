@@ -97,11 +97,10 @@
                         <form class="form-horizontal" action="{{ route('admin.savevendor')}}" method="POST">
                             {{csrf_field()}}
                             <div class="form-group">
-                                <label for="inputEmail3" class="col-sm-3 control-label">Code<span
-                                            class="text-danger">*</span></label>
+                                <label for="inputEmail3" class="col-sm-3 control-label">Code</label>
                                 <div class="col-sm-9">
                                     <input type="text" name="code" class="form-control" id="inputEmail3"
-                                           placeholder="V-123">
+                                           placeholder="">
                                 </div>
                                 @if ($errors->has('code'))
                                     <span class="invalid-feedback text-danger" role="alert">
@@ -114,7 +113,7 @@
                                             class="text-danger">*</span></label>
                                 <div class="col-sm-9">
                                     <input type="text" name="name" class="form-control" id="inputEmail3"
-                                           placeholder="">
+                                           placeholder="" required>
                                 </div>
                                 @if ($errors->has('name'))
                                     <span class="invalid-feedback text-danger" role="alert">
@@ -123,10 +122,11 @@
                                 @endif
                             </div>
                             <div class="form-group">
-                                <label for="inputPassword3" class="col-sm-3 control-label">Email</label>
+                                <label for="inputPassword3" class="col-sm-3 control-label">Email<span
+                                class="text-danger">*</span></label>
                                 <div class="col-sm-9">
                                     <input type="email" name="email" class="form-control" id="inputPassword3"
-                                           placeholder="ex. test@gmail.com">
+                                           placeholder="" required>
                                 </div>
                                 @if ($errors->has('email'))
                                     <span class="invalid-feedback text-danger" role="alert">
@@ -135,11 +135,10 @@
                                 @endif
                             </div>
                             <div class="form-group">
-                                <label for="inputPassword3" class="col-sm-3 control-label">Phone<span
-                                            class="text-danger">*</span></label>
+                                <label for="inputPassword3" class="col-sm-3 control-label">Phone</label>
                                 <div class="col-sm-9">
                                     <input type="text" name="phone" class="form-control" id="inputPassword3"
-                                           placeholder="ex. 0123456789" required>
+                                           placeholder="">
                                 </div>
                                 @if ($errors->has('phone'))
                                     <span class="invalid-feedback text-danger" role="alert">
@@ -148,11 +147,10 @@
                                 @endif
                             </div>
                             <div class="form-group">
-                                <label for="vat_reg" class="col-sm-3 control-label">Vat Reg#<span
-                                            class="text-danger">*</span></label>
+                                <label for="vat_reg" class="col-sm-3 control-label">Vat Reg#</label>
                                 <div class="col-sm-9">
                                     <input type="text" name="vat_reg" class="form-control" id="vat_reg"
-                                           placeholder="ex. 0123456789" required>
+                                           placeholder="">
                                 </div>
                                 @if ($errors->has('vat_reg'))
                                     <span class="invalid-feedback text-danger" role="alert">
@@ -163,7 +161,7 @@
                             <div class="form-group">
                                 <label for="inputPassword3" class="col-sm-3 control-label">Address</label>
                                 <div class="col-sm-9">
-                                    <textarea class="form-control" rows="3" placeholder="1355 Market Street, Suite 900 San Francisco, CA 94103 P: (123) 456-7890" name="address"></textarea>
+                                    <textarea class="form-control" rows="3" placeholder="" name="address"></textarea>
                                 </div>
                                 @if ($errors->has('address'))
                                     <span class="invalid-feedback text-danger" role="alert">
@@ -175,7 +173,7 @@
                             <div class="form-group">
                                 <label for="inputPassword3" class="col-sm-3 control-label">Company Information</label>
                                 <div class="col-sm-9">
-                                    <textarea class="form-control" rows="3" placeholder="Twitter, Inc. 1355 Market Street, Suite 900 San Francisco, CA 94103 P: (123) 456-7890" name="company"></textarea>
+                                    <textarea class="form-control" rows="3" placeholder="" name="company"></textarea>
                                 </div>
                                 @if ($errors->has('company'))
                                     <span class="invalid-feedback text-danger" role="alert">
@@ -212,10 +210,10 @@
                         <form class="form-horizontal" action="{{ route('admin.updatevendor')}}" method="POST">
                             {{csrf_field()}}
                             <div class="form-group">
-                                <label for="vendorcode" class="col-sm-3 control-label">Code<span class="text-danger">*</span></label>
+                                <label for="vendorcode" class="col-sm-3 control-label">Code</label>
                                 <div class="col-sm-9">
                                     <input type="text" name="vendorcode" class="form-control" id="vendorcode" required>
-                                    <input type="hidden" name="vendorid" class="form-control" id="vendorid" required>
+                                    <input type="hidden" name="vendorid" class="form-control" id="vendorid">
                                 </div>
                                 @if ($errors->has('code'))
                                     <span class="invalid-feedback text-danger" role="alert">
@@ -226,7 +224,7 @@
                             <div class="form-group">
                                 <label for="vendorname" class="col-sm-3 control-label">Name<span class="text-danger">*</span></label>
                                 <div class="col-sm-9">
-                                    <input type="text" name="vendorname" class="form-control" id="vendorname">
+                                    <input type="text" name="vendorname" class="form-control" id="vendorname" required>
                                 </div>
                                 @if ($errors->has('name'))
                                     <span class="invalid-feedback text-danger" role="alert">
@@ -235,9 +233,10 @@
                                 @endif
                             </div>
                             <div class="form-group">
-                                <label for="vendoremail" class="col-sm-3 control-label">Email</label>
+                                <label for="vendoremail" class="col-sm-3 control-label">Email<span
+                                class="text-danger">*</span></label>
                                 <div class="col-sm-9">
-                                    <input type="email" name="vendoremail" class="form-control" id="vendoremail" >
+                                    <input type="email" name="vendoremail" class="form-control" id="vendoremail" required>
                                 </div>
                                 @if ($errors->has('vendoremail'))
                                     <span class="invalid-feedback text-danger" role="alert">
@@ -246,9 +245,9 @@
                                 @endif
                             </div>
                             <div class="form-group">
-                                <label for="vendorphone" class="col-sm-3 control-label">Phone <span class="text-danger">*</span></label>
+                                <label for="vendorphone" class="col-sm-3 control-label">Phone</label>
                                 <div class="col-sm-9">
-                                    <input type="text" name="vendorphone" class="form-control" id="vendorphone" required>
+                                    <input type="text" name="vendorphone" class="form-control" id="vendorphone">
                                 </div>
                                 @if ($errors->has('vendorphone'))
                                     <span class="invalid-feedback text-danger" role="alert">
@@ -257,9 +256,9 @@
                                 @endif
                             </div>
                             <div class="form-group">
-                                <label for="vendorvatreg" class="col-sm-3 control-label">Vat Reg#<span class="text-danger">*</span></label>
+                                <label for="vendorvatreg" class="col-sm-3 control-label">Vat Reg#</label>
                                 <div class="col-sm-9">
-                                    <input type="text" name="vendorvatreg" class="form-control" id="vendorvatreg" required>
+                                    <input type="text" name="vendorvatreg" class="form-control" id="vendorvatreg">
                                 </div>
                                 @if ($errors->has('vendorvatreg'))
                                     <span class="invalid-feedback text-danger" role="alert">

@@ -989,6 +989,13 @@
             var customerurl = "{{URL::to('/customers')}}";
             
             $(document).on('click', '.save-btn', function () {
+
+                let name = $('#name').val().trim();
+
+                if (name === '') {
+                    alert("Name field is required.");
+                    return;
+                }
                 let formData = $('#customer-form').serialize();
                 
                 $.ajax({

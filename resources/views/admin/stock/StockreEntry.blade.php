@@ -269,7 +269,7 @@
                         <div class="form-group col-sm-6">
                             <div class="row">
                                 <div class="col-sm-4 text-left">
-                                    <label for="email">Email:</label>
+                                    <label for="email">Email:*</label>
                                 </div>
                                 <div class="col-sm-8">
                                     <input type="email" class="form-control" name="email" id="email" style="width: 100%;" required>

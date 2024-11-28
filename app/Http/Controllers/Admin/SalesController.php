@@ -135,7 +135,7 @@ class SalesController extends Controller
     {
         $request->validate([
             'name' => 'required',
-            'email' => 'required|email',
+            'email' => 'nullable|email',
             'phone' => 'nullable|numeric',
             'address' => 'nullable|string',
             'vehicleno' => 'nullable|string',

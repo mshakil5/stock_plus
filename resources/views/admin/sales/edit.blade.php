@@ -869,6 +869,13 @@
         event.preventDefault();
         // console.log('clicked');
 
+        var name = $('#name').val().trim();
+
+        if (name === '') {
+            alert("Name field is required.");
+            return;
+        }
+
         var form = $('#customer-form');
         var actionUrl = form.attr('action');
         var formData = form.serialize();

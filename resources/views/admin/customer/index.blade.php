@@ -114,14 +114,14 @@ echo Session::put('info', '');
                     <div class="form-group">
                         <label for="name" class="col-sm-3 control-label">Vehicle No</label>
                         <div class="col-sm-9">
-                            <input type="text" name="vehicleno" class="form-control" id="vehicleno" placeholder="ex. 012586" required>
+                            <input type="text" name="vehicleno" class="form-control" id="vehicleno" placeholder="">
                         </div>
                     </div>
 
                     <div class="form-group">
                         <label for="vat_number" class="col-sm-3 control-label">Vat Number</label>
                         <div class="col-sm-9">
-                            <input type="text" name="vat_number" class="form-control" id="vat_number" placeholder="ex. 012586">
+                            <input type="text" name="vat_number" class="form-control" id="vat_number" placeholder="">
                         </div>
                     </div>
 
@@ -393,6 +393,13 @@ echo Session::put('info', '');
     // save button event
 
     $(document).on('click', '.save-btn', function () {
+
+        let name = $('#name').val().trim();
+
+        if (name === '') {
+            alert("Name field is required.");
+            return;
+        }
         let formData = $('#customer-form').serialize();
         // console.log(customerurl);
         $.ajax({
@@ -417,6 +424,14 @@ echo Session::put('info', '');
     // update button event
 
     $(document).on('click', '.update-btn', function () {
+
+        let name = $('#name').val().trim();
+
+        if (name === '') {
+            alert("Name field is required.");
+            return;
+        }
+
         let formData = $('#customer-form').serialize();
         let id = $(this).val();
         $.ajax({

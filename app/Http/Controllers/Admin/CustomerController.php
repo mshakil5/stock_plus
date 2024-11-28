@@ -55,7 +55,11 @@ class CustomerController extends Controller
         $customer->type = $request->type;
         $customer->save();
 
-        return $customer;
+        return response()->json([
+            'status' => 201,
+            'message' => 'Customer created successfully.',
+            'data' => $customer
+        ], 201);
 
 
     }
@@ -86,7 +90,11 @@ class CustomerController extends Controller
         $customer->member_id = $request->member_id;
         $customer->type = $request->type;
         $customer->save();
-        return $customer;
+        return response()->json([
+            'status' => 200,
+            'message' => 'Customer updated successfully.',
+            'data' => $customer
+        ], 200);
     }
 
     public function changeStatus($id)

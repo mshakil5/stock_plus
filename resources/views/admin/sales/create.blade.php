@@ -852,6 +852,13 @@
 <script>
     $(document).on('click', '.save-btn', function(event) {
         event.preventDefault();
+
+        var name = $('#name').val().trim();
+
+        if (name === '') {
+            alert("Name field is required.");
+            return;
+        }
         // console.log('clicked');
 
         var form = $('#customer-form');
