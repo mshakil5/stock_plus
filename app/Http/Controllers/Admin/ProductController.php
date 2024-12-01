@@ -30,7 +30,6 @@ class ProductController extends Controller
 
     $validator = Validator::make($request->all(), [
             'product' => 'required',
-            'pcategoryselect' => 'required',
             'pbrandselect' => 'required',
         ]);
 
@@ -132,6 +131,12 @@ class ProductController extends Controller
           });
       }
       return Datatables::of($products)
+            ->addColumn('category_name', function ($product) {
+                return $product->category_id ? $product->category->name : 'No Category';
+            })
+            ->addColumn('brand_name', function ($product) {
+                return $product->brand_id ? $product->brand->name : 'No Brand';
+            })
           ->addColumn('action', function ($product) {
               $btn = '<div class="table-actions">';
 

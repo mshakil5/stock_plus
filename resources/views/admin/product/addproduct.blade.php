@@ -51,7 +51,7 @@
                                 <table class="table table-hover">
 
                                     <tr>
-                                        <td><label class="control-label">Part No</label></td>
+                                        <td><label class="control-label">Part No/Product ID</label></td>
                                         <td colspan="2"><input name="part_no" id="part_no" type="text" class="form-control"
                                                 maxlength="50px" placeholder="" value="{{ old('part_no') }}" />
                                             @if ($errors->has('part_no'))
@@ -69,9 +69,9 @@
                                     </tr>
 
                                     <tr>
-                                        <td><label class="control-label">Code*</label></td>
+                                        <td><label class="control-label">Code/Category*</label></td>
                                         <td colspan="2">
-                                            <select name="pcategoryselect" id="pcategoryselect" required="required" class="form-control select2">
+                                            <select name="pcategoryselect" id="pcategoryselect"  class="form-control select2">
                                             </select>
                                         </td>
                                     </tr>
@@ -232,11 +232,11 @@
                         <!-- <form class="form"> -->
                         <div class="catermsg"></div>
                         <div class="form-group mx-sm-3 mb-2">
-                            <label for="category" class="">Code</label>
+                            <label for="category" class="">Code/Category</label>
                             <br>
 
                             <input type="text" class="" id="categoryid" placeholder="ID">
-                            <input type="text" class="" id="category" placeholder="Code Name">
+                            <input type="text" class="" id="category" placeholder="Code/Category Name">
                             <br>
                             <button onclick="save_category()" type="submit" class="btn btn-primary mb-2" style="margin-top: 5px;">Save
                             </button>

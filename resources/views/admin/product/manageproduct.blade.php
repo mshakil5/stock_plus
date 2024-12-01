@@ -51,7 +51,7 @@
                         @slot('head')
                             <th>Product</th>
                             <th>Part No</th>
-                            <th>Code</th>
+                            <th>Code/Category</th>
                             <th>Brand</th>
                             <th>Sell price</th>
                             <th>Model</th>
@@ -278,8 +278,20 @@
                     
                     {data: 'productname', name: 'productname'},
                     {data: 'part_no', name: 'part_no'},
-                    {data: 'category.name', name: 'category.name'},
-                    {data: 'brand.name', name: 'brand.name'},
+                    { 
+                        data: 'category_name', 
+                        name: 'category.name',
+                        render: function(data, type, row) {
+                            return data ? data : 'No Category';
+                        }
+                    },
+                    { 
+                        data: 'brand_name', 
+                        name: 'brand.name',
+                        render: function(data, type, row) {
+                            return data ? data : 'No Brand';
+                        }
+                    },
                     {data: 'selling_price', name: 'selling_price'},
                     {data: 'model', name: 'model'},
                     {data: 'location', name: 'location'},
