@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\support\Facades\Auth;
 use App\Models\Branch;
+use App\Models\UserLogHistory;
 
   
 class LoginController extends Controller
@@ -42,85 +43,55 @@ class LoginController extends Controller
     {
         $this->middleware('guest')->except('logout');
     }
- 
+
     public function login(Request $request)
     {   
-        $input = $request->all();
-
         $this->validate($request, [
             'email' => 'required',
             'password' => 'required',
         ]);
 
-        if (filter_var($request->get('email'), FILTER_VALIDATE_EMAIL)) {
-            // return ['email' => $request->get('email'), 'password'=>$request->get('password')];
-
-            $chksts = User::where('email', $input['email'])->first();
-            if ($chksts) {
-                if ($chksts->status == 1) {
-                    if (auth()->attempt(['email' => $input['email'], 'password' => $input['password']])) {
-                        $user = auth()->user();
-                
-                        $branch = Branch::find($user->branch_id);
-                
-                        if ($branch && $branch->status == 0) {
-                            return view('auth.login')->with('message', 'Your branch is deactivated.');
-                        }
-                
-                        if ($user->type == 1) {
-                            return redirect()->route('admin.home');
-                        } else if ($user->type == 2) {
-                            return redirect()->route('manager.home');
-                        } else if ($user->type == 0) {
-                            return redirect()->route('user.home');
-                        } else {
-                            return redirect()->route('home');
-                        }
-                    } else {
-                        return view('auth.login')
-                            ->with('message', 'Email and Password are wrong.');
-                    }
-                } else {
-                    return view('auth.login')
-                        ->with('message', 'Your ID is deactivated.');
-                }                
-            }else {
-                return view('auth.login')
-                    ->with('message','Credential Error. You are not authenticate user.');
-            }
-
-        }else{
-            // return ['username' => $request->get('email'), 'password'=>$request->get('password')];
-            $chksts = User::where('username', $input['email'])->first();
-            if ($chksts) {
-                if ($chksts->status == 1) {
-                    if(auth()->attempt(array('username' => $input['email'], 'password' => $input['password'])))
-                        {
-                            if (auth()->user()->type == 1) {
-                                return redirect()->route('admin.home');
-                            }else if (auth()->user()->type == 2) {
-                                return redirect()->route('manager.home');
-                            }else if (auth()->user()->type == 0) {
-                                return redirect()->route('user.home');
-                            }else{
-                                return redirect()->route('home');
-                            }
-                        }else{
-                            return view('auth.login')
-                                ->with('message','Username And Password Are Wrong.');
-                        }
-                }else{
-                    return view('auth.login')
-                    ->with('message','Your ID is Deactive.');
-                }
-            }else {
-                return view('auth.login')
-                    ->with('message','Credential Error. You are not authenticate user.');
-            }
-
-
-
-        }
+        $input = $request->all();
+        $isEmail = filter_var($input['email'], FILTER_VALIDATE_EMAIL);
+        $field = $isEmail ? 'email' : 'username';
         
+        $user = User::where($field, $input['email'])->first();
+
+        if (!$user) {
+            return view('auth.login')->with('message', 'Credential Error. You are not an authenticated user.');
+        }
+
+        if ($user->status != 1) {
+            return view('auth.login')->with('message', 'Your ID is deactivated.');
+        }
+
+        $branch = Branch::find($user->branch_id);
+
+        if ($branch && $branch->status == 0) {
+            return view('auth.login')->with('message', 'Your Branch is deactivated.');
+        }
+
+        if (!auth()->attempt([$field => $input['email'], 'password' => $input['password']])) {
+            return view('auth.login')->with('message', 'Email/Username and Password are wrong.');
+        }
+
+        $authUser  = auth()->user();
+        $branch = Branch::find($authUser ->branch_id);
+
+        $logEntry = new UserLogHistory();
+        $logEntry->user_id = $authUser->id;
+        $logEntry->branch_id = $authUser->branch_id;
+        $logEntry->ip_address = $request->ip();
+        $logEntry->save();
+
+        if ($authUser ->type == 1) {
+            return redirect()->route('admin.home');
+        } elseif ($authUser ->type == 2) {
+            return redirect()->route('manager.home');
+        } elseif ($authUser ->type == 0) {
+            return redirect()->route('user.home');
+        } else {
+            return redirect()->route('home');
+        }
     }
 }
