@@ -39,7 +39,10 @@ echo Session::put('info', '');
                     @endslot
                     @slot('head')
                         <th>Name</th>
+                        <th>Invoice Format</th>
+                        <th>Quotation Format</th>
                         <th>Status</th>
+                        <th>Branch Info</th>
                         <th><i class=""></i> Action</th>
                     @endslot
                 @endcomponent
@@ -89,6 +92,22 @@ echo Session::put('info', '');
                 }
             },
             {
+                data: 'invoice_format', name: 'invoice_format', render: function (data, type, row, meta) {
+                    return `<select id="invoiceFormat_${row.id}" class="form-control">
+                                <option value="A4" ${data === 'A4' ? 'selected' : ''}>A4</option>
+                                <option value="POS" ${data === 'POS' ? 'selected' : ''}>POS printer size</option>
+                            </select>`;
+                }
+            },
+            {
+                data: 'quotation_format', name: 'quotation_format', render: function (data, type, row, meta) {
+                    return `<select id="quotationFormat_${row.id}" class="form-control">
+                                <option value="A4" ${data === 'A4' ? 'selected' : ''}>A4</option>
+                                <option value="POS" ${data === 'POS' ? 'selected' : ''}>POS printer size</option>
+                            </select>`;
+                }
+            },
+            {
                 data: 'status', name: 'status', render: function (data, type, row, meta) {
                     let pub_branch = `<label style="margin-bottom:0px" class="switch"><button  onclick='branch_status("unpublished-branch","${row.id}")' ><input id="switchMenu" type="checkbox" checked><span class="slider round"></span></button></label>`;
 
@@ -102,12 +121,17 @@ echo Session::put('info', '');
                 }
             },
             {
+                data: 'id', name: 'id', render: function (data, type, row, meta) {
+                    return `<a href="{{ url('/admin/branch/details') }}/${row.id}" class="btn btn-info btn-sm"><i class="fa fa-info-circle"></i> Details</a>`;
+                }
+            },
+            {
                 data: 'action',
                 name: 'action',
                 orderable: false,
                 searchable: false,
                 "render": function (data, type, row, meta) {
-                    return ` <button class="btn btn-flat btn-sm btn-primary" data-toggle="modal" onclick='edit_data("${row.id}")'><i class="fa fa-save"></i> Save</button>`;
+                    return ` <button class="btn btn-flat btn-sm btn-primary" data-toggle="modal" onclick='edit_data("${row.id}")'><i class="fa fa-save"></i> Update</button>`;
                 }
             },
         ]
@@ -135,6 +159,8 @@ echo Session::put('info', '');
 
     function edit_data(id) {
         let branchName = $("#" + id).val();
+        let invoiceFormat = $(`#invoiceFormat_${id}`).val();
+        let quotationFormat = $(`#quotationFormat_${id}`).val();
         if (!branchName) {
             alert("Please Provide Branch Name");
             brand_load();
@@ -142,7 +168,10 @@ echo Session::put('info', '');
         }
         let data = {
             branchName: branchName,
+            invoiceFormat: invoiceFormat,
+            quotationFormat: quotationFormat
         };
+        console.log(data);
         $.ajax({
             url: stsurl +'/edit-branch/' + id,
             data: {

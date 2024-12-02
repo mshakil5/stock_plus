@@ -7,20 +7,20 @@ use Illuminate\Http\Request;
 use App\Models\Branch;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Facades\Auth;
+use App\Models\BranchDetails;
 
 class BranchController extends Controller
 {
-    public function get_all_branch()
+  public function get_all_branch()
   {
     $branch = Branch::all();
 
 
-        return Response::json($branch);
-
+    return Response::json($branch);
   }
 
 
-    public function save_branch(Request $request)
+  public function save_branch(Request $request)
   {
     $branch = new Branch();
     $branch->name = $request->branch;
@@ -31,35 +31,153 @@ class BranchController extends Controller
 
   public function view_branch(Request $request)
   {
-      
-      if($request->ajax()){
-          $branch = Branch::all();
-          return Datatables::of($branch)->make(true);
-      }
-      return view("admin.branch.index");
+
+    if ($request->ajax()) {
+      $branch = Branch::all();
+      return Datatables::of($branch)->make(true);
+    }
+    return view("admin.branch.index");
   }
 
-  public function published_branch($ID) {
+  public function published_branch($ID)
+  {
 
     Branch::where('id', $ID)
-    ->update(['status' => 1]);
+      ->update(['status' => 1]);
 
-    return ;
+    return;
   }
 
 
-  public function unpublished_branch($ID) {
+  public function unpublished_branch($ID)
+  {
     Branch::where('id', $ID)
       ->update(['status' => 0]);
 
-      return ;
+    return;
   }
 
   public function edit_branch(Request $request, $id)
   {
-            $branch = Branch::where('id',$id)
-                    ->update(['name' =>$request['data']['branchName']]);
+    $branch = Branch::where('id', $id)
+      ->update([
+        'name' => $request['data']['branchName'],
+        'invoice_format' => $request['data']['invoiceFormat'],
+        'quotation_format' => $request['data']['quotationFormat']
+      ]);
 
-            return;
+    return;
+  }
+
+  public function showDetails($id)
+  {
+    $branch = Branch::findOrFail($id);
+    $branchDetails = $branch->branchDetails;
+    return view('admin.branch.details', compact('branch', 'branchDetails'));
+  }
+
+  public function branchDetailsStore(Request $request)
+  {
+    $validated = $request->validate([
+      'branch_id' => 'required',
+      'branch_name' => 'required|string|max:191',
+      'email1' => 'nullable|email|max:191',
+      'email2' => 'nullable|email|max:191',
+      'phone1' => 'nullable|string|max:191',
+      'phone2' => 'nullable|string|max:191',
+      'address' => 'nullable|string|max:191',
+      'google_map' => 'nullable|string',
+      'fav_icon' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+      'branch_logo' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+      'invoice_header' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+    ]);
+
+    $data = new BranchDetails();
+    $data->branch_id = $request->branch_id;
+    $data->branch_name = $request->branch_name;
+    $data->email1 = $request->email1;
+    $data->email2 = $request->email2;
+    $data->phone1 = $request->phone1;
+    $data->phone2 = $request->phone2;
+    $data->address = $request->address;
+    $data->google_map = $request->google_map;
+
+    if ($request->hasFile('fav_icon')) {
+      $favIconName = rand(100000, 999999) . '_fav_icon.' . $request->fav_icon->extension();
+      $request->fav_icon->move(public_path('images/branch'), $favIconName);
+      $data->fav_icon = $favIconName;
+    }
+
+    if ($request->hasFile('branch_logo')) {
+      $logoName = rand(100000, 999999) . '_branch_logo.' . $request->branch_logo->extension();
+      $request->branch_logo->move(public_path('images/branch'), $logoName);
+      $data->branch_logo = $logoName;
+    }
+
+    if ($request->hasFile('invoice_header')) {
+      $logoName = rand(100000, 999999) . '_invoice_header.' . $request->invoice_header->extension();
+      $request->invoice_header->move(public_path('images/branch'), $logoName);
+      $data->invoice_header = $logoName;
+    }
+
+    $data->save();
+
+    return redirect()->back()->with('success', 'Branch details saved successfully!');
+  }
+
+  public function branchDetailsUpdate(Request $request, $id)
+  {
+    $validated = $request->validate([
+      'branch_id' => 'required',
+      'branch_name' => 'required|string|max:191',
+      'email1' => 'nullable|email|max:191',
+      'email2' => 'nullable|email|max:191',
+      'phone1' => 'nullable|string|max:191',
+      'phone2' => 'nullable|string|max:191',
+      'address' => 'nullable|string|max:191',
+      'google_map' => 'nullable|string',
+      'fav_icon' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+      'branch_logo' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+    ]);
+
+    $data = BranchDetails::findOrFail($id);
+    $data->branch_name = $request->branch_name;
+    $data->email1 = $request->email1;
+    $data->email2 = $request->email2;
+    $data->phone1 = $request->phone1;
+    $data->phone2 = $request->phone2;
+    $data->address = $request->address;
+    $data->google_map = $request->google_map;
+
+    if ($request->hasFile('fav_icon')) {
+      if ($data->fav_icon && file_exists(public_path('images/branch/' . $data->fav_icon))) {
+        unlink(public_path('images/branch/' . $data->fav_icon));
+      }
+      $favIconName = rand(100000, 999999) . '_fav_icon.' . $request->fav_icon->extension();
+      $request->fav_icon->move(public_path('images/branch'), $favIconName);
+      $data->fav_icon = $favIconName;
+    }
+
+    if ($request->hasFile('branch_logo')) {
+      if ($data->branch_logo && file_exists(public_path('images/branch/' . $data->branch_logo))) {
+        unlink(public_path('images/branch/' . $data->branch_logo));
+      }
+      $branchLogoName = rand(100000, 999999) . '_branch_logo.' . $request->branch_logo->extension();
+      $request->branch_logo->move(public_path('images/branch'), $branchLogoName);
+      $data->branch_logo = $branchLogoName;
+    }
+
+    if ($request->hasFile('invoice_header')) {
+      if ($data->invoice_header && file_exists(public_path('images/branch/' . $data->invoice_header))) {
+        unlink(public_path('images/branch/' . $data->invoice_header));
+      }
+      $invoiceHeaderName = rand(100000, 999999) . '_invoice_header.' . $request->invoice_header->extension();
+      $request->invoice_header->move(public_path('images/branch'), $invoiceHeaderName);
+      $data->invoice_header = $invoiceHeaderName;
+    }
+
+    $data->save();
+
+    return redirect()->back()->with('success', 'Branch details updated successfully!');
   }
 }

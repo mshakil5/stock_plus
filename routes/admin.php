@@ -55,7 +55,10 @@ Route::group(['prefix' =>'admin/', 'middleware' => ['auth', 'is_admin']], functi
     Route::get('/published-branch/{id}', [BranchController::class, 'published_branch']);
     Route::get('/unpublished-branch/{id}', [BranchController::class, 'unpublished_branch']);
     Route::post('/edit-branch/{id}', [BranchController::class, 'edit_branch']);
-    
+    Route::get('/branch/details/{id}', [BranchController::class, 'showDetails'])->name('admin.branchDetails.show');
+    Route::post('/branch/details', [BranchController::class, 'branchDetailsStore'])->name('admin.branchDetails.store');
+    Route::put('/branch/details/{id}', [BranchController::class, 'branchDetailsUpdate'])->name('admin.branchDetails.update');
+
     //System User
     Route::get('/create-user', [UserController::class, 'create_user'])->name('create_user');
     Route::post('/create-user', [UserController::class, 'save_user'])->name('save_user');

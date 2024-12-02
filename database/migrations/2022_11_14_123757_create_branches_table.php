@@ -18,6 +18,8 @@ return new class extends Migration
             $table->string('name')->nullable();
             $table->string('slug')->nullable();
             $table->string('status')->nullable(1);
+            $table->string('invoice_format')->default('A4');
+            $table->string('quotation_format')->default('A4');
             $table->string('updated_by')->nullable();
             $table->string('created_by')->nullable();
             $table->timestamps();

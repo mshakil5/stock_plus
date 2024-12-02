@@ -142,7 +142,7 @@
 
 
     @if(Auth::user()->type == '1' && in_array('16', json_decode(Auth::user()->role->permission)) || Auth::user()->type == '0' && in_array('16', json_decode(Auth::user()->role->permission)))
-    <li class="{{ (request()->is('admin/branch')) ? 'active' : '' }}">
+    <li class="{{ (request()->is('admin/branch*')) ? 'active' : '' }}">
         <a href="{{ route('view_branch')}}">
             <i class="fa fa-users"></i>
             <span>Branch</span>

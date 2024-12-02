@@ -23,4 +23,9 @@ class Branch extends Model
     {
         return $this->hasMany('App\Models\User');
     }
+
+    public function branchDetails()
+    {
+        return $this->hasOne(BranchDetails::class);
+    }
 }
