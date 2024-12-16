@@ -43,6 +43,7 @@ echo Session::put('info', '');
                         <th>Quotation Format</th>
                         <th>Status</th>
                         <th>Branch Info</th>
+                        <th>Mail</th>
                         <th><i class=""></i> Action</th>
                     @endslot
                 @endcomponent
@@ -123,6 +124,19 @@ echo Session::put('info', '');
             {
                 data: 'id', name: 'id', render: function (data, type, row, meta) {
                     return `<a href="{{ url('/admin/branch/details') }}/${row.id}" class="btn btn-info btn-sm"><i class="fa fa-info-circle"></i> Details</a>`;
+                }
+            },
+            {
+                data: 'id',
+                name: 'mail',
+                orderable: false,
+                searchable: false,
+                render: function (data, type, row) {
+                    if (row.has_details) {
+                        return '<a href="send-mail/' + data + '" class="btn btn-sm btn-primary">Mail</a>';
+                    } else {
+                        return '<button class="btn btn-sm btn-primary" disabled>Mail</button>';
+                    }
                 }
             },
             {

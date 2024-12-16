@@ -8,6 +8,8 @@ use App\Models\Branch;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Facades\Auth;
 use App\Models\BranchDetails;
+use App\Mail\SendBranchEmail;
+use Illuminate\Support\Facades\Mail;
 
 class BranchController extends Controller
 {
@@ -33,9 +35,14 @@ class BranchController extends Controller
   {
 
     if ($request->ajax()) {
-      $branch = Branch::all();
-      return Datatables::of($branch)->make(true);
-    }
+      $branch = Branch::with('branchDetails')->get();
+
+      return Datatables::of($branch)
+          ->addColumn('has_details', function ($branch) {
+              return $branch->branchDetails ? true : false;
+          })
+          ->make(true);
+  }
     return view("admin.branch.index");
   }
 
@@ -180,4 +187,38 @@ class BranchController extends Controller
 
     return redirect()->back()->with('success', 'Branch details updated successfully!');
   }
+
+  public function sendMail($branch_id)
+  {
+      if (!$branch_id) {
+          return redirect()->back()->with('error', 'Branch not found.');
+      }
+
+      $branch = BranchDetails::where('branch_id', $branch_id)->select('email1', 'branch_name')->first();
+
+      if(!$branch){
+        return redirect()->back()->with('error', 'Branch mail not found.');
+      }
+
+      $branchEmail = $branch->email1;
+      $branchName = $branch->branch_name;
+
+      return view('admin.branch.send_mail', compact('branchEmail', 'branchName'));
+  }
+
+    public function sendEmailStore(Request $request)
+    {
+        $validated = $request->validate([
+            'subject' => 'required|string|max:255',
+            'body' => 'required|string',
+            'email' => 'required|email'
+        ]);
+
+        Mail::to($validated['email'])->send(new SendBranchEmail($validated['subject'], $validated['body']));
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Email sent successfully!'
+        ]);
+    }
 }

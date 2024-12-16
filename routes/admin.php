@@ -59,6 +59,10 @@ Route::group(['prefix' =>'admin/', 'middleware' => ['auth', 'is_admin']], functi
     Route::post('/branch/details', [BranchController::class, 'branchDetailsStore'])->name('admin.branchDetails.store');
     Route::put('/branch/details/{id}', [BranchController::class, 'branchDetailsUpdate'])->name('admin.branchDetails.update');
 
+    Route::get('/send-mail/{branch_id}', [BranchController::class, 'sendMail'])->name('branch.sendMail');
+
+    Route::post('/send-email', [BranchController::class, 'sendEmailStore'])->name('sendBranchEmail');
+
     //System User
     Route::get('/create-user', [UserController::class, 'create_user'])->name('create_user');
     Route::post('/create-user', [UserController::class, 'save_user'])->name('save_user');
