@@ -45,7 +45,7 @@ class LoginController extends Controller
     }
 
     public function login(Request $request)
-    {   
+    {
         $this->validate($request, [
             'email' => 'required',
             'password' => 'required',
@@ -58,25 +58,33 @@ class LoginController extends Controller
         $user = User::where($field, $input['email'])->first();
 
         if (!$user) {
-            return view('auth.login')->with('message', 'Credential Error. You are not an authenticated user.');
+            return redirect()->back()
+                ->withInput($request->only('email'))
+                ->with('message', 'Credential Error. You are not an authenticated user.');
         }
 
         if ($user->status != 1) {
-            return view('auth.login')->with('message', 'Your ID is deactivated.');
+            return redirect()->back()
+                ->withInput($request->only('email'))
+                ->with('message', 'Your ID is deactivated.');
         }
 
         $branch = Branch::find($user->branch_id);
 
         if ($branch && $branch->status == 0) {
-            return view('auth.login')->with('message', 'Your Branch is deactivated.');
+            return redirect()->back()
+                ->withInput($request->only('email'))
+                ->with('message', 'Your Branch is deactivated.');
         }
 
         if (!auth()->attempt([$field => $input['email'], 'password' => $input['password']])) {
-            return view('auth.login')->with('message', 'Email/Username and Password are wrong.');
+            return redirect()->back()
+                ->withInput($request->only('email'))
+                ->with('message', 'Email/Username and Password are wrong.');
         }
 
-        $authUser  = auth()->user();
-        $branch = Branch::find($authUser ->branch_id);
+        $authUser = auth()->user();
+        $branch = Branch::find($authUser->branch_id);
 
         $logEntry = new UserLogHistory();
         $logEntry->user_id = $authUser->id;
@@ -84,11 +92,11 @@ class LoginController extends Controller
         $logEntry->ip_address = $request->ip();
         $logEntry->save();
 
-        if ($authUser ->type == 1) {
+        if ($authUser->type == 1) {
             return redirect()->route('admin.home');
-        } elseif ($authUser ->type == 2) {
+        } elseif ($authUser->type == 2) {
             return redirect()->route('manager.home');
-        } elseif ($authUser ->type == 0) {
+        } elseif ($authUser->type == 0) {
             return redirect()->route('user.home');
         } else {
             return redirect()->route('home');
