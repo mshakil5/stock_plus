@@ -120,7 +120,7 @@
         
                                                 @if (in_array(6, $permissions))
                                                 <tr>
-                                                    <td><label class="control-label">Edit Purchase</label></td>
+                                                    <td><label class="control-label">Purchase History</label></td>
                                                     <td>
                                                         <label style="margin-top: -9px" class="switch"><input id="p6" name="permission[]" type="checkbox" value="6" @foreach (json_decode($data->permission) as $permission) @if ($permission == 6) checked @endif @endforeach ><span class="slider round"></span></label>
                                                     </td>
@@ -158,7 +158,7 @@
                                                 <tr>
                                                     <td><label class="control-label">Damaged Products</label></td>
                                                     <td>
-                                                        <label style="margin-top: -9px" class="switch"><input id="p38" name="permission[]" type="checkbox" value="38" ><span class="slider round"></span></label>
+                                                        <label style="margin-top: -9px" class="switch"><input id="p38" name="permission[]" type="checkbox" value="38" @foreach (json_decode($data->permission) as $permission) @if ($permission == 38) checked @endif @endforeach><span class="slider round"></span></label>
                                                     </td>
                                                 </tr>
                                                 @endif

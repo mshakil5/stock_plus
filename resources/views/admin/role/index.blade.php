@@ -171,7 +171,7 @@
         
                                                 @if (in_array(6, $permissions))
                                                 <tr>
-                                                    <td><label class="control-label">Edit Purchase</label></td>
+                                                    <td><label class="control-label">Purchase History</label></td>
                                                     <td>
                                                         <label style="margin-top: -9px" class="switch"><input id="p6" name="permission[]" type="checkbox" value="6" ><span class="slider round"></span></label>
                                                     </td>
