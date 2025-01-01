@@ -23,14 +23,14 @@
     <section class="section register min-vh-100">
         <div class="min-vh-100">
             <div class="row min-vh-100 mx-0">
-                <div class="col-md-8 mx-auto">
+                <div class="col-md-10 mx-auto">
                     <div class="row h-100 d-flex align-items-center justify-content-center">
                         <div class="col-lg-6 mx-auto mb-4">
                             <div class="d-flex justify-content-center py-4">
                                 @yield('header')
                             </div>
                             <div class="card mb-3">
-                                <div class="card-body p-5">
+                                <div class="card-body p-3">
                                     @yield('content')
                                 </div>
                             </div>
