@@ -20,12 +20,12 @@
             <form class="row g-3 needs-validation" method="POST" action="{{ route('login') }}">
                 @csrf
                 <div class="col-12">
-                    <label for="email" class="form-label">Email <span class="text-danger">*</span></label>
+                    <label for="email" class="form-label">Email Or Username<span class="text-danger">*</span></label>
                     <div class="input-group has-validation">
                         <input type="text" name="email"
                             class="form-control @error('email') is-invalid @enderror" id="email" value="{{ old('email') }}"
                             required>
-                        <div class="invalid-feedback">Please enter your email.</div>
+                        <div class="invalid-feedback">Please enter your email or username.</div>
                     </div>
                     @error('email')
                     <span class="text-danger small">{{ $message }}</span>
