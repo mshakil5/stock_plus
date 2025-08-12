@@ -116,4 +116,15 @@ class InvoiceController extends Controller
         return view('invoices.print_invoice', compact('order','customerdtl'));
         
     }
+
+    public function customer_invoice_print1($id)
+    {
+        $order = Order::findOrFail($id);
+        $customerdtl = Customer::where('id','=',$order->customer_id)->first();
+        $pdf = PDF::loadView('invoices.print_invoice', compact('order','customerdtl'));
+
+        $output = $pdf->output();
+        return view('invoices.print_invoice', compact('order','customerdtl'));
+        
+    }
 }
