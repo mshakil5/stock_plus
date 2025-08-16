@@ -1,365 +1,222 @@
-
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
-
+<html lang="en">
 <head>
-    <meta charset="utf-8">
-    <!-- CSRF Token -->
-    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="x-ua-compatible" content="ie=edge">
-    <title>Customer invoice</title>
-
-
+    <title>Invoice</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { font-size: 14px; background: #f8f9fa; }
+        .invoice-container {
+            width: 900px;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            border: 1px solid black;
+        }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+        table, th, td {
+            border: 1px solid black !important;
+        }
+        table td {
+            min-width: 140px;
+            padding: 4px 8px;
+        }
+        th, td {
+            padding: 5px;
+            vertical-align: middle;
+        }
+        .work-list td {
+            height: 35px;
+        }
+        .bordered {
+            border: 1px solid black;
+        }
+        @media print {
+            @page {
+                margin: 0;
+            }
+            body {
+                margin: 1.6cm;
+            }
+            .invoice-container {
+                border: none;
+                padding: 0;
+                width: 100%;
+            }
+        }
+    </style>
     <script>
         setTimeout(function () {
             window.print();
         }, 800);
     </script>
-    <style>
-        @media print {
-            @page {
-                margin: 100px auto; /* imprtant to logo margin */
-            }
-
-            html, body {
-                margin: 100 0 0 0;
-                padding: 0
-            }
-
-            #printContainer {
-                width: 250px;
-                margin: auto;
-                /*text-align: justify;*/
-            }
-
-            .text-center {
-                text-align: center;
-            }
-            .text-right {
-                text-align: right;
-            }
-        }
-    </style>
 </head>
-
 <body>
-    <section class="invoice">
-        <div class="container-fluid p-0">
-            <div class="invoice-body py-5">
-                <div style="  max-width: 1170px; margin: 70px auto;">
-                    @if ( $order->quotation == 1 )
-                    <div class="col-lg-2" style="flex: 2; text-align: center;">
-                        <h3 style="font-size: 1.5rem; margin-bottom: 5px;">QUOTATION</h3>
-                    </div>
 
-                        <table style="width: 100%;">
-                            <tbody>
-                                <tr>
-                                    <td colspan="4" class="" style="border :0px solid #dee2e6 ;width:70%;">
-                                        <div class="col-lg-5" style="flex: 2;">
-                                            <p>Customer Name : {{ $customerdtl->name }} </p>
-                                            <span style="padding-left: 118px">{{ $customerdtl->address }}</span> 
-                                        </div>
-                                    </td>
-                                    <td colspan="2" class="" style="border :0px solid #dee2e6 ;">
-                                        <div class="col-lg-2 text-end" style="flex: 2; text-align: right;">
-                                            <h5 style="font-size: .90rem; margin : 5px;text-align: left;">TRN: 100474976600003</h5>
-                                            <h5 style="font-size: .90rem; margin : 5px;text-align: left;">INV NO: {{ $order->invoiceno }}3</h5>
-                                            <h5 style="font-size: .90rem; margin : 5px;text-align: left;">QTN No: 000{{ $order->id }}</h5>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td colspan="4" class="" style="border :0px solid #dee2e6 ;">
-                                        <div class="col-lg-5" style="flex: 2;">
-                                            <i>Dear Sir, </i>
-                                            <p>We are pleased to quote our best prices as follows </p>
-                                        </div>
-                                    </td>
-                                    <td colspan="2" class="" style="border :0px solid #dee2e6 ;">
-                                        <div class="col-lg-2 text-end" style="">
-                                            <h5 style="font-size: .90rem; margin : 5px;">Date: {{ $order->orderdate }}</h5>
-                                        </div>
-                                    </td>
-                                </tr>
-                            </tbody>
-                            
-                        </table>
+  @php
+    $company = \App\Models\CompanyDetails::first();
+  @endphp
 
+<div class="invoice-container">
 
-                    @elseif ($order->delivery_note == 1)
-
-                    <div class="col-lg-2" style="flex: 2; text-align: center;">
-                        <h3 style="font-size: 1.5rem; margin-bottom: 5px;">DELIVERY NOTE</h3>
-                    </div>
-
-                        <table style="width: 100%;">
-                            <thead>
-                                <tr>
-                                    <th style="width: 75%"></th>
-                                    <th></th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td style="border :0px solid #ffffff ; width:75%;">
-                                        <div class="col-lg-5" style="flex: 2;">
-                                            <p> <span style="text-transform: uppercase;text-align: left;">{{ $customerdtl->name }}</span> </p>
-                                            <p> <span style="text-transform: uppercase;text-align: left;">{{ $customerdtl->address }}</span> </p>
-                                        </div>
-                                    </td>
-                                    <td style="border :0px solid #ffffff ;">
-                                        <div class="col-lg-2 text-end" style="flex: 2; text-align: right;">
-                                            <h5 style="font-size: .90rem; margin : 5px;text-align: left;">INV NO: {{ $order->invoiceno }}</h5>
-                                            <h5 style="font-size: .90rem; margin : 5px;text-align: left;">Q/N NO: {{ $order->qn_no }}</h5>
-                                            <h5 style="font-size: .90rem; margin : 5px;text-align: left;">D/N NO: {{ $order->id }}</h5>
-                                            <h5 style="font-size: .90rem; margin : 5px;text-align: left;">Date: {{ $order->orderdate }}</h5>
-                                            <h5 style="font-size: .90rem; margin : 5px;text-align: left;">Ref: {{ $order->ref }}</h5>
-                                            <h5 style="font-size: .90rem; margin : 5px;text-align: left;">Page: </h5>
-                                        </div>
-                                    </td>
-                                </tr>
-
-                            </tbody>
-                        </table>
-
-
-                    @else
-
-                        <div class="row text-center" style="text-align: center; margin: 5px 0;">
-                            <h3 style="font-size: 1.1rem; margin-bottom: 5px;">TAX CASH INVOICE</h3>
-                            <h5 style="font-size: .70rem; margin : 5px;">TRN: 100474976600003</h5>
-                        </div>
-                    @endif
-
-
-
-                    @if ( $order->quotation == 1 )
-
-                    @elseif ($order->delivery_note == 1)
-
-                    @else
-                        <div class=" " style="display: flex; flex-wrap: wrap; margin: 5px 0;">
-                            <table style="width: 100%">
-                                <tbody>
-                                    <tr>
-                                        <td colspan="2" style="width: 25%">
-                                            <div class="col-lg-12" style="flex:2;">
-                                                <div class="card border box-round" style="border: 1px solid #dee2e6!important; padding: 5px 0 75px 15px; border-radius:5px;">
-                                                    @if ($customerdtl->id == 1)
-                                                        CASH SALES
-                                                    @else
-                                                        <p> <span style="text-transform: uppercase;text-align: left;">{{ $customerdtl->name }}</span> </p>
-                                                        <p> <span style="text-transform: uppercase;text-align: left;">{{ $customerdtl->address }}</span> </p>
-                                                    @endif
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td style="width: 30%">
-                                            <div class="col-lg-12" style="flex:1;width: 5%"> </div>
-                                        </td>
-                                        <td colspan="2" style="width: 29%">
-                                            <div class="col-lg-12"style="flex:2; border: 1px solid #dee2e6!important; padding-left: 10px; border-radius:5px;">
-                                                <div class="card border box-round" style="padding: 5px" >
-                                                    <span><b>Invoice No :</b> {{ $order->invoiceno }}</span><br>
-                                                    <span><b>Invoice Date:</b> {{ $order->orderdate }}</span><br>
-                                                    <span><b>DO No:</b> {{ $order->dn_no }}</span><br>
-                                                    <span><b>LPO No:</b></span><br>
-                                                    <span><b>Salesman:</b> {{\App\Models\User::where('id', $order->created_by)->first()->name}}-{{\App\Models\User::where('id', $order->created_by)->first()->phone}}</span>
-                                                </div>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    @endif
-
-                    
-
-
-                    
-                    <div class="row overflow">
-                        <table style="width: 100%;border-collapse: collapse;">
-                            <thead>
-                                <tr>
-                                    <th  style="border: 1px solid #dee2e6!important; padding: 0 15px;">#</th>
-                                    <th  style="border: 1px solid #dee2e6!important; padding: 0 15px;">Part No</th>
-                                    <th  style="border: 1px solid #dee2e6!important; padding: 0 15px;">Product Number</th>
-                                    <th  style="border: 1px solid #dee2e6!important; padding: 0 15px;">Qty</th>
-                                    <th  style="border: 1px solid #dee2e6!important; padding: 0 15px;">Price</th>
-                                    <th  style="border: 1px solid #dee2e6!important; padding: 0 15px;">Total Amount</th>
-
-                                </tr>
-                            </thead>
-                            <tbody>
-
-
-                                @foreach ($order->orderdetails as $key => $orderdetail)
-                                <tr style="border-bottom:1px solid #dee2e6 ; border-right:1px solid #dee2e6 ; border-left:1px solid #dee2e6 ;">
-                                    <td style="border: 1px solid #dee2e6!important; padding: 1px 10px;text-align:center">{{ $key + 1 }}</td>
-                                    <td style="border: 1px solid #dee2e6!important; padding: 1px 10px;">@if ($order->partnoshow == 1){{ $orderdetail->product->part_no }} @endif  </td>
-                                    <td style="border: 1px solid #dee2e6!important; padding: 1px 10px;">{{ $orderdetail->product->productname }} </td>
-                                    <td style="border: 1px solid #dee2e6!important; padding: 1px 10px;text-align:center">{{ $orderdetail->quantity }}</td>
-                                    <td style="border: 1px solid #dee2e6!important; padding: 1px 10px;text-align:right">{{ number_format($orderdetail->sellingprice, 2) }}</td>
-                                    <td style="border: 1px solid #dee2e6!important; padding: 1px 10px;text-align:right">{{ number_format($orderdetail->total_amount, 2) }}</td>
-                                </tr>
-                                @endforeach
-
-                            </tbody>
-                            <tfoot  style="border :1px solid #dee2e6 ; width: 100%; ">
-                                <tr>
-                                    <td colspan="3" rowspan="7" style="padding-left: 25px;">
-                                      <b>  </i></b>
-                                    </td>
-                                    <td colspan="2" class="" style="border :1px solid #dee2e6 ;">
-                                        <span class="float-start"><b>Total w/o discount:</b></span>
-                                    </td>
-                                    <td colspan="1" class="" style="border :1px solid #dee2e6; text-align:right">
-                                        <span class="float-end">{{ number_format($order->grand_total, 2) }}</span>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td colspan="2" class="" style="border :1px solid #dee2e6 ;">
-                                        <span class="float-start"><b>Discount:</b></span>
-                                    </td>
-                                    
-                                    <td colspan="1" class="" style="border :1px solid #dee2e6; text-align:right">
-                                        <span class="float-end">{{ number_format($order->discount_amount, 2) }}</span>
-                                    </td>
-                                </tr>
-                                
-                                <tr>
-                                    <td colspan="2" class="" style="border :1px solid #dee2e6 ;">
-                                        <span class="float-start"><b>Vat:{{ $order->vatpercentage }}%</b></span>
-                                    </td>
-                                    
-                                    <td colspan="1" class="" style="border :1px solid #dee2e6; text-align:right">
-                                        <span class="float-end">{{ number_format($order->vatamount, 2) }}</span>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td colspan="2" class="" style="border :1px solid #dee2e6 ;">
-                                        <span class="float-start"> <b>Total with vat:</b> </span>
-                                    </td>
-                                    
-                                    <td colspan="1" class="" style="border :1px solid #dee2e6; text-align:right">
-                                        <span class="float-end">{{ number_format($order->net_total, 2) }}</span>
-                                    </td>
-                                </tr>
-
-                                @if ($order->sales_status == 1)
-                                <tr>
-                                    <td colspan="2" class="" style="border :1px solid #dee2e6 ;">
-                                        <span class="float-start"> <b>Customer paid:</b> </span>
-                                    </td>
-                                    
-                                    <td colspan="1" class="" style="border :1px solid #dee2e6; text-align:right">
-                                        <span class="float-end">{{ number_format($order->customer_paid, 2) }}</span>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td colspan="2" class="" style="border :1px solid #dee2e6 ;">
-                                        <span class="float-start"> <b>Due:</b> </span>
-                                    </td>
-                                    
-                                    <td colspan="1" class="" style="border :1px solid #dee2e6; text-align:right">
-                                        <span class="float-end">{{ number_format($order->due, 2) }}</span>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td colspan="2" class="" style="border :1px solid #dee2e6 ;">
-                                        <span class="float-start"> <b>Return Amount:</b> </span>
-                                    </td>
-                                    
-                                    <td colspan="1" class="" style="border :1px solid #dee2e6; text-align:right">
-                                        <span class="float-end">{{ number_format($order->return_amount, 2) }}</span>
-                                    </td>
-                                </tr>
-                                @endif
-
-                                
-
-
-
-                            </tfoot>
-                        </table>
-                    </div>
-                    <br>
-                    <br>
-                    <div class="row my-5" style="display: flex;">
-
-
-                        @if ( $order->quotation == 1 )
-
-                            <table style="width: 100%;">
-                                <tr>
-                                    <td class="" style="border :0px solid #dee2e6 ;">
-                                        <div class="col-lg-5" style="flex: 2;">
-                                            <u>Terms and conditions </u><br>
-                                            <i>Validity : </i><br>
-                                            <i>Delivery : </i><br>
-                                            <i>Payment : </i><br>
-                                            <i>Other terms and conditions : </i>
-                                        </div>
-                                    </td>
-                                </tr>
-                            </table>
-
-                        @elseif ($order->delivery_note == 1)
-                            <table style="width: 100%;">
-                                <tr>
-                                    <td colspan="2" class="" style="border :0px solid #dee2e6 ;">
-                                        <div class="col-lg-5" style="flex: 2;">
-                                            <i>Received by : Signature & stamp</i>
-                                        </div>
-                                    </td>
-                                    <td colspan="2" class="" style="border :0px solid #dee2e6 ;">
-                                        <div class="col-lg-5" style="flex: 1;"></div>
-                                    </td>
-                                    <td colspan="2" class="" style="border :0px solid #dee2e6 ;">
-                                        <div class="col-lg-2 text-end" style="flex: 2; text-align: right;">
-                                            <span for="" style="padding-right: 30px">{{\App\Models\User::where('id', $order->created_by)->first()->name}}</span><br>
-                                            Salesman Signature
-                                        </div>
-                                    </td>
-                                </tr>
-                            </table>
-                        @else
-                            <table style="width: 100%;">
-                                <tr>
-                                    <td colspan="2" class="" style="border :0px solid #dee2e6 ;">
-                                        <div class="col-lg-5" style="flex: 2;">
-                                            <i>Received by : Signature & stamp</i>
-                                        </div>
-                                    </td>
-                                    <td colspan="2" class="" style="border :0px solid #dee2e6 ;">
-                                        <div class="col-lg-5" style="flex: 1;"></div>
-                                    </td>
-                                    <td colspan="2" class="" style="border :0px solid #dee2e6 ;">
-                                        <div class="col-lg-2 text-end" style="flex: 2; text-align: right;">
-                                            <span for="" style="padding-right: 30px">{{\App\Models\User::where('id', $order->created_by)->first()->name}}</span><br>
-                                            Salesman Signature
-                                        </div>
-                                    </td>
-                                </tr>
-                            </table>
-                        @endif
-
-                        
-
-                    </div>
-                </div>
-            </div>
-            {{-- <div  style="margin-top: 15px; display: flex;align-items: center;justify-content: center;background-color: #FF9A38;">
-                <h4 class="mb-0 text-white" style="color: white; text-align: center;">Musaffa M-9 Abudhabi UAE</h4>
-            </div> --}}
+    <div class="row text-center align-items-center">
+        <div class="col-4 text-start fw-bold">
+            {{ $company->company_name }} <br>
+            <small>{{ $company->address1 }}</small>
         </div>
-    </section>
+        <div class="col-4">
+            @if ($order->quotation == 1)
+                <h3 style="font-size: 1.5rem; margin-bottom: 5px;">QUOTATION</h3>
+            @elseif ($order->delivery_note == 1)
+                <h3 style="font-size: 1.5rem; margin-bottom: 5px;">DELIVERY NOTE</h3>
+            @else
+                <h3 style="font-size: 1.5rem; margin-bottom: 5px;">TAX CASH INVOICE</h3>
+            @endif
+        </div>
+        <div class="col-4 text-start fw-bold">
+            TRN: 100474976600003<br>
+            @if ($order->quotation == 1)
+                QTN No: 000{{ $order->id }}<br>
+            @elseif ($order->delivery_note == 1)
+                D/N NO: {{ $order->id }}<br>
+            @endif
+            INV NO: {{ $order->invoiceno }}<br>
+            Date: {{ \Carbon\Carbon::parse($order->orderdate)->format('d-m-Y') }}
+        </div>
+    </div>
 
+    <table class="mt-2">
+        <tbody>
+            <tr>
+                <th colspan="2">CUSTOMER INFORMATION</th>
+                <th colspan="4">ORDER INFORMATION</th>
+            </tr>
+            <tr>
+                <td class="fw-bold">NAME</td>
+                <td>{{ $customerdtl->name }}</td>
+                <td class="fw-bold">REFERENCE</td>
+                <td>{{ $order->ref }}</td>
+                <td class="fw-bold">SALESMAN</td>
+                <td>{{\App\Models\User::where('id', $order->created_by)->first()->name}}</td>
+            </tr>
+            <tr>
+                <td class="fw-bold">ADDRESS</td>
+                <td>{{ $customerdtl->address }}</td>
+                <td class="fw-bold">Q/N NO</td>
+                <td>{{ $order->qn_no }}</td>
+                <td class="fw-bold">CONTACT</td>
+                <td>{{\App\Models\User::where('id', $order->created_by)->first()->phone}}</td>
+            </tr>
+            <tr>
+                <td class="fw-bold">MOBILE</td>
+                <td>{{ $customerdtl->phone }}</td>
+                <td class="fw-bold">D/N NO</td>
+                <td>{{ $order->dn_no }}</td>
+                <td class="fw-bold">LPO NO</td>
+                <td>{{ $order->lpo_no ?? 'N/A' }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <table class="mt-4 work-list">
+        <thead>
+            <tr>
+                <th style="width: 5%;">NO.</th>
+                <th>DESCRIPTION</th>
+                @if ($order->partnoshow == 1)
+                <th style="width: 15%;">PART NO</th>
+                @endif
+                <th style="width: 10%;">QTY.</th>
+                <th style="width: 15%;">PRICE</th>
+                <th style="width: 15%;">AMOUNT</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach ($order->orderdetails as $key => $orderdetail)
+            <tr>
+                <td>{{ $key + 1 }}</td>
+                <td>{{ $orderdetail->product->productname }}</td>
+                @if ($order->partnoshow == 1)
+                <td>{{ $orderdetail->product->part_no }}</td>
+                @endif
+                <td>{{ $orderdetail->quantity }}</td>
+                <td>{{ number_format($orderdetail->sellingprice, 2) }}</td>
+                <td>{{ number_format($orderdetail->total_amount, 2) }}</td>
+            </tr>
+            @endforeach
+            
+            @for ($i = count($order->orderdetails); $i < 8; $i++)
+            <tr><td></td><td></td>@if ($order->partnoshow == 1)<td></td>@endif<td></td><td></td><td></td></tr>
+            @endfor
+        </tbody>
+    </table>
+
+    <table class="mt-2">
+        <tr>
+            <td colspan="{{ $order->partnoshow == 1 ? 4 : 3 }}" class="fw-bold">Total w/o discount:</td>
+            <td class="text-end">{{ number_format($order->grand_total, 2) }}</td>
+        </tr>
+        <tr>
+            <td colspan="{{ $order->partnoshow == 1 ? 4 : 3 }}" class="fw-bold">Discount:</td>
+            <td class="text-end">{{ number_format($order->discount_amount, 2) }}</td>
+        </tr>
+        <tr>
+            <td colspan="{{ $order->partnoshow == 1 ? 4 : 3 }}" class="fw-bold">Vat ({{ $order->vatpercentage }}%):</td>
+            <td class="text-end">{{ number_format($order->vatamount, 2) }}</td>
+        </tr>
+        <tr>
+            <td colspan="{{ $order->partnoshow == 1 ? 4 : 3 }}" class="fw-bold">Total with vat:</td>
+            <td class="text-end">{{ number_format($order->net_total, 2) }}</td>
+        </tr>
+        @if ($order->sales_status == 1)
+        <tr>
+            <td colspan="{{ $order->partnoshow == 1 ? 4 : 3 }}" class="fw-bold">Customer paid:</td>
+            <td class="text-end">{{ number_format($order->customer_paid, 2) }}</td>
+        </tr>
+        <tr>
+            <td colspan="{{ $order->partnoshow == 1 ? 4 : 3 }}" class="fw-bold">Due:</td>
+            <td class="text-end">{{ number_format($order->due, 2) }}</td>
+        </tr>
+        <tr>
+            <td colspan="{{ $order->partnoshow == 1 ? 4 : 3 }}" class="fw-bold">Return Amount:</td>
+            <td class="text-end">{{ number_format($order->return_amount, 2) }}</td>
+        </tr>
+        @endif
+    </table>
+
+    @if ($order->quotation == 1)
+    <div class="mt-2">
+        <strong>TERMS AND CONDITIONS:</strong>
+        <div class="bordered p-2" style="min-height:50px;">
+            <i>Validity : </i><br>
+            <i>Delivery : </i><br>
+            <i>Payment : </i><br>
+            <i>Other terms and conditions : </i>
+        </div>
+    </div>
+    @endif
+
+    <table class="mt-4">
+        <tr>
+            <td style="width: 40%;">
+                <strong>Received by :</strong><br>
+                <div style="height: 40px;"></div>
+                <span>Signature & stamp</span>
+            </td>
+            <td style="width: 20%;"></td>
+            <td style="width: 40%; text-align: right;">
+                <strong>Salesman Signature:</strong><br>
+                <div style="height: 40px;"></div>
+                <span>{{\App\Models\User::where('id', $order->created_by)->first()->name}}</span>
+            </td>
+        </tr>
+    </table>
+
+</div>
 
 </body>
-
 </html>
-
