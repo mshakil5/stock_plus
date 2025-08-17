@@ -24,7 +24,7 @@
                     <div class="input-group has-validation">
                         <input type="text" name="email"
                             class="form-control @error('email') is-invalid @enderror" id="email" value="{{ old('email') }}"
-                            required>
+                            required autofocus>
                         <div class="invalid-feedback">Please enter your email or username.</div>
                     </div>
                     @error('email')

@@ -66,7 +66,8 @@
                                     <th scope="col">Part No</th>
                                     <th scope="col">Product</th>
                                     <th scope="col">Quantity</th>
-                                    <th scope="col">Price</th>
+                                    <th scope="col">Unit Price</th>
+                                    <th scope="col">Vat</th>
                                     <th scope="col">Total Price</th>
                                 </tr>
                             </thead>
@@ -182,6 +183,7 @@
                                 <td>${orderdetail.product.productname}</td>
                                 <td>${orderdetail.quantity}</td>
                                 <td>${orderdetail.sellingprice}</td>
+                                <td>${orderdetail.vat_amount}</td>
                                 <td>${orderdetail.total_amount}</td>
                             </tr>
                         `);

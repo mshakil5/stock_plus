@@ -110,14 +110,17 @@
     <table class="custom-table">
       <thead>
         <tr>
-          <th>NO.</th>
+          <th>Sl No</th>
           @if ($order->partnoshow == 1)
-            <th>PART NO</th>
+            <th>Part No</th>
           @endif
-          <th class="text-start">DESCRIPTION</th>
-          <th>QTY.</th>
-          <th>PRICE</th>
-          <th>AMOUNT</th>
+          <th class="text-start">Description</th>
+          <th>Qty</th>
+          <th>Unit Price</th>
+          <th>TotalExcl</th>
+          <th>Vat%</th>
+          <th>Vat Amt</th>
+          <th>TotalIncl</th>
         </tr>
       </thead>
       <tbody>
@@ -136,6 +139,9 @@
             <td class="text-start">{{ $item->product->productname }}</td>
             <td>{{ $item->quantity }}</td>
             <td>{{ number_format($item->sellingprice, 2) }}</td>
+            <td>{{ number_format($item->subtotal_excl_vat, 2) }}</td>
+            <td>{{ number_format($item->vat_percent, 0) }}</td>
+            <td>{{ number_format($item->vat_amount, 2) }}</td>
             <td>{{ number_format($item->total_amount, 2) }}</td>
           </tr>
         @endforeach
@@ -144,7 +150,7 @@
 
     <div class="outer-border mt-2 p-2">
       <div class="row">
-        <div class="col-6">
+        <div class="col-4">
         </div>
         <div class="col-3 text-end">
           Total Qty: {{ $totalQty }}
@@ -152,7 +158,7 @@
         <div class="col-2 text-start">
           <strong>Gross Amount:</strong> 
         </div>
-        <div class="col-1 text-end">
+        <div class="col-2 text-end">
           {{ number_format($order->grand_total, 2) }}
         </div>
       </div>
@@ -188,10 +194,17 @@
     <div class="row" style="position: absolute; bottom: 0; width: 100%;">
       <div class="col-1"></div>
       <div class="col-4 text start">
-        Received By: <br> <br> <br>
+        Received By:  ___________________<br> <br> <br>
         Authorised Dealer
       </div>
     </div>
   </div>
+
+  <script>
+    window.onload = function() {
+      window.print();
+    };
+  </script>
+
 </body>
 </html>

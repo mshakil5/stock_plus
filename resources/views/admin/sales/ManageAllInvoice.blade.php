@@ -124,6 +124,7 @@ echo Session::put('message', '');
                                                 <th scope="col">Product</th>
                                                 <th scope="col">Quantity</th>
                                                 <th scope="col">Price</th>
+                                                <th scope="col">Vat</th>
                                                 <th scope="col">Total Price</th>
                                             </tr>
                                         </thead>
@@ -291,6 +292,7 @@ echo Session::put('message', '');
                             orderdetail.product.productname,
                             orderdetail.quantity,
                             orderdetail.sellingprice,
+                            orderdetail.vat_amount,
                             orderdetail.total_amount
                         ]).draw(true);
                     });

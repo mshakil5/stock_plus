@@ -104,7 +104,10 @@
                             <th class="text-center">Product Name</th>
                             <th class="text-center">Qty</th>
                             <th class="text-center">Unit Price</th>
-                            <th class="text-center">Total Price</th>
+                            <th class="text-center">Total  Excl</th>
+                            <th class="text-center">Vat%</th>
+                            <th class="text-center">Vat Amount</th>
+                            <th class="text-center">Total Incl</th>
                             <th class="text-center">Action</th>
                         </tr>
                     </thead>
@@ -132,24 +135,31 @@
                         </div>
                     </div>
 
-                    <div class="form-group row">
+                    <div class="form-group row" style="display: none">
                         <label for="discount" class="col-sm-6 col-form-label">Discount</label>
                         <div class="col-sm-6">
                             <input type="number" class="form-control" id="discount" name="discount">
                         </div>
                     </div>
 
-                    <div class="form-group row">
+                    <div class="form-group row" style="display: none">
                         <label for="vat_percent" class="col-sm-6 col-form-label">Vat Percent</label>
                         <div class="col-sm-6">
                             <input type="number" class="form-control" id="vat_percent" name="vat_percent" min="0">
                         </div>
                     </div>
 
-                    <div class="form-group row">
+                    <div class="form-group row" style="display: none">
                         <label for="total_vat_amount" class="col-sm-6 col-form-label">Vat Amount</label>
                         <div class="col-sm-6">
                             <input type="number" class="form-control" id="total_vat_amount" name="total_vat_amount" readonly>
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <label for="display_total_vat" class="col-sm-6 col-form-label">Total VAT Amount</label>
+                        <div class="col-sm-6">
+                            <input type="number" class="form-control" id="display_total_vat" readonly>
                         </div>
                     </div>
 
@@ -464,6 +474,18 @@
                                     value="" class="form-control unit-price">
                             </td>
                             <td class="text-center">
+                              <input type="text" id="subtotal_excl_vat" name="subtotal_excl_vat[]" 
+                                  value="0" class="form-control subtotal-excl-vat" readonly>
+                            </td>
+                            <td class="text-center">
+                                <input type="number" id="vat_percent" name="vat_percent[]" 
+                                    value="0" class="form-control vat-percent" oninput="if(this.value<0)this.value=0;">
+                            </td>
+                            <td class="text-center">
+                                <input type="text" id="vat_amount" name="vat_amount[]" 
+                                    value="0" class="form-control vat-amount" readonly>
+                            </td>
+                            <td class="text-center">
                                 <input type="text" id="total_amount" name="total_amount[]" 
                                     value="" class="form-control total" readonly>
                             </td>
@@ -502,43 +524,52 @@
 
         // unit price calculation
 
-        $("body").delegate(".unit-price, .quantity", "keyup change", function(event) {
+        $("body").delegate(".unit-price, .quantity, .vat-percent", "keyup change", function(event) {
             event.preventDefault();
             var row = $(this).closest('tr');
-            var price = row.find('.unit-price').val();
-            var qty = row.find('.quantity').val();
+            var price = parseFloat(row.find('.unit-price').val()) || 0;
+            var qty = parseFloat(row.find('.quantity').val()) || 0;
+            var vatPercent = parseFloat(row.find('.vat-percent').val()) || 0;
 
-            if (isNaN(qty)) {
-                qty = 1;
-            }
-            if (qty < 1) {
-                qty = 1;
-            }
+            if (qty < 1) qty = 1;
 
-            var total = price * qty;
-            row.find('.total').val(total.toFixed(2));
+            // Calculate row values
+            var subtotal = price * qty;
+            var vatAmount = (subtotal * vatPercent) / 100;
+            var total = subtotal + vatAmount;
 
-            // Calculate total amounts
-            var grand_total = 0;
-            $('.total').each(function() {
-                grand_total += ($(this).val() - 0);
+            // Update row fields
+            row.find('.subtotal-excl-vat').val(subtotal.toFixed(2));  // Subtotal before VAT
+            row.find('.vat-amount').val(vatAmount.toFixed(2));        // VAT amount
+            row.find('.total').val(total.toFixed(2));                 // Total incl VAT
+
+            // Calculate totals for all rows
+            var totalVat = 0;
+            var grandTotalWithoutVAT = 0;
+            var grandTotalWithVAT = 0;
+            
+            $('tr').each(function() {
+                var rowSubtotal = parseFloat($(this).find('.subtotal-excl-vat').val()) || 0;
+                var rowVat = parseFloat($(this).find('.vat-amount').val()) || 0;
+                var rowTotal = parseFloat($(this).find('.total').val()) || 0;
+                
+                grandTotalWithoutVAT += rowSubtotal;
+                totalVat += rowVat;
+                grandTotalWithVAT += rowTotal;
             });
 
-            // Get the VAT percent from the input field
-            var vat_percent = parseFloat($("#vat_percent").val()) || 0;
-            var total_vat = (grand_total * vat_percent) / 100;
+            // Update summary fields
+            $('#total_vat_amount').val(totalVat.toFixed(2));
+            $('#display_total_vat').val(totalVat.toFixed(2));
+            $('#grand_total').val(grandTotalWithoutVAT.toFixed(2));
+            $('#net_amount').val(grandTotalWithVAT.toFixed(2));
 
-            // Update total fields
-            $('#total_vat_amount').val(total_vat.toFixed(2));
-            $('#grand_total').val(grand_total.toFixed(2));
-            $('#net_amount').val((grand_total + total_vat - (parseFloat($('#discount').val()) || 0)).toFixed(2));
-
-            // Update due amount if necessary
-            var paid_amount = parseFloat($("#paid_amount").val()) || 0;
-            $('#due_amount').val((grand_total + total_vat - paid_amount - (parseFloat($('#discount').val()) || 0)).toFixed(2));
-
-            let return_amount = (paid_amount > net_amount) ? -(paid_amount - net_amount) : 0;
-            $('#return_amount').val(return_amount.toFixed(2)); 
+            // Update payment fields
+            var paidAmount = parseFloat($("#paid_amount").val()) || 0;
+            $('#due_amount').val((grandTotalWithVAT - paidAmount).toFixed(2));
+            
+            let returnAmount = (paidAmount > grandTotalWithVAT) ? (paidAmount - grandTotalWithVAT) : 0;
+            $('#return_amount').val(returnAmount.toFixed(2)); 
         });
 
         // Listen for changes in the VAT percentage input
@@ -604,7 +635,20 @@
                 }).get(),
                 unit_price: $("input[name='unit_price[]']").map(function() {
                     return $(this).val();
-                }).get()
+                }).get(),
+                vat_percent: $("input[name='vat_percent[]']").map(function() {
+                    return $(this).val();
+                }).get(),
+                vat_amount: $("input[name='vat_amount[]']").map(function() {
+                    return $(this).val();
+                }).get(),
+                subtotal_excl_vat: $("input[name='subtotal_excl_vat[]']").map(function() {
+                    return $(this).val();
+                }).get(),
+                total_amount: $("input[name='total_amount[]']").map(function() {
+                    return $(this).val();
+                }).get(),
+
             };
 
             console.log(data);
@@ -658,7 +702,7 @@
                 salestype: $("#salestype").val(),
                 grand_total: $("#grand_total").val(),
                 discount: $("#discount").val(),
-                vat_percent: $("#vat_percent").val(),
+                // vat_percent: $("#vat_percent").val(),
                 total_vat_amount: $("#total_vat_amount").val(),
                 net_amount: $("#net_amount").val(),
                 paid_amount: $("#paid_amount").val(),
@@ -673,10 +717,23 @@
                 }).get(),
                 unit_price: $("input[name='unit_price[]']").map(function() {
                     return $(this).val();
-                }).get()
+                }).get(),
+                vat_percent: $("input[name='vat_percent[]']").map(function() {
+                    return $(this).val();
+                }).get(),
+                vat_amount: $("input[name='vat_amount[]']").map(function() {
+                    return $(this).val();
+                }).get(),
+                subtotal_excl_vat: $("input[name='subtotal_excl_vat[]']").map(function() {
+                    return $(this).val();
+                }).get(),
+                total_amount: $("input[name='total_amount[]']").map(function() {
+                    return $(this).val();
+                }).get(),
+
             };
 
-            // console.log(data);
+            console.log(data);
 
 
             $.ajax({
@@ -744,7 +801,19 @@
                 }).get(),
                 unit_price: $("input[name='unit_price[]']").map(function() {
                     return $(this).val();
-                }).get()
+                }).get(),
+                vat_percent: $("input[name='vat_percent[]']").map(function() {
+                    return $(this).val();
+                }).get(),
+                vat_amount: $("input[name='vat_amount[]']").map(function() {
+                    return $(this).val();
+                }).get(),
+                subtotal_excl_vat: $("input[name='subtotal_excl_vat[]']").map(function() {
+                    return $(this).val();
+                }).get(),
+                total_amount: $("input[name='total_amount[]']").map(function() {
+                    return $(this).val();
+                }).get(),
             };
 
             // console.log(data);

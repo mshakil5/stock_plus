@@ -205,7 +205,7 @@ class SalesController extends Controller
         $order->ref = $request->ref; 
         $order->qn_no = $request->order_id ?: "0";
         $order->dn_no = $request->delivery_note_id ?: "0";
-        $order->vatpercentage = $request->vat_percent;
+        $order->vatpercentage = 0;
         $order->vatamount = $request->total_vat_amount;
         $order->discount_amount = $request->discount;
         $order->grand_total = $request->grand_total; 
@@ -250,7 +250,10 @@ class SalesController extends Controller
                 $orderDtl->product_id = $request->get('product_id')[$key];
                 $orderDtl->quantity = $request->get('quantity')[$key];
                 $orderDtl->sellingprice = $request->get('unit_price')[$key];
-                $orderDtl->total_amount = $request->get('quantity')[$key] * $request->get('unit_price')[$key];
+                $orderDtl->vat_percent = $request->get('vat_percent')[$key];
+                $orderDtl->vat_amount = $request->get('vat_amount')[$key];
+                $orderDtl->subtotal_excl_vat = $request->get('subtotal_excl_vat')[$key];
+                $orderDtl->total_amount = $request->get('total_amount')[$key];
                 $orderDtl->created_by = Auth::user()->id;
                 $orderDtl->save();
 
@@ -383,7 +386,7 @@ class SalesController extends Controller
         $order->customer_id = $request->customer_id;
         $order->branch_id = Auth::user()->branch_id;
         $order->ref = $request->ref; 
-        $order->vatpercentage = $request->vat_percent;
+        // $order->vatpercentage = $request->vat_percent;
         $order->vatamount = $request->total_vat_amount;
         $order->discount_amount = $request->discount;
         $order->grand_total = $request->grand_total; 
@@ -423,7 +426,10 @@ class SalesController extends Controller
                     if ($orderDetail) {
                         $orderDetail->quantity = $request->input('quantity')[$key];
                         $orderDetail->sellingprice = $request->input('unit_price')[$key];
-                        $orderDetail->total_amount = $request->input('quantity')[$key] * $request->input('unit_price')[$key];
+                        $orderDetail->vat_percent = $request->input('vat_percent')[$key];
+                        $orderDetail->vat_amount = $request->input('vat_amount')[$key];
+                        $orderDetail->subtotal_excl_vat = $request->input('subtotal_excl_vat')[$key];
+                        $orderDetail->total_amount = $request->input('total_amount')[$key];
                         $orderDetail->save();
                     }
                 } else {
@@ -433,7 +439,10 @@ class SalesController extends Controller
                     $orderDtl->product_id = $productId;
                     $orderDtl->quantity = $request->input('quantity')[$key];
                     $orderDtl->sellingprice = $request->input('unit_price')[$key];
-                    $orderDtl->total_amount = $request->input('quantity')[$key] * $request->input('unit_price')[$key];
+                    $orderDtl->vat_percent = $request->input('vat_percent')[$key];
+                    $orderDtl->vat_amount = $request->input('vat_amount')[$key];
+                    $orderDtl->subtotal_excl_vat = $request->input('subtotal_excl_vat')[$key];
+                    $orderDtl->total_amount = $request->input('total_amount')[$key];
                     $orderDtl->created_by = Auth::user()->id;
                     $orderDtl->save();
                 }
@@ -498,7 +507,7 @@ class SalesController extends Controller
         $order->ref = $request->ref; 
         $order->qn_no = $request->order_id ?: "0";
         $order->dn_no = $request->delivery_note_id ?: "0";
-        $order->vatpercentage = $request->vat_percent;
+        // $order->vatpercentage = $request->vat_percent;
         $order->vatamount = $request->total_vat_amount;
         $order->discount_amount = $request->discount;
         $order->grand_total = $request->grand_total; 
@@ -519,8 +528,11 @@ class SalesController extends Controller
                 $orderDtl->order_id = $order->id;
                 $orderDtl->product_id = $request->get('product_id')[$key];
                 $orderDtl->quantity = $request->get('quantity')[$key];
-                $orderDtl->sellingprice = $request->get('unit_price')[$key];
-                $orderDtl->total_amount = $request->get('quantity')[$key] * $request->get('unit_price')[$key];
+                $orderDtl->sellingprice = $request->input('unit_price')[$key];
+                $orderDtl->vat_percent = $request->get('vat_percent')[$key];
+                $orderDtl->vat_amount = $request->get('vat_amount')[$key];
+                $orderDtl->subtotal_excl_vat = $request->get('subtotal_excl_vat')[$key];
+                $orderDtl->total_amount = $request->get('total_amount')[$key];
                 $orderDtl->created_by = Auth::user()->id;
                 $orderDtl->save();
 
@@ -585,7 +597,7 @@ class SalesController extends Controller
         $order->customer_id = $request->customer_id;
         $order->branch_id = Auth::user()->branch_id;
         $order->ref = $request->ref; 
-        $order->vatpercentage = $request->vat_percent;
+        // $order->vatpercentage = $request->vat_percent;
         $order->vatamount = $request->total_vat_amount;
         $order->discount_amount = $request->discount;
         $order->grand_total = $request->grand_total; 
@@ -614,7 +626,10 @@ class SalesController extends Controller
                     if ($orderDetail) {
                         $orderDetail->quantity = $request->input('quantity')[$key];
                         $orderDetail->sellingprice = $request->input('unit_price')[$key];
-                        $orderDetail->total_amount = $request->input('quantity')[$key] * $request->input('unit_price')[$key];
+                        $orderDetail->vat_percent = $request->input('vat_percent')[$key];
+                        $orderDetail->vat_amount = $request->input('vat_amount')[$key];
+                        $orderDetail->subtotal_excl_vat = $request->input('subtotal_excl_vat')[$key];
+                        $orderDetail->total_amount = $request->input('total_amount')[$key];
                         $orderDetail->save();
                     }
                 } else {
@@ -624,7 +639,10 @@ class SalesController extends Controller
                     $orderDtl->product_id = $productId;
                     $orderDtl->quantity = $request->input('quantity')[$key];
                     $orderDtl->sellingprice = $request->input('unit_price')[$key];
-                    $orderDtl->total_amount = $request->input('quantity')[$key] * $request->input('unit_price')[$key];
+                    $orderDetail->vat_percent = $request->input('vat_percent')[$key];
+                    $orderDetail->vat_amount = $request->input('vat_amount')[$key];
+                    $orderDetail->subtotal_excl_vat = $request->input('subtotal_excl_vat')[$key];
+                    $orderDetail->total_amount = $request->input('total_amount')[$key];
                     $orderDtl->created_by = Auth::user()->id;
                     $orderDtl->save();
                 }
@@ -640,6 +658,7 @@ class SalesController extends Controller
     
     public function deliveryNoteStore(Request $request)
     {
+
         $productIDs = $request->input('product_id');
 
         if (empty($productIDs)) {
@@ -671,7 +690,7 @@ class SalesController extends Controller
         $order->ref = $request->ref; 
         $order->qn_no = $request->order_id ?: "0";
         $order->dn_no = $request->delivery_note_id ?: "0";
-        $order->vatpercentage = $request->vat_percent;
+        // $order->vatpercentage = $request->vat_percent;
         $order->vatamount = $request->total_vat_amount;
         $order->discount_amount = $request->discount;
         $order->grand_total = $request->grand_total; 
@@ -693,7 +712,10 @@ class SalesController extends Controller
                 $orderDtl->product_id = $request->get('product_id')[$key];
                 $orderDtl->quantity = $request->get('quantity')[$key];
                 $orderDtl->sellingprice = $request->get('unit_price')[$key];
-                $orderDtl->total_amount = $request->get('quantity')[$key] * $request->get('unit_price')[$key];
+                $orderDtl->vat_percent = $request->get('vat_percent')[$key];
+                $orderDtl->vat_amount = $request->get('vat_amount')[$key];
+                $orderDtl->subtotal_excl_vat = $request->get('subtotal_excl_vat')[$key];
+                $orderDtl->total_amount = $request->get('total_amount')[$key];
                 $orderDtl->created_by = Auth::user()->id;
                 $orderDtl->save();
 
@@ -802,7 +824,7 @@ class SalesController extends Controller
         $order->customer_id = $request->customer_id;
         $order->branch_id = Auth::user()->branch_id;
         $order->ref = $request->ref; 
-        $order->vatpercentage = $request->vat_percent;
+        // $order->vatpercentage = $request->vat_percent;
         $order->vatamount = $request->total_vat_amount;
         $order->discount_amount = $request->discount;
         $order->grand_total = $request->grand_total; 
