@@ -11,11 +11,27 @@
     .invoice-box { padding: 15px; width: 100%; }
     .invoice-title { font-weight: bold; font-size: 18px; text-align: right; }
 
-    .custom-table { width: 100%; border-collapse: collapse; }
-    .custom-table th, .custom-table td {
-      border: 1px solid #000; padding: 5px; text-align: center;
+.custom-table {
+      width: 100%;
+      border-collapse: collapse;
+      border: 1px solid #000;
     }
-    .custom-table th { background: #f2f2f2; }
+    .custom-table th, .custom-table td {
+      padding: 6px;
+      text-align: center;
+      border-left: 1px solid #000;
+      border-right: 1px solid #000;
+    }
+    .custom-table th {
+      border-bottom: 1px solid #000;
+    }
+    .custom-table tbody tr td {
+      border-top: none;
+      border-bottom: none;
+    }
+    .custom-table tbody tr:last-child td {
+      border-bottom: 1px solid #000;
+    }
 
     .outer-border { border: 1px solid #000; padding: 6px; margin: 10px 0; }
     .text-end { text-align: right; }
@@ -113,8 +129,8 @@
     <div class="outer-border mt-2 p-2">
       <table style="width:100%; border-collapse: collapse;">
         <tr>
-          <td style="width:30%;"></td>
-          <td style="width:40%; text-align:center;">
+          <td style="width:40%;"></td>
+          <td style="width:30%; text-align:left;">
             Total Qty: {{ $totalQty }}
           </td>
           <td style="width:20%; text-align:left;">

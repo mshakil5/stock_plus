@@ -150,15 +150,18 @@
 
     <div class="outer-border mt-2 p-2">
       <div class="row">
-        <div class="col-4">
+        <div class="col-3">
         </div>
         <div class="col-3 text-end">
           Total Qty: {{ $totalQty }}
         </div>
+        <div class="col-3">
+
+        </div>
         <div class="col-2 text-start">
           <strong>Gross Amount:</strong> 
         </div>
-        <div class="col-2 text-end">
+        <div class="col-1 text-start" style="padding: 1px;">
           {{ number_format($order->grand_total, 2) }}
         </div>
       </div>
@@ -168,7 +171,7 @@
         <div class="col-2 text-start">
           <strong>VAT {{ is_numeric($order->vatpercentage) ? $order->vatpercentage : 0 }}%:</strong> 
         </div>
-        <div class="col-1 text-end">
+        <div class="col-1 text-start" style="padding: 1px;">
             {{ is_numeric($order->vatamount) ? number_format($order->vatamount, 2) : '0.00' }}
         </div>
       </div>
@@ -187,12 +190,11 @@
       <div class="row">
         <div class="col-9">{{ $amountInWords }} Only</div>
         <div class="col-2 text-start"><strong>Net Amount:</strong> </div>
-        <div class="col-1 text-end">{{ number_format($order->net_total, 2) }}</div>
+        <div class="col-1 text-start" style="padding: 1px;">{{ number_format($order->net_total, 2) }}</div>
       </div>
     </div>
 
     <div class="row" style="position: absolute; bottom: 0; width: 100%;">
-      <div class="col-1"></div>
       <div class="col-4 text start">
         Received By:  ___________________<br> <br> <br>
         Authorised Dealer
