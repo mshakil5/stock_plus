@@ -18,6 +18,7 @@
       background: #fff;
     }
     .invoice-title { font-weight: bold; font-size: 20px; text-align: center; }
+    .invoice-subtitle { font-weight: bold; font-size: 16px; text-align: center;padding-right: 200px; }
     
     .custom-table {
       width: 100%;
@@ -65,6 +66,9 @@
           @if ($company->phone2) 
           <p class="mb-0">Office: {{ $company->phone2 ?? '' }}</p>
           @endif
+          @if ($company->website) 
+          <p class="mb-0">Website: {{ $company->website ?? '' }}</p>
+          @endif
           @if ($company->email1)
           <p>Email: {{ $company->email1 ?? '' }}</p>
           @endif
@@ -74,17 +78,14 @@
           @elseif ($order->delivery_note == 1)
           <h3 class="invoice-title">DELIVERY NOTE</h3>
           @else
-          <h3 class="invoice-title">CASH INVOICE</h3>
+          <h3 class="invoice-title">TAX INVOICE</h3>
           @endif
+          <h3 class="invoice-subtitle">TRN: </h3>
 
       </div>
 
 
 
-      <div class="col-6">
-        
-        <p class="mb-0">TRN:</p>
-      </div>
 
     </div>
 
@@ -177,7 +178,7 @@
         <div class="col-9">
         </div>
         <div class="col-2 text-start">
-          <strong>VAT {{ is_numeric($order->vatpercentage) ? $order->vatpercentage : 0 }}%:</strong> 
+          <strong>VAT Amount:</strong> 
         </div>
         <div class="col-1 text-end" style="padding-right: 6px;">
             <strong>{{ is_numeric($order->vatamount) ? number_format($order->vatamount, 2) : '0.00' }}</strong>

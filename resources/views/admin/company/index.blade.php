@@ -99,7 +99,7 @@
                 <div class="col-sm-4">
                     <div class="form-group">
                     <label>Website</label>
-                    <input type="text" class="form-control @error('website') is-invalid @enderror" id="facebook" name="facebook" value="{{$data->facebook}}">
+                    <input type="text" class="form-control @error('website') is-invalid @enderror" id="website" name="website" value="{{$data->website}}">
                     </div>
                 </div>
 
