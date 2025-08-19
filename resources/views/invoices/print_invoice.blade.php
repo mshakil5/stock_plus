@@ -7,7 +7,7 @@
     @endphp
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>{{ $company->company_name }}Invoice</title>
+  <title>{{ $company->company_name }} - Invoice - {{$order->id}}</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <style>
     body { font-family: Arial, sans-serif; font-size: 14px; }
@@ -60,18 +60,25 @@
             تاتش فيمس إصلاح كهرباء السيارات - ذ.م.م - ش.ش.و
           </h6>
           <p class="mb-0">{{ $company->address1 }}</p>
+          <p class="mb-0">
           @if ($company->phone1) 
-          <p class="mb-0">Tel: {{ $company->phone1 ?? '' }}</p>
+          Tel: {{ $company->phone1 ?? '' }}@if ($company->phone2) , @endif
           @endif
+
           @if ($company->phone2) 
-          <p class="mb-0">Office: {{ $company->phone2 ?? '' }}</p>
+          Office: {{ $company->phone2 ?? '' }}
           @endif
+
+          </p>
+          
           @if ($company->website) 
           <p class="mb-0">Website: {{ $company->website ?? '' }}</p>
           @endif
           @if ($company->email1)
           <p>Email: {{ $company->email1 ?? '' }}</p>
           @endif
+
+          <br>
 
           @if ($order->quotation == 1)
           <h3 class="invoice-title">QUOTATION</h3>
