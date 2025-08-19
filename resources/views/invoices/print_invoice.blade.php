@@ -259,6 +259,7 @@
       @endif
 
     </div> <!-- /.invoice-box -->
+      <hr>
   </div> <!-- /.page -->
 @endforeach
 
