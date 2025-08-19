@@ -17,7 +17,7 @@
       width: 900px;
       background: #fff;
     }
-    .invoice-title { font-weight: bold; font-size: 20px; text-align: center; }
+    .invoice-title { font-weight: bold; font-size: 20px; text-align: right; }
     
     .custom-table {
       width: 100%;
@@ -53,39 +53,31 @@
 <body>
   <div class="invoice-box">
     <div class="row">
-
-      <div class="col-12 text-center">
-          <h6 class="fw-bold mb-1">{{ $company->company_name }} <br>
-            تاتش فيمس إصلاح كهرباء السيارات - ذ.م.م - ش.ش.و
-          </h6>
-          <p class="mb-0">{{ $company->address1 }}</p>
-          @if ($company->phone1) 
-          <p class="mb-0">Tel: {{ $company->phone1 ?? '' }}</p>
-          @endif
-          @if ($company->phone2) 
-          <p class="mb-0">Office: {{ $company->phone2 ?? '' }}</p>
-          @endif
-          @if ($company->email1)
-          <p>Email: {{ $company->email1 ?? '' }}</p>
-          @endif
-
-          @if ($order->quotation == 1)
-          <h3 class="invoice-title">QUOTATION</h3>
-          @elseif ($order->delivery_note == 1)
-          <h3 class="invoice-title">DELIVERY NOTE</h3>
-          @else
-          <h3 class="invoice-title">CASH INVOICE</h3>
-          @endif
-
-      </div>
-
-
-
       <div class="col-6">
-        
-        <p class="mb-0">TRN:</p>
+        <h6 class="fw-bold mb-1">{{ $company->company_name }} <br>
+          تاتش فيمس إصلاح كهرباء السيارات - ذ.م.م - ش.ش.و
+        </h6>
+        <p class="mb-0">{{ $company->address1 }}</p>
+        @if ($company->phone1) 
+        <p class="mb-0">Tel: {{ $company->phone1 ?? '' }}</p>
+        @endif
+        @if ($company->phone2) 
+        <p class="mb-0">Office: {{ $company->phone2 ?? '' }}</p>
+        @endif
+        @if ($company->email1)
+        <p>Email: {{ $company->email1 ?? '' }}</p>
+        @endif
       </div>
-
+      <div class="col-6 text-end">
+        @if ($order->quotation == 1)
+        <h3 class="invoice-title">QUOTATION</h3>
+        @elseif ($order->delivery_note == 1)
+        <h3 class="invoice-title">DELIVERY NOTE</h3>
+        @else
+        <h3 class="invoice-title">TAX CASH INVOICE</h3>
+        @endif
+        <p class="mb-0">TRN: 100474976600003</p>
+      </div>
     </div>
 
     <div class="row mb-3">
@@ -125,10 +117,10 @@
           <th class="text-start">Description</th>
           <th>Qty</th>
           <th>Unit Price</th>
-          <th>Total (Excl. vat)</th>
+          <th>TotalExcl</th>
           <th>Vat%</th>
           <th>Vat Amt</th>
-          <th>Total (Incl. vat)</th>
+          <th>TotalIncl</th>
         </tr>
       </thead>
       <tbody>
@@ -150,7 +142,7 @@
             <td>{{ number_format($item->subtotal_excl_vat, 2) }}</td>
             <td>{{ number_format($item->vat_percent, 0) }}</td>
             <td>{{ number_format($item->vat_amount, 2) }}</td>
-            <td class="text-end">{{ number_format($item->total_amount, 2) }}</td>
+            <td>{{ number_format($item->total_amount, 2) }}</td>
           </tr>
         @endforeach
       </tbody>
@@ -169,8 +161,8 @@
         <div class="col-2 text-start">
           <strong>Gross Amount:</strong> 
         </div>
-        <div class="col-1 text-end" style="padding-right: 6px;">
-          <strong>{{ number_format($order->grand_total, 2) }}</strong>
+        <div class="col-1 text-start" style="padding: 1px;">
+          {{ number_format($order->grand_total, 2) }}
         </div>
       </div>
       <div class="row">
@@ -179,8 +171,8 @@
         <div class="col-2 text-start">
           <strong>VAT {{ is_numeric($order->vatpercentage) ? $order->vatpercentage : 0 }}%:</strong> 
         </div>
-        <div class="col-1 text-end" style="padding-right: 6px;">
-            <strong>{{ is_numeric($order->vatamount) ? number_format($order->vatamount, 2) : '0.00' }}</strong>
+        <div class="col-1 text-start" style="padding: 1px;">
+            {{ is_numeric($order->vatamount) ? number_format($order->vatamount, 2) : '0.00' }}
         </div>
       </div>
       @php
@@ -198,9 +190,7 @@
       <div class="row">
         <div class="col-9">{{ $amountInWords }} Only</div>
         <div class="col-2 text-start"><strong>Net Amount:</strong> </div>
-        <div class="col-1 text-end" style="padding-right: 6px;">
-          <strong>{{ number_format($order->net_total, 2) }}</strong>
-        </div>
+        <div class="col-1 text-start" style="padding: 1px;">{{ number_format($order->net_total, 2) }}</div>
       </div>
     </div>
 
