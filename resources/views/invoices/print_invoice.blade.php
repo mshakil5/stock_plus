@@ -62,11 +62,11 @@
           <p class="mb-0">{{ $company->address1 }}</p>
           <p class="mb-0">
           @if ($company->phone1) 
-          Tel: {{ $company->phone1 ?? '' }}@if ($company->phone2) , @endif
+          Tel: {{ $company->phone1 ?? '' }}@if ($company->phone2),@endif
           @endif
 
           @if ($company->phone2) 
-          Office: {{ $company->phone2 ?? '' }}
+          {{ $company->phone2 ?? '' }}
           @endif
 
           </p>
@@ -168,7 +168,7 @@
       <div class="row">
         <div class="col-3">
         </div>
-        <div class="col-3 text-end">
+        <div class="col-3 text-center">
           Total Qty: {{ $totalQty }}
         </div>
         <div class="col-3">
@@ -197,10 +197,12 @@
         $whole = floor($order->net_total);
         $decimal = round(($order->net_total - $whole) * 100);
 
-        $amountInWords = ucfirst($f->format($whole));
+
+        $amountInWords = ucfirst(str_replace('-', ' ', $f->format($whole)));
+        $decimalInWords = ucfirst(str_replace('-', ' ', $f->format($decimal)));
 
         if($decimal > 0){
-            $amountInWords .= ' and ' . $decimal . '/100';
+            $amountInWords .= ' and ' . $decimalInWords . ' Fils';
         }
       @endphp
       <div class="row">
