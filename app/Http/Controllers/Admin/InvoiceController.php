@@ -70,13 +70,14 @@ class InvoiceController extends Controller
                         <span title="Print Invoice">Print</span>
                     </a>';
 
+                    // $btn .= '<a href="' . route('admin.download_invoice', $invoice->id) . '" class="btn btn-primary btn-xs">
+                    //     <span title="Download Invoice">
+                    //         <i class="fa fa-download" aria-hidden="true"></i> Download
+                    //     </span>
+                    // </a>';
+
                 
-                    $btn .= '<a href="' . route('admin.download_invoice', $invoice->id) . '" class="btn btn-primary btn-xs">
-                        <span title="Download Invoice">
-                            <i class="fa fa-download" aria-hidden="true"></i> Download
-                        </span>
-                    </a>
-                    <button type="button" class="btn btn-primary btn-xs view-btn" data-toggle="modal" data-target="#product-details" value="' . $invoice->id . '">
+                    $btn .= '<button type="button" class="btn btn-primary btn-xs view-btn" data-toggle="modal" data-target="#product-details" value="' . $invoice->id . '">
                         <i class="fa fa-eye" aria-hidden="true"></i> View
                     </button>';
                 
