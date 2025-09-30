@@ -62,9 +62,29 @@
     .signature {
       position: absolute;
       right: 20px;
-      bottom: 20px;
+      bottom: 60px;
       text-align: right;
       font-size: 14px;
+    }
+
+    .footer-note {
+      position: absolute;
+      bottom: 10px; /* adjust space from bottom */
+      left: 20px;
+      right: 20px;
+      font-size: 12px;
+      text-align: center;
+      page-break-inside: avoid;
+    }
+
+
+    .invoice-header {
+      background-color: rgb(255, 166, 0);
+      color: white;
+      padding: 10px; /* optional */
+      margin-left: -15px; /* adjust based on bootstrap container */
+      margin-right: -15px;
+      
     }
 
     @media print {
@@ -90,11 +110,11 @@
   <div class="page">
     <div class="invoice-box">
       {{-- Header --}}
-      <div class="row">
-        <div class="col-12 text-center">
-          <h6 class="fw-bold mb-1">{{ $company->company_name }} <br>
+      <div class="row mb-3">
+        <div class="col-12 text-center  invoice-header">
+          <h3 class="fw-bold mb-1">{{ $company->company_name }} <br>
             تاتش فيمس إصلاح كهرباء السيارات - ذ.م.م - ش.ش.و
-          </h6>
+          </h3>
           <p class="mb-0">{{ $company->address1 }}</p>
           <p class="mb-0">
             @if ($company->phone1)
@@ -111,9 +131,11 @@
           @if ($company->email1)
             <p>Email: {{ $company->email1 }}</p>
           @endif
+        </div>
+
+        <div class="col-12 text-center">
 
           <br>
-
           @if ($order->quotation == 1)
             <h3 class="invoice-title">QUOTATION</h3>
           @elseif ($order->delivery_note == 1)
@@ -259,7 +281,10 @@
       @endif
 
     </div> <!-- /.invoice-box -->
+    <div class="footer-note">
       <hr>
+      <p>Mechanics | Electrical Repair | Ac Working | Computer Checking | Oil Change | Suspension Work</p>
+    </div>
   </div> <!-- /.page -->
 @endforeach
 
