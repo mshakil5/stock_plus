@@ -70,16 +70,19 @@
     .footer-note {
       position: absolute;
       bottom: 10px; /* adjust space from bottom */
-      left: 20px;
-      right: 20px;
-      font-size: 12px;
+      left: 10px;
+      right: 10px;
+      font-size: 18px;
       text-align: center;
       page-break-inside: avoid;
+      color: #F74B00;
+      font-weight: bold;
+      background-color: rgb(0, 0, 0);
     }
 
 
     .invoice-header {
-      background-color: rgb(255, 166, 0);
+      background-color: rgb(0, 0, 0);
       color: white;
       padding: 10px; /* optional */
       margin-left: -15px; /* adjust based on bootstrap container */
@@ -112,7 +115,7 @@
       {{-- Header --}}
       <div class="row mb-3">
         <div class="col-12 text-center  invoice-header">
-          <h3 class="fw-bold mb-1">{{ $company->company_name }} <br>
+          <h3 class="fw-bold mb-1"> <span style="color: #F74B00">{{ $company->company_name }}</span> <br>
             تاتش فيمس إصلاح كهرباء السيارات - ذ.م.م - ش.ش.و
           </h3>
           <p class="mb-0">{{ $company->address1 }}</p>
@@ -282,7 +285,7 @@
 
     </div> <!-- /.invoice-box -->
     <div class="footer-note">
-      <hr>
+      <br>
       <p>Mechanics | Electrical Repair | Ac Working | Computer Checking | Oil Change | Suspension Work</p>
     </div>
   </div> <!-- /.page -->
