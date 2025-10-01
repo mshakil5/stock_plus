@@ -186,10 +186,10 @@
     <footer class="main-footer fixed-bottom">
         <div class="container-fluid">
             <div class="offset-md-3 col-md-9">
-                <div class="pull-right hidden-xs">
+                <!-- <div class="pull-right hidden-xs">
                     <b>Version:</b> 1.1.0
-                </div>
-                <strong>Copyright &copy; </strong>Next Link Ltd All rights reserved.
+                </div> -->
+                Developed By:<strong> <a href="https://www.mentosoftware.co.uk/" target="blank">Mento Software</a></strong> | Email: info@mentosoftware.co.uk | Phone: 0044(0) 7745975978 | www.mentosoftware.co.uk .
             </div>
         </div>
     </footer>
