@@ -4,7 +4,7 @@
   @php
     $company = \App\Models\CompanyDetails::first();
     // Controls how many rows fit per page without spilling
-    $rowsPerPage = 17; // adjust to 16/18/19 if needed
+    $rowsPerPage = 20; // adjust to 16/18/19 if needed
     $items = $order->orderdetails->values(); // ensure zero-based indexing
     $pages = $items->chunk($rowsPerPage);
   @endphp
@@ -82,7 +82,7 @@
 
 
     .invoice-header {
-      background-color: #151616;
+      background-color: rgb(0, 0, 0);
       color: white;
       padding: 10px; /* optional */
       margin-left: -15px; /* adjust based on bootstrap container */
@@ -115,7 +115,9 @@
       {{-- Header --}}
       <div class="row mb-3">
         <div class="col-12 text-center  invoice-header">
-          <img src="{{asset('touch.png')}}" alt="" width="100%" height="120">
+          <h3 class="fw-bold mb-1"> <span style="color: #F74B00">{{ $company->company_name }}</span> <br>
+            تاتش فيمس إصلاح كهرباء السيارات - ذ.م.م - ش.ش.و
+          </h3>
           <p class="mb-0">{{ $company->address1 }}</p>
           <p class="mb-0">
             @if ($company->phone1)
@@ -201,17 +203,17 @@
               $totalQtyAll += $item->quantity;
             @endphp
             <tr>
-              <td style="border-bottom: 1px solid #000;">{{ $globalIndex + 1 }}</td>
+              <td>{{ $globalIndex + 1 }}</td>
               @if ($order->partnoshow == 1)
-                <td style="border-bottom: 1px solid #000;" class="text-start">{{ $item->product->part_no }}</td>
+                <td class="text-start">{{ $item->product->part_no }}</td>
               @endif
-              <td style="border-bottom: 1px solid #000;" class="text-start">{{ $item->product->productname }}</td>
-              <td style="border-bottom: 1px solid #000;" class="text-end">{{ $item->quantity }}</td>
-              <td style="border-bottom: 1px solid #000;" class="text-end">{{ number_format($item->sellingprice, 2) }}</td>
-              <td style="border-bottom: 1px solid #000;" class="text-end">{{ number_format($item->subtotal_excl_vat, 2) }}</td>
-              <td style="border-bottom: 1px solid #000;" class="text-center">{{ number_format($item->vat_percent, 0) }}</td>
-              <td style="border-bottom: 1px solid #000;" class="text-end">{{ number_format($item->vat_amount, 2) }}</td>
-              <td style="border-bottom: 1px solid #000;" class="text-end">{{ number_format($item->total_amount, 2) }}</td>
+              <td class="text-start">{{ $item->product->productname }}</td>
+              <td class="text-end">{{ $item->quantity }}</td>
+              <td class="text-end">{{ number_format($item->sellingprice, 2) }}</td>
+              <td class="text-end">{{ number_format($item->subtotal_excl_vat, 2) }}</td>
+              <td class="text-center">{{ number_format($item->vat_percent, 0) }}</td>
+              <td class="text-end">{{ number_format($item->vat_amount, 2) }}</td>
+              <td class="text-end">{{ number_format($item->total_amount, 2) }}</td>
             </tr>
           @endforeach
 
