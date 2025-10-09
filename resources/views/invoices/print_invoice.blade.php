@@ -72,22 +72,33 @@
       bottom: 10px; /* adjust space from bottom */
       left: 10px;
       right: 10px;
-      font-size: 18px;
+      font-size: 14px;
       text-align: center;
       page-break-inside: avoid;
       color: #F74B00;
       font-weight: bold;
-      background-color: rgb(0, 0, 0);
     }
 
 
     .invoice-header {
-      background-color: #151616;
-      color: white;
       padding: 10px; /* optional */
       margin-left: -15px; /* adjust based on bootstrap container */
       margin-right: -15px;
       
+    }
+
+    .invoice-header p {
+      font-size: 18px;
+      color: black;
+      font-weight: bold;
+
+    }
+
+    /* image center align */
+    .invoice-header img{
+      display: block;
+      margin-left: 14px;
+      margin-right: auto;
     }
 
     @media print {
@@ -284,7 +295,7 @@
     </div> <!-- /.invoice-box -->
     <div class="footer-note">
       <br>
-      <p>Mechanics | Electrical Repair | Ac Working | Computer Checking | Oil Change | Suspension Work</p>
+      <p>Our Services: Mechanics | Electrical Repair | Ac Working | Computer Checking | Oil Change | Suspension Work</p>
     </div>
   </div> <!-- /.page -->
 @endforeach

@@ -229,13 +229,15 @@ echo Session::put('message', '');
                 },
                 {
                     data: 'net_total',
-                    name: 'net_total'
+                    name: 'net_total',
+                    className: 'text-right'
                 },
                 {
                     data: 'action',
                     name: 'action',
                     orderable: false,
-                    searchable: false
+                    searchable: false,
+                    className: 'text-center'
                 },
             ]
         });

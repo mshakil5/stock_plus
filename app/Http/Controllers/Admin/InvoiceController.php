@@ -48,8 +48,8 @@ class InvoiceController extends Controller
             ->editColumn('customer_id', function ($invoice) {
                 return $invoice->customer->name;
             })
-            ->addColumn('total', function ($invoice) {
-                $total = $invoice->net_total;
+            ->addColumn('net_total', function ($invoice) {
+                $total = number_format($invoice->net_total, 2);
                 return $total;
             })
             ->addColumn('created_at', function ($invoice) {
