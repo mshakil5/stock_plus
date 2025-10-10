@@ -181,31 +181,46 @@
                 url: invoiceurl + "/" + id,
                 success: function(data) {
                     console.log(data);
+                    var modal = $('#product-details');
                     modal.find('.invoice-details tbody').empty();
                     ctp.clear().draw(true);
+
                     $.each(data.orderdetails, function(i, orderdetail) {
+                        // Handle products that may be null
+                        var partNo = orderdetail.product ? orderdetail.product.part_no : '-';
+                        var productName = orderdetail.product 
+                            ? orderdetail.product.productname 
+                            : orderdetail.productname || '-';
+                        var qty = orderdetail.quantity || 0;
+                        var price = orderdetail.sellingprice || 0;
+                        var vat = orderdetail.vat_amount || 0;
+                        var total = orderdetail.total_amount || 0;
+
                         ctp.row.add([
                             orderdetail.id,
-                            orderdetail.product.part_no,
-                            orderdetail.product.productname,
-                            orderdetail.quantity,
-                            orderdetail.sellingprice,
-                            orderdetail.vat_amount,
-                            orderdetail.total_amount
+                            partNo,
+                            productName,
+                            qty,
+                            price,
+                            vat,
+                            total
                         ]).draw(true);
                     });
-                    modal.find('.total').text(data.grand_total);
-                    modal.find('.vat-amount').text(data.vatamount);
-                    modal.find('.discount-amount').text(data.discount_amount);
-                    modal.find('.grand-total').text(data.net_total);
-                    modal.find('.paid-amount').text(data.customer_paid);
 
+                    // Handle null or missing values gracefully
+                    modal.find('.total').text(data.grand_total ?? 0);
+                    modal.find('.vat-amount').text(data.vatamount ?? 0);
+                    modal.find('.discount-amount').text(data.discount_amount ?? 0);
+                    modal.find('.grand-total').text(data.net_total ?? 0);
+                    modal.find('.paid-amount').text(data.customer_paid ?? 0);
                 },
+
                 error: function(err) {
                     console.log(err);
                 }
             });
         });
+
 
 
         let ctp = $('.invoice-details').DataTable({
