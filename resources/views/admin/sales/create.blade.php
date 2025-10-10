@@ -987,8 +987,6 @@
 
             };
 
-            console.log(data);
-
 
             $.ajax({
                 url: quotationStoreurl,
@@ -1048,6 +1046,9 @@
                 partnoshow: $("#partnoshow").val(),
                 return_amount: $("#return_amount").val(),
                 product_id: $("input[name='product_id[]']").map(function() {
+                    return $(this).val();
+                }).get(),
+                productname: $("input[name='productname[]']").map(function() {
                     return $(this).val();
                 }).get(),
                 quantity: $("input[name='quantity[]']").map(function() {

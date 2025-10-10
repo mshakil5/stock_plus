@@ -696,10 +696,10 @@ class SalesController extends Controller
     public function deliveryNoteStore(Request $request)
     {
 
-        $productIDs = $request->input('product_id');
+        $productIDs = $request->productname;
 
         if (empty($productIDs)) {
-            $message = "<div class='alert alert-warning'><a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a><b>Please fill Product field.</b></div>";
+            $message = "<div class='alert alert-warning'><a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a><b>Please fill Product name field.</b></div>";
             return response()->json(['status' => 303, 'message' => $message]);
         }
 
@@ -742,11 +742,12 @@ class SalesController extends Controller
 
         if ($order->save()) {
 
-            foreach ($request->input('product_id') as $key => $value) {
+            foreach ($request->input('productname') as $key => $value) {
                 $orderDtl = new OrderDetail();
                 $orderDtl->invoiceno = $order->invoiceno;
                 $orderDtl->order_id = $order->id;
-                $orderDtl->product_id = $request->get('product_id')[$key];
+                $orderDtl->product_id = $request->get('product_id')[$key] ?? null;
+                $orderDtl->productname = $request->get('productname')[$key] ?? null;
                 $orderDtl->quantity = $request->get('quantity')[$key];
                 $orderDtl->sellingprice = $request->get('unit_price')[$key];
                 $orderDtl->vat_percent = $request->get('vat_percent')[$key];
@@ -757,37 +758,15 @@ class SalesController extends Controller
                 $orderDtl->save();
 
 
-                $stockid = Stock::where('product_id', '=', $request->get('product_id')[$key])
-                    ->where('branch_id', '=', Auth::user()->branch_id)
-                    ->first();
-
-                if ($request->delivery_note_id == "") {
-                    if (isset($stockid->id)) {
-                        $dstock = Stock::find($stockid->id);
-                        $dstock->quantity -= $request->get('quantity')[$key];
-                        $dstock->save();
-                    } else {
-                        $newstock = new Stock();
-                        $newstock->branch_id = Auth::user()->branch_id;
-                        $newstock->product_id = $request->get('product_id')[$key];
-                        $newstock->quantity = 0 - $request->get('quantity')[$key];
-                        $newstock->created_by = Auth::user()->id;
-                        $newstock->save();
-                    }
-                } else {
-                    $oldDNqty = OrderDetail::where('order_id', $request->delivery_note_id)
-                        ->where('product_id', $request->get('product_id')[$key])
+                if ($request->get('product_id')[$key]) {
+                    $stockid = Stock::where('product_id', '=', $request->get('product_id')[$key])
+                        ->where('branch_id', '=', Auth::user()->branch_id)
                         ->first();
 
-                    if (isset($oldDNqty)) {
-                        $amend_stock = $oldDNqty->quantity - $request->get('quantity')[$key];
-                        $dstock = Stock::find($stockid->id);
-                        $dstock->quantity += $amend_stock;
-                        $dstock->save();
-                    } else {
+                    if ($request->delivery_note_id == "") {
                         if (isset($stockid->id)) {
                             $dstock = Stock::find($stockid->id);
-                            $dstock ->quantity -= $request->get('quantity')[$key];
+                            $dstock->quantity -= $request->get('quantity')[$key];
                             $dstock->save();
                         } else {
                             $newstock = new Stock();
@@ -797,8 +776,34 @@ class SalesController extends Controller
                             $newstock->created_by = Auth::user()->id;
                             $newstock->save();
                         }
+                    } else {
+                        $oldDNqty = OrderDetail::where('order_id', $request->delivery_note_id)
+                            ->where('product_id', $request->get('product_id')[$key])
+                            ->first();
+
+                        if (isset($oldDNqty)) {
+                            $amend_stock = $oldDNqty->quantity - $request->get('quantity')[$key];
+                            $dstock = Stock::find($stockid->id);
+                            $dstock->quantity += $amend_stock;
+                            $dstock->save();
+                        } else {
+                            if (isset($stockid->id)) {
+                                $dstock = Stock::find($stockid->id);
+                                $dstock ->quantity -= $request->get('quantity')[$key];
+                                $dstock->save();
+                            } else {
+                                $newstock = new Stock();
+                                $newstock->branch_id = Auth::user()->branch_id;
+                                $newstock->product_id = $request->get('product_id')[$key];
+                                $newstock->quantity = 0 - $request->get('quantity')[$key];
+                                $newstock->created_by = Auth::user()->id;
+                                $newstock->save();
+                            }
+                        }
                     }
                 }
+
+                
 
             }
 
