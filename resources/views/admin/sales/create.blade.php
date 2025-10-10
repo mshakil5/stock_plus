@@ -73,11 +73,19 @@
                             <div class="form-group col-md-6">
                                 <label for="product">Product *</label>
                                 <select name="product" id="product" class="form-control select2">
-                                    <option value="">Select</option>
-                                    @foreach (\App\Models\Product::select('id','productname','part_no')->where('branch_id', Auth::user()->branch_id)->get() as $product)
+                                    {{-- <option value="">Select</option> --}}
+                                    {{-- @foreach (\App\Models\Product::select('id','productname','part_no')->where('branch_id', Auth::user()->branch_id)->get() as $product)
                                     <option value="{{ $product->id }}">{{ $product->productname }}-{{ $product->part_no }}</option>
-                                    @endforeach
+                                    @endforeach --}}
                                 </select>
+                            </div>
+
+                            
+                            <div class="form-group col-md-1">
+                                <label for=""> New</label>
+                                <a class="btn btn-primary btn-sm btn-return" data-toggle="modal" data-target="#newProductModal">
+                                    <i class='fa fa-plus'></i> Add
+                                </a>
                             </div>
 
                             <div class="form-group col-md-4">
@@ -336,6 +344,149 @@
     </div>
 </div>
 
+<div class="modal fade" id="newProductModal">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header alert alert-success" style="text-align: left;">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">#Add New Product</h4>
+            </div>
+            <div class="modal-body">
+                <div class="productmsg"></div>
+                
+
+                <form action="{{ route('admin.storeproduct') }}" method="post" enctype="multipart/form-data" id="product-form">
+                        {{ csrf_field() }}
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <table class="table table-hover">
+                                    <input type="hidden" id="salepage" name="salespage" value="1">
+                                    <tr>
+                                        <td><label class="control-label">Part No/Product ID</label></td>
+                                        <td colspan="2"><input name="part_no" id="part_no" type="text" class="form-control"
+                                                maxlength="50px" placeholder="" value="{{ old('part_no') }}" />
+                                            @if ($errors->has('part_no'))
+                                            <span class="text-danger">{{ $errors->first('part_no') }}</span>
+                                            @endif
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><label class="control-label">Product Name*</label></td>
+                                        <td colspan="2"><input name="product_name" id="product_name" type="text" class="form-control" maxlength="50px" placeholder="" required="required" value="{{ old('product_name') }}" />
+                                            @if ($errors->has('product_name'))
+                                            <span class="text-danger">{{ $errors->first('product_name') }}</span>
+                                            @endif
+                                        </td>
+                                    </tr>
+
+                                    <tr>
+                                        <td><label class="control-label">Code/Category*</label></td>
+                                        <td colspan="2">
+                                            <select name="pcategoryselect" id="pcategoryselect"  class="form-control select2">
+                                            </select>
+                                        </td>
+                                    </tr>
+
+                                    <tr>
+                                        <td><label class="control-label">Brand*</label></td>
+
+                                        <td colspan="2">
+                                            <select name="pbrandselect" id="pbrandselect" required="required" class="form-control select2">
+                                            </select>
+                                        </td>
+                                    </tr>
+
+                                    <tr>
+                                        <td><label class="control-label">Unit</label></td>
+                                        <td colspan="2"><input name="unit" id="unit" type="text" class="form-control"
+                                                maxlength="50px" placeholder="" value="{{ old('unit') }}" />
+                                            @if ($errors->has('unit'))
+                                            <span class="text-danger">{{ $errors->first('unit') }}</span>
+                                            @endif
+                                        </td>
+                                    </tr>
+
+
+                                    <tr>
+                                        <td><label class="control-label">Sell price*</label></td>
+                                        <td colspan="2"><input name="sell_price" id="sell_price" type="number"
+                                                class="form-control"
+                                                oninput="this.value=(parseInt(this.value)||0)" maxlength="50px"
+                                                placeholder="Enter price" value="0" />
+                                            @if ($errors->has('sell_price'))
+                                            <span class="text-danger">{{ $errors->first('sell_price') }}</span>
+                                            @endif
+                                        </td>
+                                    </tr>
+
+                                    
+                                </table>
+                            </div>
+
+                            <div class="col-md-6">
+                                <table class="table table-hover">
+                                    <tr>
+                                        <td><label class="control-label">Model</label></td>
+                                        <td><input name="model" id="model" type="text" class="form-control"
+                                                maxlength="50px" placeholder="" value="{{ old('model') }}" />
+                                            @if ($errors->has('model'))
+                                            <span class="text-danger">{{ $errors->first('model') }}</span>
+                                            @endif
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><label class="control-label">Location</label></td>
+                                        <td><input name="location" id="location" type="text" class="form-control"
+                                                maxlength="50px" placeholder="" value="{{ old('location') }}" />
+                                            @if ($errors->has('location'))
+                                            <span class="text-danger">{{ $errors->first('location') }}</span>
+                                            @endif
+                                        </td>
+                                    </tr>
+
+                                    <tr>
+                                        <td><label class="control-label">Group</label></td>
+                                        <td>
+                                            <select name="group_id" id="group_id" class="form-control select2">
+                                            </select>
+                                        </td>
+                                    </tr>
+
+
+
+
+                                    <tr>
+                                        <td><label class="control-label">Remarks</label></td>
+                                        <td>
+                                            <textarea name="productdesc" id="pro_desc" class="form-control"
+                                                rows="4"></textarea>
+                                        </td>
+                                    </tr>
+
+
+
+                                </table>
+                                <br>
+                                
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-danger btn-sm" data-dismiss="modal">Close</button>
+                                    <button type="submit" class="btn btn-primary btn-sm product-save-btn"><i class="fa fa-save"></i> Save</button>
+                                </div>
+                            </div>
+
+
+                            {{-- end  --}}
+                        </div>
+                    </form>
+
+
+
+            </div>
+        </div>
+    </div>
+</div>
+
 @endsection
 
 @section('script')
@@ -433,10 +584,10 @@
             product_id.push(product);
             seen = product_id.filter((s => v => s.has(v) || !s.add(v))(new Set));
 
-            if (Array.isArray(seen) && seen.length) {
-                $(".ermsg").html("<div class='alert alert-warning'><a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a><b>Duplicate product found..!</b></div>");
-                return;
-            }
+            // if (Array.isArray(seen) && seen.length) {
+            //     $(".ermsg").html("<div class='alert alert-warning'><a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a><b>Duplicate product found..!</b></div>");
+            //     return;
+            // }
 
 
             $.ajax({
@@ -955,6 +1106,273 @@
             }
         });
     });
+
+    
+    var getProductUrl = "{{URL::to('/admin/getallproduct')}}";
+    product_load();
+
+        function product_load() {
+        $.ajax({
+            url: getProductUrl,
+            type: 'GET',
+            beforeSend: function(request) {
+                return request.setRequestHeader('X-CSRF-Token', $("meta[name='csrf-token']").attr('content'));
+            },
+            success: function(response) {
+                console.log(response);
+
+                $('#product').append('<option value="">Select</option>');
+                $.each(response, function() {
+                    $('<option/>', {
+                            'value': this.id,
+                            'text': this.productname + ' - ' + this.part_no
+                        }).appendTo('#product');
+                });
+
+            },
+            error: function(err) {
+                console.log(err);
+                alert("Something Went Wrong, Please check again");
+            }
+        });
+    }
+
+    var getcaturl = "{{URL::to('/admin/category-all')}}";
+    var getbrdurl = "{{URL::to('/admin/brand-all')}}";
+    var getgroupurl = "{{URL::to('/admin/group-all')}}";
+    category_load();
+    brand_load();
+    group_load();
+
+
+    function category_load() {
+        $.ajax({
+            url: getcaturl,
+            type: 'GET',
+            beforeSend: function(request) {
+                return request.setRequestHeader('X-CSRF-Token', $("meta[name='csrf-token']").attr('content'));
+            },
+            success: function(response) {
+
+                $('#pcategoryselect').append('<option value="">Select</option>');
+                $.each(response, function() {
+                    if (this.status == 0) {
+
+                    } else {
+                        $('<option/>', {
+                            'value': this.id,
+                            'text': this.name + ' - ' + this.categoryid
+                        }).appendTo('#pcategoryselect');
+                    }
+                });
+
+            },
+            error: function(err) {
+                console.log(err);
+                alert("Something Went Wrong, Please check again");
+            }
+        });
+    }
+
+
+    function brand_load() {
+        $.ajax({
+            url: getbrdurl,
+            type: 'GET',
+            beforeSend: function(request) {
+                return request.setRequestHeader('X-CSRF-Token', $("meta[name='csrf-token']").attr('content'));
+            },
+            success: function(response) {
+                $('#pbrandselect').append('<option value="">Select</option>');
+                $.each(response, function() {
+                    if (this.status == 0) {
+
+                    } else {
+                        $('<option/>', {
+                            'value': this.id,
+                            'text': this.name + ' - ' + this.brandid
+                        }).appendTo('#pbrandselect');
+                    }
+
+                });
+            },
+            error: function(err) {
+                console.log(err);
+                alert("Something Went Wrong, Please check again");
+            }
+        });
+    }
+
+    function group_load() {
+        $.ajax({
+            url: getgroupurl,
+            type: 'GET',
+            beforeSend: function(request) {
+                return request.setRequestHeader('X-CSRF-Token', $("meta[name='csrf-token']").attr('content'));
+            },
+            success: function(response) {
+                $('#group_id').append('<option value="">Select</option>');
+                $.each(response, function() {
+                    if (this.status == 0) {
+
+                    } else {
+                        $('<option/>', {
+                            'value': this.id,
+                            'text': this.name + ' - ' + this.groupid
+                        }).appendTo('#group_id');
+                    }
+                });
+            },
+            error: function(err) {
+                console.log(err);
+                alert("Something Went Wrong, Please check again");
+            }
+        });
+    }
+
+
+    // $(document).on('click', '.product-save-btn', function(event) {
+    //     event.preventDefault();
+    //     var form = $('#product-form');
+
+    //     // Product form validation
+    //     var part_no = $('#part_no').val().trim();
+    //     var product = $('#product_name').val().trim();
+    //     var pcategoryselect = $('#pcategoryselect').val();
+    //     var pbrandselect = $('#pbrandselect').val();
+    //     var sell_price = $('#sell_price').val().trim();
+
+    //     if (part_no === '') {
+    //         alert("Part No/Product ID is required.");
+    //         return;
+    //     }
+    //     if (product === '') {
+    //         alert("Product aaa Name is required.");
+    //         return;
+    //     }
+    //     if (!pcategoryselect) {
+    //         alert("Category is required.");
+    //         return;
+    //     }
+    //     if (!pbrandselect) {
+    //         alert("Brand is required.");
+    //         return;
+    //     }
+    //     if (sell_price === '' || isNaN(sell_price) || parseFloat(sell_price) < 0) {
+    //         alert("Sell price must be a non-negative number.");
+    //         return;
+    //     }
+
+    //     var actionUrl = form.attr('action');
+    //     var formData = form.serialize();
+    //     formData.push(
+    //         { name: 'part_no', value: part_no },
+    //         { name: 'product_name', value: product },
+    //         { name: 'category_id', value: pcategoryselect },
+    //         { name: 'brand_id', value: pbrandselect },
+    //         { name: 'sell_price', value: sell_price }
+    //     );
+
+    //     $.ajax({
+    //         url: actionUrl,
+    //         type: 'POST',
+    //         data: formData,
+    //         success: function(response) {
+    //             if (response.success) {
+    //                 var newOption = new Option(response.product.productname, response.product.id, true, true);
+    //                 $('#product').append(newOption).trigger('change');
+
+    //                 $('#newProductModal').modal('hide');
+
+    //                 alert('Product added successfully!');
+    //             } else {
+    //                 alert('Error: ' + response.message);
+    //             }
+    //         },
+    //         error: function(xhr, status, error) {
+    //             console.error(xhr.responseText);
+    //         }
+    //     });
+    // });
+
+
+    $(document).on('click', '.product-save-btn', function(event) {
+        event.preventDefault();
+        var form = $('#product-form');
+
+        // Product form validation
+        var part_no = $('#part_no').val().trim();
+        var product = $('#product_name').val().trim();
+        var pcategoryselect = $('#pcategoryselect').val();
+        var pbrandselect = $('#pbrandselect').val();
+        var sell_price = $('#sell_price').val().trim();
+
+        if (part_no === '') {
+            alert("Part No/Product ID is required.");
+            return;
+        }
+        if (product === '') {
+            alert("Product Name is required.");
+            return;
+        }
+        if (!pcategoryselect) {
+            alert("Category is required.");
+            return;
+        }
+        if (!pbrandselect) {
+            alert("Brand is required.");
+            return;
+        }
+        if (sell_price === '' || isNaN(sell_price) || parseFloat(sell_price) < 0) {
+            alert("Sell price must be a non-negative number.");
+            return;
+        }
+
+        var actionUrl = form.attr('action');
+
+        // ✅ Use serializeArray() instead of serialize()
+        var formData = form.serializeArray();
+
+        // ✅ Push custom data into the array
+        formData.push(
+            { name: 'part_no', value: part_no },
+            { name: 'product_name', value: product },
+            { name: 'category_id', value: pcategoryselect },
+            { name: 'brand_id', value: pbrandselect },
+            { name: 'sell_price', value: sell_price },
+            { name: 'vat_percent', value: 0 }
+        );
+
+        $.ajax({
+            url: actionUrl,
+            type: 'POST',
+            data: $.param(formData),
+            success: function(response) {
+                if (response.status === 200) {
+                    var newOption = new Option(response.data.productname, response.data.id, true, true);
+                    $('#product').append(newOption).trigger('change');
+                    $('#newProductModal').modal('hide');
+                    alert('Product added successfully!');
+                    // Clear form fields after success
+                    form[0].reset();
+                    // Also reset select2 fields if needed
+                    $('#pcategoryselect').val('').trigger('change');
+                    $('#pbrandselect').val('').trigger('change');
+                    $('#group_id').val('').trigger('change');
+                } else {
+                    alert('Error: ' + response.message);
+                }
+            },
+            error: function(xhr) {
+                console.error(xhr.responseText);
+                alert('Server error. Please check console for details.');
+            }
+        });
+
+    });
+
+
+
 </script>
 
 @endsection

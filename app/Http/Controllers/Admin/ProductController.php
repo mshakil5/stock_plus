@@ -12,6 +12,7 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Validator;
@@ -25,8 +26,11 @@ class ProductController extends Controller
         return view("admin.product.addproduct", compact('product'));
     }
 
-  public function storeProduct(Request $request)
+  public function storeProduct2(Request $request)
   {
+
+    $alldata = $request->all();
+    Log::info('all request data: ', $alldata);
 
     $validator = Validator::make($request->all(), [
             'product' => 'required',
@@ -50,7 +54,7 @@ class ProductController extends Controller
     $image = $request->image;
 
     $product = new Product();
-    $product->productname = $request->product;
+    $product->productname = $request->product ?? $request->product_name;
     $product->part_no = $request->part_no;
     $product->category_id = $request->pcategoryselect;
     $product->brand_id = $request->pbrandselect;
@@ -67,12 +71,12 @@ class ProductController extends Controller
     $product->description = $request->productdesc;
     $product->created_by = Auth::user()->id;
     
-    if ($image) {
-    	$rand = mt_rand(100000, 999999);
-      $imageName = time(). $rand .'.'.$request->image->extension();
-      $request->image->move(public_path('images/product'), $imageName);
-      $product->image= $imageName;
-    }
+    // if ($image) {
+    // 	$rand = mt_rand(100000, 999999);
+    //   $imageName = time(). $rand .'.'.$request->image->extension();
+    //   $request->image->move(public_path('images/product'), $imageName);
+    //   $product->image= $imageName;
+    // }
     
     if ($product->save()) {
         if ($request->input('alternative')) {
@@ -100,10 +104,111 @@ class ProductController extends Controller
             }
         }
     }
+    
+    Log::info('all store data: ', $product);
+
     Session::put('success', 'New Product Saved Successfully !');
-    return back();
+    if ($request->salespage == 1) {
+        return response()->json(['status' => 200, 'message' => 'Product created successfully!', 'data' => $product]);
+    } else {
+        return back();
+    }
+    
   }
 
+
+  public function storeProduct(Request $request)
+    {
+        Log::info('all request data: ', $request->all());
+
+        $validator = Validator::make($request->all(), [
+            'product_name' => 'required|string|max:255',
+            'pbrandselect' => 'required|integer',
+            'pcategoryselect' => 'required|integer',
+            'sell_price' => 'required|numeric|min:0',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => 422,
+                'success' => false,
+                'message' => $validator->errors()->first(),
+            ]);
+        }
+
+        $check = Product::where('part_no', $request->part_no)
+                    ->where('branch_id', Auth::user()->branch_id)
+                    ->first();
+
+        if ($check) {
+            if ($request->salespage == 1) {
+                return response()->json([
+                'status' => 409,
+                'success' => false,
+                'message' => 'The part number already exists in this branch.',
+            ]);
+            } else {
+                Session::put('warning', 'The part number "' . $request->part_no . '" already exists here. Please use a different part number or product code.');
+                return back();
+            }
+            
+            
+        }
+
+        $product = new Product();
+        $product->productname = $request->product_name ?? $request->product;
+        $product->part_no = $request->part_no;
+        $product->category_id = $request->pcategoryselect;
+        $product->brand_id = $request->pbrandselect;
+        $product->branch_id = Auth::user()->branch_id;
+        $product->selling_price = $request->sell_price;
+        $product->vat_percent = $request->vat_percent;
+        $product->selling_price_with_vat = $request->sell_price + $request->sell_price * ($request->vat_percent / 100);
+        $product->description = $request->productdesc ?? null;
+        $product->created_by = Auth::user()->id;
+        $product->group_id = $request->group_id ?? null;
+        $product->unit = $request->unit ?? null;
+        $product->model = $request->model ?? null;
+        $product->location = $request->location ?? null;
+        $product->replacement = $request->replacement ?? null;
+
+        if ($product->save()) {
+            if ($request->input('alternative')) {
+            foreach($request->input('alternative') as $key => $value)
+            {
+                $alt = new AlternativeProduct();
+                $alt->product_id = $product->id;
+                $alt->alternative_product_id = $value;
+                $alt->created_by = Auth::user()->id;
+                $alt->save();
+            }
+            }
+
+            if ($request->replacement) {
+
+                $allreplacementid = explode(',',$request->replacement);
+
+                foreach($allreplacementid as $key => $value)
+                {
+                    $replace = new Replacement();
+                    $replace->product_id = $product->id;
+                    $replace->replacementid = $value;
+                    $replace->created_by = Auth::user()->id;
+                    $replace->save();
+                }
+            }
+        }
+
+        Log::info('all store data: ', $product->toArray());
+
+
+        if ($request->salespage == 1) {
+            return response()->json(['status' => 200, 'message' => 'Product created successfully!', 'data' => $product]);
+        } else {
+            Session::put('success', 'New Product Saved Successfully !');
+            return back();
+        }
+    }
 
 
   public function view_manage_product()
@@ -275,7 +380,7 @@ class ProductController extends Controller
             
             
         }
-
+  
     }
 
     public function getAllProduct(){

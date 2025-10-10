@@ -61,9 +61,9 @@
                                     </tr>
                                     <tr>
                                         <td><label class="control-label">Product Name*</label></td>
-                                        <td colspan="2"><input name="product" id="product" type="text" class="form-control" maxlength="50px" placeholder="" required="required" value="{{ old('product') }}" />
-                                            @if ($errors->has('product'))
-                                            <span class="text-danger">{{ $errors->first('product') }}</span>
+                                        <td colspan="2"><input name="product_name" id="product_name" type="text" class="form-control" maxlength="50px" placeholder="" required="required" value="{{ old('product_name') }}" />
+                                            @if ($errors->has('product_name'))
+                                            <span class="text-danger">{{ $errors->first('product_name') }}</span>
                                             @endif
                                         </td>
                                     </tr>
@@ -191,7 +191,7 @@
                                         </td>
                                     </tr>
 
-                                    <tr>
+                                    <tr style="display: none">
                                         <td><label class="control-label">Replacement</label></td>
                                         <td>
                                             <input type="text" name="replacement" id="replacement" class="form-control" rows="3" value="" />

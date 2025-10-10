@@ -5,11 +5,14 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Customer;
+use App\Models\Group;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Order;
 use App\Models\OrderDetail;
 use App\Models\PurchaseHistory;
 use App\Models\Stock;
+use App\Models\Category;
+use App\Models\Brand;
 use App\Models\Transaction;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Carbon;
@@ -19,7 +22,10 @@ class SalesController extends Controller
 {
     public function sales()
     {
-        return view('admin.sales.create');
+        $brands = Brand::where('branch_id', Auth::user()->branch_id)->get();
+        $category = Category::where('branch_id', Auth::user()->branch_id)->get();
+
+        return view('admin.sales.create', compact('brands','category'));
     }
 
     public function getAllQuoation()

@@ -189,6 +189,7 @@ Route::group(['prefix' =>'admin/', 'middleware' => ['auth', 'is_admin']], functi
 
     // for purchase 
     Route::post('getproduct', [ProductController::class, 'getproduct']);
+    Route::get('getallproduct', [ProductController::class, 'getAllProduct']);
 
     Route::get('sales', [SalesController::class, 'sales'])->name('admin.sales');
     Route::post('sales-store', [SalesController::class, 'salesStore'])->name('admin.sales.store');
