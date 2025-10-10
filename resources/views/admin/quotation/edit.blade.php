@@ -1238,6 +1238,82 @@
             }
         });
     });
+
+            $(document).on('click', '.product-save-btn', function(event) {
+            event.preventDefault();
+            var form = $('#product-form');
+
+            // Product form validation
+            var part_no = $('#part_no').val().trim();
+            var product = $('#product_name').val().trim();
+            var pcategoryselect = $('#pcategoryselect').val();
+            var pbrandselect = $('#pbrandselect').val();
+            var sell_price = $('#sell_price').val().trim();
+
+            if (part_no === '') {
+                alert("Part No/Product ID is required.");
+                return;
+            }
+            if (product === '') {
+                alert("Product Name is required.");
+                return;
+            }
+            if (!pcategoryselect) {
+                alert("Category is required.");
+                return;
+            }
+            if (!pbrandselect) {
+                alert("Brand is required.");
+                return;
+            }
+            if (sell_price === '' || isNaN(sell_price) || parseFloat(sell_price) < 0) {
+                alert("Sell price must be a non-negative number.");
+                return;
+            }
+
+            var actionUrl = form.attr('action');
+
+            // ✅ Use serializeArray() instead of serialize()
+            var formData = form.serializeArray();
+
+            // ✅ Push custom data into the array
+            formData.push(
+                { name: 'part_no', value: part_no },
+                { name: 'product_name', value: product },
+                { name: 'category_id', value: pcategoryselect },
+                { name: 'brand_id', value: pbrandselect },
+                { name: 'sell_price', value: sell_price },
+                { name: 'vat_percent', value: 0 }
+            );
+
+            $.ajax({
+                url: actionUrl,
+                type: 'POST',
+                data: $.param(formData),
+                success: function(response) {
+                    if (response.status === 200) {
+                        var newOption = new Option(response.data.productname, response.data.id, true, true);
+                        $('#product').append(newOption).trigger('change');
+                        $('#newProductModal').modal('hide');
+                        alert('Product added successfully!');
+                        // Clear form fields after success
+                        form[0].reset();
+                        // Also reset select2 fields if needed
+                        $('#pcategoryselect').val('').trigger('change');
+                        $('#pbrandselect').val('').trigger('change');
+                        $('#group_id').val('').trigger('change');
+                    } else {
+                        alert('Error: ' + response.message);
+                    }
+                },
+                error: function(xhr) {
+                    console.error(xhr.responseText);
+                    alert('Server error. Please check console for details.');
+                }
+            });
+
+        });
+        
 </script>
 
 @endsection

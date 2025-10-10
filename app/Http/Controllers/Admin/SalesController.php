@@ -905,6 +905,7 @@ class SalesController extends Controller
                 if ($orderDetailId) {
                     $orderDetail = OrderDetail::find($orderDetailId);
                     if ($orderDetail) {
+                        $orderDetail->productname = $request->get('productname')[$key] ?? null;
                         $orderDetail->quantity = $request->input('quantity')[$key];
                         $orderDetail->sellingprice = $request->input('unit_price')[$key];
                         $orderDetail->total_amount = $request->input('quantity')[$key] * $request->input('unit_price')[$key];
@@ -914,7 +915,8 @@ class SalesController extends Controller
                     $orderDtl = new OrderDetail();
                     $orderDtl->invoiceno = $order->invoiceno;
                     $orderDtl->order_id = $order->id;
-                    $orderDtl->product_id = $productId;
+                    $orderDtl->product_id = $request->get('product_id')[$key] ?? null;
+                    $orderDtl->productname = $request->get('productname')[$key] ?? null;
                     $orderDtl->quantity = $request->input('quantity')[$key];
                     $orderDtl->sellingprice = $request->input('unit_price')[$key];
                     $orderDtl->total_amount = $request->input('quantity')[$key] * $request->input('unit_price')[$key];

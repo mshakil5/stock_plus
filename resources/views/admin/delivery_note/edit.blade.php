@@ -41,7 +41,7 @@
 
                             <div class="form-group col-md-3">
                                 <label for="invoiceno">Invoice No *</label>
-                                <input type="number" class="form-control" id="invoiceno" name="invoiceno" value="{{ $order->invoiceno }}">
+                                <input type="text" class="form-control" id="invoiceno" name="invoiceno" value="{{ $order->invoiceno }}">
                             </div>
 
                             <div class="form-group col-md-3">
@@ -78,6 +78,12 @@
                                     <option value="{{ $product->id }}">{{ $product->productname }}-{{ $product->part_no }}</option>
                                     @endforeach
                                 </select>
+                            </div>
+                            <div class="form-group col-md-1">
+                                <label for=""> New</label>
+                                <a class="btn btn-primary btn-sm btn-return" data-toggle="modal" data-target="#newProductModal">
+                                    <i class='fa fa-plus'></i> Add
+                                </a>
                             </div>
 
                             <div class="form-group col-md-4">
@@ -116,12 +122,12 @@
                         @foreach ($order->orderdetails as $detail)
                         <tr>
                             <td class="text-center">
-                                <input type="text" id="pert_no" name="pert_no[]" value="{{ $detail->product->part_no }}" class="form-control" readonly>
+                                <input type="text" id="pert_no" name="pert_no[]" value="{{ $detail->product->part_no ?? '' }}" class="form-control" readonly>
                                 <input type="hidden" id="orderdtl_id" name="orderdtl_id[]" value="{{ $detail->id }}" class="form-control" readonly>
                             </td>
                             <td class="text-center">
-                                <input type="text" id="productname" name="productname[]" value="{{ $detail->product->productname }}" class="form-control" readonly>
-                                <input type="hidden" id="product_id" name="product_id[]" value="{{ $detail->product_id }}" class="form-control ckproduct_id" readonly>
+                                <input type="text" id="productname" name="productname[]" value="{{ $detail->product ? $detail->product->productname : $detail->productname }}" class="form-control" readonly>
+                                <input type="hidden" id="product_id" name="product_id[]" value="{{ $detail->product_id ?? '' }}" class="form-control ckproduct_id" readonly>
                             </td>
                             <td class="text-center">
                                 <input type="number" id="quantity" name="quantity[]" value="{{ $detail->quantity }}" min="1" class="form-control quantity">
@@ -142,6 +148,21 @@
                                 <input type="text" id="total_amount" name="total_amount[]" value="{{ $detail->total_amount }}" class="form-control total" readonly>
                             </td>
                             <td class="text-center">
+                                <div style="
+                                    color: white; 
+                                    user-select: none; font-size: 30px;
+                                    background: green; 
+                                    width: 45px; 
+                                    display: flex; 
+                                    align-items: center; 
+                                    margin-right: 5px; 
+                                    justify-content: center; 
+                                    border-radius: 4px;
+                                    left: 4px;
+                                    top: 81px;" 
+                                    onclick="addRow(event)">
+                                    +
+                                </div>
                             </td>
                         </tr>
                         @endforeach
@@ -360,6 +381,150 @@
     </div>
 </div>
 
+<div class="modal fade" id="newProductModal">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header alert alert-success" style="text-align: left;">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">#Add New Product</h4>
+            </div>
+            <div class="modal-body">
+                <div class="productmsg"></div>
+                
+
+                <form action="{{ route('admin.storeproduct') }}" method="post" enctype="multipart/form-data" id="product-form">
+                        {{ csrf_field() }}
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <table class="table table-hover">
+                                    <input type="hidden" id="salepage" name="salespage" value="1">
+                                    <tr>
+                                        <td><label class="control-label">Part No/Product ID</label></td>
+                                        <td colspan="2"><input name="part_no" id="part_no" type="text" class="form-control"
+                                                maxlength="50px" placeholder="" value="{{ old('part_no') }}" />
+                                            @if ($errors->has('part_no'))
+                                            <span class="text-danger">{{ $errors->first('part_no') }}</span>
+                                            @endif
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><label class="control-label">Product Name*</label></td>
+                                        <td colspan="2"><input name="product_name" id="product_name" type="text" class="form-control" maxlength="50px" placeholder="" required="required" value="{{ old('product_name') }}" />
+                                            @if ($errors->has('product_name'))
+                                            <span class="text-danger">{{ $errors->first('product_name') }}</span>
+                                            @endif
+                                        </td>
+                                    </tr>
+
+                                    <tr>
+                                        <td><label class="control-label">Code/Category*</label></td>
+                                        <td colspan="2">
+                                            <select name="pcategoryselect" id="pcategoryselect"  class="form-control select2">
+                                            </select>
+                                        </td>
+                                    </tr>
+
+                                    <tr>
+                                        <td><label class="control-label">Brand*</label></td>
+
+                                        <td colspan="2">
+                                            <select name="pbrandselect" id="pbrandselect" required="required" class="form-control select2">
+                                            </select>
+                                        </td>
+                                    </tr>
+
+                                    <tr>
+                                        <td><label class="control-label">Unit</label></td>
+                                        <td colspan="2"><input name="unit" id="unit" type="text" class="form-control"
+                                                maxlength="50px" placeholder="" value="{{ old('unit') }}" />
+                                            @if ($errors->has('unit'))
+                                            <span class="text-danger">{{ $errors->first('unit') }}</span>
+                                            @endif
+                                        </td>
+                                    </tr>
+
+
+                                    <tr>
+                                        <td><label class="control-label">Sell price*</label></td>
+                                        <td colspan="2"><input name="sell_price" id="sell_price" type="number"
+                                                class="form-control"
+                                                oninput="this.value=(parseInt(this.value)||0)" maxlength="50px"
+                                                placeholder="Enter price" value="0" />
+                                            @if ($errors->has('sell_price'))
+                                            <span class="text-danger">{{ $errors->first('sell_price') }}</span>
+                                            @endif
+                                        </td>
+                                    </tr>
+
+                                    
+                                </table>
+                            </div>
+
+                            <div class="col-md-6">
+                                <table class="table table-hover">
+                                    <tr>
+                                        <td><label class="control-label">Model</label></td>
+                                        <td><input name="model" id="model" type="text" class="form-control"
+                                                maxlength="50px" placeholder="" value="{{ old('model') }}" />
+                                            @if ($errors->has('model'))
+                                            <span class="text-danger">{{ $errors->first('model') }}</span>
+                                            @endif
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><label class="control-label">Location</label></td>
+                                        <td><input name="location" id="location" type="text" class="form-control"
+                                                maxlength="50px" placeholder="" value="{{ old('location') }}" />
+                                            @if ($errors->has('location'))
+                                            <span class="text-danger">{{ $errors->first('location') }}</span>
+                                            @endif
+                                        </td>
+                                    </tr>
+
+                                    <tr>
+                                        <td><label class="control-label">Group</label></td>
+                                        <td>
+                                            <select name="group_id" id="group_id" class="form-control select2">
+                                            </select>
+                                        </td>
+                                    </tr>
+
+
+
+
+                                    <tr>
+                                        <td><label class="control-label">Remarks</label></td>
+                                        <td>
+                                            <textarea name="productdesc" id="pro_desc" class="form-control"
+                                                rows="4"></textarea>
+                                        </td>
+                                    </tr>
+
+
+
+                                </table>
+                                <br>
+                                
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-danger btn-sm" data-dismiss="modal">Close</button>
+                                    <button type="submit" class="btn btn-primary btn-sm product-save-btn"><i class="fa fa-save"></i> Save</button>
+                                </div>
+                            </div>
+
+
+                            {{-- end  --}}
+                        </div>
+                    </form>
+
+
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
 @endsection
 
 @section('script')
@@ -386,6 +551,86 @@
         net_total();
         net_total_vat();
     }
+    function addRow(event) {
+        
+        var markup = `
+        <tr>
+            <td class="text-center">
+                <input type="text" id="pert_no" name="pert_no[]" 
+                    value="" class="form-control">
+            </td>
+            <td class="text-center">
+                <input type="text" id="productname" name="productname[]" 
+                    value="" class="form-control">
+                <input type="hidden" id="product_id" name="product_id[]" 
+                    value="" class="form-control ckproduct_id" readonly>
+            </td>
+            <td class="text-center">
+                <input type="number" id="quantity" name="quantity[]" 
+                    value="1" min="1" class="form-control quantity">
+            </td>
+            <td class="text-center">
+                <input type="number" id="unit_price" name="unit_price[]" 
+                    value="" class="form-control unit-price">
+            </td>
+            <td class="text-center">
+                <input type="text" id="subtotal_excl_vat" name="subtotal_excl_vat[]" 
+                    value="0" class="form-control subtotal-excl-vat" readonly>
+            </td>
+            <td class="text-center">
+                <input type="number" id="vat_percent" name="vat_percent[]" 
+                    value="0" class="form-control vat-percent" oninput="if(this.value<0)this.value=0;">
+            </td>
+            <td class="text-center">
+                <input type="text" id="vat_amount" name="vat_amount[]" 
+                    value="0" class="form-control vat-amount" readonly>
+            </td>
+            <td class="text-center">
+                <input type="text" id="total_amount" name="total_amount[]" 
+                    value="" class="form-control total" readonly>
+            </td>
+            <td class="text-center">
+                <div style="
+                    color: white; 
+                    user-select: none; 
+                    padding: 5px; 
+                    background: red; 
+                    width: 45px; 
+                    display: flex; 
+                    align-items: center; 
+                    margin-right: 5px; 
+                    justify-content: center; 
+                    border-radius: 4px;
+                    left: 4px;
+                    top: 81px;" 
+                    onclick="removeRow(event)">
+                    X
+                </div>
+
+                <div style="
+                    color: white; 
+                    user-select: none; font-size: 30px;
+                    background: green; 
+                    width: 45px; 
+                    display: flex; 
+                    align-items: center; 
+                    margin-right: 5px; 
+                    justify-content: center; 
+                    border-radius: 4px;
+                    left: 4px;
+                    top: 81px;" 
+                    onclick="addRow(event)">
+                    +
+                </div>
+
+            </td>
+        </tr>`;
+
+        $("table #inner ").append(markup);
+        net_total();
+        net_total_vat();
+    }
+
 
     function net_total() {
         var grand_total = 0;
@@ -519,6 +764,21 @@
                                     onclick="removeRow(event)">
                                     X
                                 </div>
+                                <div style="
+                                    color: white; 
+                                    user-select: none; font-size: 30px;
+                                    background: green; 
+                                    width: 45px; 
+                                    display: flex; 
+                                    align-items: center; 
+                                    margin-right: 5px; 
+                                    justify-content: center; 
+                                    border-radius: 4px;
+                                    left: 4px;
+                                    top: 81px;" 
+                                    onclick="addRow(event)">
+                                    +
+                                </div>
                             </td>
                         </tr>`;
 
@@ -639,6 +899,9 @@
                 product_id: $("input[name='product_id[]']").map(function() {
                     return $(this).val();
                 }).get(),
+                productname: $("input[name='productname[]']").map(function() {
+                    return $(this).val();
+                }).get(),
                 orderdtl_id: $("input[name='orderdtl_id[]']").map(function() {
                     return $(this).val();
                 }).get(),
@@ -723,6 +986,9 @@
                 product_id: $("input[name='product_id[]']").map(function() {
                     return $(this).val();
                 }).get(),
+                productname: $("input[name='productname[]']").map(function() {
+                    return $(this).val();
+                }).get(),
                 quantity: $("input[name='quantity[]']").map(function() {
                     return $(this).val();
                 }).get(),
@@ -804,6 +1070,9 @@
                 partnoshow: $("#partnoshow").val(),
                 return_amount: $("#return_amount").val(),
                 product_id: $("input[name='product_id[]']").map(function() {
+                    return $(this).val();
+                }).get(),
+                productname: $("input[name='productname[]']").map(function() {
                     return $(this).val();
                 }).get(),
                 quantity: $("input[name='quantity[]']").map(function() {
@@ -948,6 +1217,81 @@
             }
         });
     });
+
+            $(document).on('click', '.product-save-btn', function(event) {
+            event.preventDefault();
+            var form = $('#product-form');
+
+            // Product form validation
+            var part_no = $('#part_no').val().trim();
+            var product = $('#product_name').val().trim();
+            var pcategoryselect = $('#pcategoryselect').val();
+            var pbrandselect = $('#pbrandselect').val();
+            var sell_price = $('#sell_price').val().trim();
+
+            if (part_no === '') {
+                alert("Part No/Product ID is required.");
+                return;
+            }
+            if (product === '') {
+                alert("Product Name is required.");
+                return;
+            }
+            if (!pcategoryselect) {
+                alert("Category is required.");
+                return;
+            }
+            if (!pbrandselect) {
+                alert("Brand is required.");
+                return;
+            }
+            if (sell_price === '' || isNaN(sell_price) || parseFloat(sell_price) < 0) {
+                alert("Sell price must be a non-negative number.");
+                return;
+            }
+
+            var actionUrl = form.attr('action');
+
+            // ✅ Use serializeArray() instead of serialize()
+            var formData = form.serializeArray();
+
+            // ✅ Push custom data into the array
+            formData.push(
+                { name: 'part_no', value: part_no },
+                { name: 'product_name', value: product },
+                { name: 'category_id', value: pcategoryselect },
+                { name: 'brand_id', value: pbrandselect },
+                { name: 'sell_price', value: sell_price },
+                { name: 'vat_percent', value: 0 }
+            );
+
+            $.ajax({
+                url: actionUrl,
+                type: 'POST',
+                data: $.param(formData),
+                success: function(response) {
+                    if (response.status === 200) {
+                        var newOption = new Option(response.data.productname, response.data.id, true, true);
+                        $('#product').append(newOption).trigger('change');
+                        $('#newProductModal').modal('hide');
+                        alert('Product added successfully!');
+                        // Clear form fields after success
+                        form[0].reset();
+                        // Also reset select2 fields if needed
+                        $('#pcategoryselect').val('').trigger('change');
+                        $('#pbrandselect').val('').trigger('change');
+                        $('#group_id').val('').trigger('change');
+                    } else {
+                        alert('Error: ' + response.message);
+                    }
+                },
+                error: function(xhr) {
+                    console.error(xhr.responseText);
+                    alert('Server error. Please check console for details.');
+                }
+            });
+
+        });
 </script>
 
 @endsection
