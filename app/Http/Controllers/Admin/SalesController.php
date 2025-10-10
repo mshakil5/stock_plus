@@ -379,10 +379,10 @@ class SalesController extends Controller
         //     'orderdtl_id' => 'nullable|array',
         // ]);
 
-        $productIDs = $request->input('product_id');
+        $productIDs = $request->productname;
 
         if (empty($productIDs)) {
-            $message = "<div class='alert alert-warning'><a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a><b>Please fill Product field.</b></div>";
+            $message = "<div class='alert alert-warning'><a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a><b>Please fill Product name field.</b></div>";
             return response()->json(['status' => 303, 'message' => $message]);
         }
 
@@ -454,7 +454,7 @@ class SalesController extends Controller
                 OrderDetail::whereIn('id', $toDelete)->delete();
             }
 
-            foreach ($request->input('product_id') as $key => $productId) {
+            foreach ($request->input('productname') as $key => $productId) {
                 $orderDetailId = $request->input('orderdtl_id')[$key] ?? null;
         
                 if ($orderDetailId) {
@@ -472,7 +472,8 @@ class SalesController extends Controller
                     $orderDtl = new OrderDetail();
                     $orderDtl->invoiceno = $order->invoiceno;
                     $orderDtl->order_id = $order->id;
-                    $orderDtl->product_id = $productId;
+                    $orderDtl->product_id = $request->input('product_id')[$key] ?? null;
+                    $orderDtl->productname = $request->input('productname')[$key] ?? null;
                     $orderDtl->quantity = $request->input('quantity')[$key];
                     $orderDtl->sellingprice = $request->input('unit_price')[$key];
                     $orderDtl->vat_percent = $request->input('vat_percent')[$key];
@@ -483,8 +484,9 @@ class SalesController extends Controller
                     $orderDtl->save();
                 }
             }
-        
-            foreach ($request->input('product_id') as $key => $productId) {
+
+            if ($request->input('product_id')) {
+                foreach ($request->input('product_id') as $key => $productId) {
                 $stock = Stock::where('product_id', $productId)
                     ->where('branch_id', Auth::user()->branch_id)
                     ->first();
@@ -501,6 +503,9 @@ class SalesController extends Controller
                     $newStock->save();
                 }
             }
+            }
+        
+            
         
             $message = "<div class='alert alert-success'><a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a><b>Order updated successfully.</b></div>";
             return response()->json(['status' => 300, 'message' => $message, 'id' => $order->id]);

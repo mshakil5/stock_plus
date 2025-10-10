@@ -1223,8 +1223,6 @@
                 return request.setRequestHeader('X-CSRF-Token', $("meta[name='csrf-token']").attr('content'));
             },
             success: function(response) {
-                console.log(response);
-
                 $('#product').append('<option value="">Select</option>');
                 $.each(response, function() {
                     $('<option/>', {
