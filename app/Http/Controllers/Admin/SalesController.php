@@ -193,10 +193,14 @@ class SalesController extends Controller
 
     public function salesStore(Request $request)
     {
-        $productIDs = $request->productname;
+        $productIDs = $request->input('productname', []);
 
-        if (empty($productIDs)) {
-            $message = "<div class='alert alert-warning'><a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a><b>Please fill Product name field.</b></div>";
+        // Check if array is empty or has any empty string values
+        if (empty($productIDs) || count(array_filter($productIDs)) !== count($productIDs)) {
+            $message = "<div class='alert alert-warning'>
+                <a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a>
+                <b>Please fill all Product name fields.</b>
+            </div>";
             return response()->json(['status' => 303, 'message' => $message]);
         }
 
@@ -379,10 +383,14 @@ class SalesController extends Controller
         //     'orderdtl_id' => 'nullable|array',
         // ]);
 
-        $productIDs = $request->productname;
+        $productIDs = $request->input('productname', []);
 
-        if (empty($productIDs)) {
-            $message = "<div class='alert alert-warning'><a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a><b>Please fill Product name field.</b></div>";
+        // Check if array is empty or has any empty string values
+        if (empty($productIDs) || count(array_filter($productIDs)) !== count($productIDs)) {
+            $message = "<div class='alert alert-warning'>
+                <a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a>
+                <b>Please fill all Product name fields.</b>
+            </div>";
             return response()->json(['status' => 303, 'message' => $message]);
         }
 
@@ -401,15 +409,6 @@ class SalesController extends Controller
             return response()->json(['status' => 303, 'message' => $message]);
         }
 
-        // if ($request->salestype == "Cash" && empty($request->customer_id) && $request->due_amount > 0) {
-        //     $message = "<div class='alert alert-warning'><a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a><b>Please pay the full amount.</b></div>";
-        //     return response()->json(['status' => 303, 'message' => $message]);
-        // }
-
-        // if ($request->salestype == "Credit" && empty($request->customer_id)) {
-        //     $message = "<div class='alert alert-warning'><a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a><b>Please select a customer.</b></div>";
-        //     return response()->json(['status' => 303, 'message' => $message]);
-        // }
 
         $order = Order::find($request->sale_id);
         if (!$order) {
@@ -422,7 +421,6 @@ class SalesController extends Controller
         $order->customer_id = $request->customer_id;
         $order->branch_id = Auth::user()->branch_id;
         $order->ref = $request->ref; 
-        // $order->vatpercentage = $request->vat_percent;
         $order->vatamount = $request->total_vat_amount;
         $order->discount_amount = $request->discount;
         $order->grand_total = $request->grand_total; 
@@ -517,10 +515,14 @@ class SalesController extends Controller
 
     public function quotationStore(Request $request)
     {
-        $productIDs = $request->productname;
+        $productIDs = $request->input('productname', []);
 
-        if (empty($productIDs)) {
-            $message = "<div class='alert alert-warning'><a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a><b>Please fill Product name field.</b></div>";
+        // Check if array is empty or has any empty string values
+        if (empty($productIDs) || count(array_filter($productIDs)) !== count($productIDs)) {
+            $message = "<div class='alert alert-warning'>
+                <a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a>
+                <b>Please fill all Product name fields.</b>
+            </div>";
             return response()->json(['status' => 303, 'message' => $message]);
         }
 
@@ -595,23 +597,18 @@ class SalesController extends Controller
 
     public function quotationUpdate(Request $request)
     {
-        // $request->validate([
-        //     'invoiceno' => 'required',
-        //     'date' => 'required|date',
-        //     'salestype' => 'required',
-        //     'customer_id' => 'nullable|exists:customers,id',
-        //     'product_id' => 'required|array',
-        //     'quantity' => 'required|array',
-        //     'unit_price' => 'required|array',
-        //     'orderdtl_id' => 'nullable|array',
-        // ]);
 
-        $productIDs = $request->input('product_id');
+        $productIDs = $request->input('productname', []);
 
-        if (empty($productIDs)) {
-            $message = "<div class='alert alert-warning'><a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a><b>Please fill Product field.</b></div>";
+        // Check if array is empty or has any empty string values
+        if (empty($productIDs) || count(array_filter($productIDs)) !== count($productIDs)) {
+            $message = "<div class='alert alert-warning'>
+                <a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a>
+                <b>Please fill all Product name fields.</b>
+            </div>";
             return response()->json(['status' => 303, 'message' => $message]);
         }
+
 
         if (empty($request->date)) {
             $message = "<div class='alert alert-warning'><a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a><b>Please fill Date field.</b></div>";
@@ -660,12 +657,13 @@ class SalesController extends Controller
                 OrderDetail::whereIn('id', $toDelete)->delete();
             }
 
-            foreach ($request->input('product_id') as $key => $productId) {
+            foreach ($request->input('productname') as $key => $productId) {
                 $orderDetailId = $request->input('orderdtl_id')[$key] ?? null;
         
                 if ($orderDetailId) {
                     $orderDetail = OrderDetail::find($orderDetailId);
                     if ($orderDetail) {
+                        $orderDetail->productname = $request->get('productname')[$key] ?? null;
                         $orderDetail->quantity = $request->input('quantity')[$key];
                         $orderDetail->sellingprice = $request->input('unit_price')[$key];
                         $orderDetail->vat_percent = $request->input('vat_percent')[$key];
@@ -678,13 +676,14 @@ class SalesController extends Controller
                     $orderDtl = new OrderDetail();
                     $orderDtl->invoiceno = $order->invoiceno;
                     $orderDtl->order_id = $order->id;
-                    $orderDtl->product_id = $productId;
+                    $orderDtl->product_id = $request->get('product_id')[$key] ?? null;
+                    $orderDtl->productname = $request->get('productname')[$key] ?? null;
                     $orderDtl->quantity = $request->input('quantity')[$key];
                     $orderDtl->sellingprice = $request->input('unit_price')[$key];
-                    $orderDetail->vat_percent = $request->input('vat_percent')[$key];
-                    $orderDetail->vat_amount = $request->input('vat_amount')[$key];
-                    $orderDetail->subtotal_excl_vat = $request->input('subtotal_excl_vat')[$key];
-                    $orderDetail->total_amount = $request->input('total_amount')[$key];
+                    $orderDtl->vat_percent = $request->input('vat_percent')[$key];
+                    $orderDtl->vat_amount = $request->input('vat_amount')[$key];
+                    $orderDtl->subtotal_excl_vat = $request->input('subtotal_excl_vat')[$key];
+                    $orderDtl->total_amount = $request->input('total_amount')[$key];
                     $orderDtl->created_by = Auth::user()->id;
                     $orderDtl->save();
                 }
@@ -701,10 +700,14 @@ class SalesController extends Controller
     public function deliveryNoteStore(Request $request)
     {
 
-        $productIDs = $request->productname;
+        $productIDs = $request->input('productname', []);
 
-        if (empty($productIDs)) {
-            $message = "<div class='alert alert-warning'><a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a><b>Please fill Product name field.</b></div>";
+        // Check if array is empty or has any empty string values
+        if (empty($productIDs) || count(array_filter($productIDs)) !== count($productIDs)) {
+            $message = "<div class='alert alert-warning'>
+                <a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a>
+                <b>Please fill all Product name fields.</b>
+            </div>";
             return response()->json(['status' => 303, 'message' => $message]);
         }
 
@@ -838,10 +841,14 @@ class SalesController extends Controller
         //     'orderdtl_id' => 'nullable|array',
         // ]);
 
-        $productIDs = $request->input('product_id');
+        $productIDs = $request->input('productname', []);
 
-        if (empty($productIDs)) {
-            $message = "<div class='alert alert-warning'><a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a><b>Please fill Product field.</b></div>";
+        // Check if array is empty or has any empty string values
+        if (empty($productIDs) || count(array_filter($productIDs)) !== count($productIDs)) {
+            $message = "<div class='alert alert-warning'>
+                <a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a>
+                <b>Please fill all Product name fields.</b>
+            </div>";
             return response()->json(['status' => 303, 'message' => $message]);
         }
 
