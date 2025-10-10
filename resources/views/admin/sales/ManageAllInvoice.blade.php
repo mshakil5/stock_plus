@@ -284,7 +284,7 @@ echo Session::put('message', '');
                 type: "GET",
                 url: invoiceurl + "/" + id,
                 success: function(data) {
-                    // console.log(data);
+                    console.log(data);
                     modal.find('.invoice-details tbody').empty();
                     ctp.clear().draw(true);
                     $.each(data.orderdetails, function(i, orderdetail) {
