@@ -126,7 +126,8 @@
       {{-- Header --}}
       <div class="row mb-3">
         <div class="col-12 text-center  invoice-header">
-          <img src="{{asset('touch.png')}}" alt="" width="100%" height="120">
+          <img src="data:image/png;base64,{{ base64_encode(file_get_contents(public_path('touch.png'))) }}" width="100%" height="120" />
+
           <p class="mb-0">{{ $company->address1 }}</p>
           <p class="mb-0">
             @if ($company->phone1)

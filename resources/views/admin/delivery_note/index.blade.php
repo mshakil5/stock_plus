@@ -163,7 +163,7 @@
                     return row.partnoshow == 1 ? pub_partno : unpub_partno;
                 }},
                 { data: 'net_total', name: 'net_total' },
-                { data: 'action', name: 'action', orderable: false, searchable: false }
+                { data: 'action', name: 'action', orderable: false, searchable: false, className: 'text-center' }
             ]
         });
 
@@ -194,6 +194,79 @@
                 }
             });
         });
+
+
+                var invoiceurl = "{{URL::to('/admin/invoice')}}";
+        $('#product-details').on('show.bs.modal', function(event) {
+            $(this).css("zIndex", 99999999);
+            let id = $(event.relatedTarget).val();
+            var modal = $(this);
+            $.ajax({
+                type: "GET",
+                url: invoiceurl + "/" + id,
+                success: function(data) {
+                    console.log(data);
+                    modal.find('.invoice-details tbody').empty();
+                    ctp.clear().draw(true);
+                    $.each(data.orderdetails, function(i, orderdetail) {
+                        ctp.row.add([
+                            orderdetail.id,
+                            orderdetail.product.part_no,
+                            orderdetail.product.productname,
+                            orderdetail.quantity,
+                            orderdetail.sellingprice,
+                            orderdetail.vat_amount,
+                            orderdetail.total_amount
+                        ]).draw(true);
+                    });
+                    modal.find('.total').text(data.grand_total);
+                    modal.find('.vat-amount').text(data.vatamount);
+                    modal.find('.discount-amount').text(data.discount_amount);
+                    modal.find('.grand-total').text(data.net_total);
+                    modal.find('.paid-amount').text(data.customer_paid);
+
+                },
+                error: function(err) {
+                    console.log(err);
+                }
+            });
+        });
+
+
+        let ctp = $('.invoice-details').DataTable({
+            dom: 'Bfrtip',
+            buttons: [{
+                    extend: 'print',
+                    text: 'Print',
+                    autoPrint: true,
+                    exportOptions: {
+                        columns: [0, 1, 2, 3, 4],
+                    },
+
+                    customize: function(win) {
+                        $(win.document.body).find('table').addClass('display').css('font-size', '14px');
+                        $(win.document.body).find('tr:nth-child(odd) td').each(function(index) {
+                            $(this).css('background-color', '#D0D0D0');
+                        });
+                        $(win.document.body).find('h1').css('text-align', 'center');
+                    }
+                },
+                {
+                    extend: 'csvHtml5',
+                    text: '<i class="fa fa-file-text-o"></i>',
+                    titleAttr: 'CSV',
+                    exportOptions: {
+                        columns: [0, 1, 2, 3, 4],
+                    },
+                }
+            ]
+        });
+
+
+
+
+
+
     });
 
     var stsurl = "{{URL::to('/admin')}}";

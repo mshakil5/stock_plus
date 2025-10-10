@@ -114,9 +114,13 @@ class SalesController extends Controller
             ->editColumn('customer_id', function ($invoice) {
                 return $invoice->customer->name;
             })
-            ->addColumn('total', function ($invoice) {
-                $total = $invoice->net_total;
+            ->addColumn('net_total', function ($invoice) {
+                $total = number_format($invoice->net_total, 2);
                 return $total;
+            })
+            ->addColumn('due', function ($invoice) {
+                $due = number_format($invoice->due, 2);
+                return $due;
             })
             ->addColumn('created_at', function ($invoice) {
                 return "<span data-title='" . Carbon::parse($invoice->created_at)->format('h:m A') . "'>" . Carbon::parse($invoice->created_at)->format('d M Y') . "</span>";
@@ -133,12 +137,13 @@ class SalesController extends Controller
                     </a>';
 
                 
-                    $btn .= '<a href="' . route('admin.download_invoice', $invoice->id) . '" class="btn btn-primary btn-xs">
-                        <span title="Download Invoice">
-                            <i class="fa fa-download" aria-hidden="true"></i> Download
-                        </span>
-                    </a>
-                    <button type="button" class="btn btn-primary btn-xs view-btn" data-toggle="modal" data-target="#product-details" value="' . $invoice->id . '">
+                    // $btn .= '<a href="' . route('admin.download_invoice', $invoice->id) . '" class="btn btn-primary btn-xs">
+                    //     <span title="Download Invoice">
+                    //         <i class="fa fa-download" aria-hidden="true"></i> Download
+                    //     </span>
+                    // </a>';
+
+                    $btn .= '<button type="button" class="btn btn-primary btn-xs view-btn" data-toggle="modal" data-target="#product-details" value="' . $invoice->id . '">
                         <i class="fa fa-eye" aria-hidden="true"></i> View
                     </button>';
                 
