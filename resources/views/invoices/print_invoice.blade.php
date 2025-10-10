@@ -214,9 +214,16 @@
             <tr>
               <td style="border-bottom: 1px solid #000;">{{ $globalIndex + 1 }}</td>
               @if ($order->partnoshow == 1)
-                <td style="border-bottom: 1px solid #000;" class="text-start">{{ $item->product->part_no }}</td>
+                <td style="border-bottom: 1px solid #000;" class="text-start">{{ $item->product->part_no  ?? null  }}</td>
               @endif
-              <td style="border-bottom: 1px solid #000;" class="text-start">{{ $item->product->productname }}</td>
+              <td style="border-bottom: 1px solid #000;" class="text-start">
+                
+                @if ($item->product_id)
+                    {{ $item->product->productname ?? null }}
+                @else
+                    {{ $item->productname ?? null }}
+                @endif
+              </td>
               <td style="border-bottom: 1px solid #000;" class="text-end">{{ $item->quantity }}</td>
               <td style="border-bottom: 1px solid #000;" class="text-end">{{ number_format($item->sellingprice, 2) }}</td>
               <td style="border-bottom: 1px solid #000;" class="text-end">{{ number_format($item->subtotal_excl_vat, 2) }}</td>

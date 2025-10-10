@@ -52,6 +52,10 @@ class InvoiceController extends Controller
                 $total = number_format($invoice->net_total, 2);
                 return $total;
             })
+            ->addColumn('due', function ($invoice) {
+                $due = number_format($invoice->due, 2);
+                return $due;
+            })
             ->addColumn('created_at', function ($invoice) {
                 return "<span data-title='" . Carbon::parse($invoice->created_at)->format('h:m A') . "'>" . Carbon::parse($invoice->created_at)->format('d M Y') . "</span>";
             })

@@ -26,100 +26,10 @@ class ProductController extends Controller
         return view("admin.product.addproduct", compact('product'));
     }
 
-  public function storeProduct2(Request $request)
-  {
-
-    $alldata = $request->all();
-    Log::info('all request data: ', $alldata);
-
-    $validator = Validator::make($request->all(), [
-            'product' => 'required',
-            'pbrandselect' => 'required',
-        ]);
-
-    if($validator->fails()) {
-          Session::put('warning', 'Already warned you to use jpeg,png,jpg,gif format and max size 2048 KB !');
-          return back();
-    }
-
-    $check = Product::where('part_no', $request->part_no)
-                ->where('branch_id', Auth::user()->branch_id)
-                ->first();
-
-        if ($check) {
-            Session::put('warning', 'The part number "' . $request->part_no . '" already exists in your branch. Please use a different part number for this branch.');
-            return back();
-        }
-
-    $image = $request->image;
-
-    $product = new Product();
-    $product->productname = $request->product ?? $request->product_name;
-    $product->part_no = $request->part_no;
-    $product->category_id = $request->pcategoryselect;
-    $product->brand_id = $request->pbrandselect;
-    $product->branch_id = Auth::user()->branch_id;
-    $product->group_id = $request->group_id;
-    $product->unit = $request->unit;
-    $product->model = $request->model;
-    $product->location = $request->location;
-    $product->replacement = $request->replacement;
-    $product->vat_percent = $request->vat_percent;
-    $product->vat_amount = $request->sell_price * ($request->vat_percent/100);
-    $product->selling_price = $request->sell_price;
-    $product->selling_price_with_vat = $request->sell_price + $request->sell_price * ($request->vat_percent/100);
-    $product->description = $request->productdesc;
-    $product->created_by = Auth::user()->id;
-    
-    // if ($image) {
-    // 	$rand = mt_rand(100000, 999999);
-    //   $imageName = time(). $rand .'.'.$request->image->extension();
-    //   $request->image->move(public_path('images/product'), $imageName);
-    //   $product->image= $imageName;
-    // }
-    
-    if ($product->save()) {
-        if ($request->input('alternative')) {
-          foreach($request->input('alternative') as $key => $value)
-          {
-              $alt = new AlternativeProduct();
-              $alt->product_id = $product->id;
-              $alt->alternative_product_id = $value;
-              $alt->created_by = Auth::user()->id;
-              $alt->save();
-          }
-        }
-
-        if ($request->replacement) {
-
-            $allreplacementid = explode(',',$request->replacement);
-
-            foreach($allreplacementid as $key => $value)
-            {
-                $replace = new Replacement();
-                $replace->product_id = $product->id;
-                $replace->replacementid = $value;
-                $replace->created_by = Auth::user()->id;
-                $replace->save();
-            }
-        }
-    }
-    
-    Log::info('all store data: ', $product);
-
-    Session::put('success', 'New Product Saved Successfully !');
-    if ($request->salespage == 1) {
-        return response()->json(['status' => 200, 'message' => 'Product created successfully!', 'data' => $product]);
-    } else {
-        return back();
-    }
-    
-  }
-
 
   public function storeProduct(Request $request)
     {
-        Log::info('all request data: ', $request->all());
+        
 
         $validator = Validator::make($request->all(), [
             'product_name' => 'required|string|max:255',
@@ -198,9 +108,6 @@ class ProductController extends Controller
                 }
             }
         }
-
-        Log::info('all store data: ', $product->toArray());
-
 
         if ($request->salespage == 1) {
             return response()->json(['status' => 200, 'message' => 'Product created successfully!', 'data' => $product]);

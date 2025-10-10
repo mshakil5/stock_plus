@@ -41,7 +41,7 @@
 
                             <div class="form-group col-md-3">
                                 <label for="invoiceno">Invoice No *</label>
-                                <input type="number" class="form-control" id="invoiceno" name="invoiceno">
+                                <input type="text" class="form-control" id="invoiceno" name="invoiceno" value="{{ $invoiceno ?? '' }}" readonly>
                             </div>
 
                             <div class="form-group col-md-3">
@@ -532,6 +532,86 @@
         net_total_vat();
     }
 
+    function addRow(event) {
+        
+        var markup = `
+        <tr>
+            <td class="text-center">
+                <input type="text" id="pert_no" name="pert_no[]" 
+                    value="" class="form-control">
+            </td>
+            <td class="text-center">
+                <input type="text" id="productname" name="productname[]" 
+                    value="" class="form-control">
+                <input type="hidden" id="product_id" name="product_id[]" 
+                    value="" class="form-control ckproduct_id" readonly>
+            </td>
+            <td class="text-center">
+                <input type="number" id="quantity" name="quantity[]" 
+                    value="1" min="1" class="form-control quantity">
+            </td>
+            <td class="text-center">
+                <input type="number" id="unit_price" name="unit_price[]" 
+                    value="" class="form-control unit-price">
+            </td>
+            <td class="text-center">
+                <input type="text" id="subtotal_excl_vat" name="subtotal_excl_vat[]" 
+                    value="0" class="form-control subtotal-excl-vat" readonly>
+            </td>
+            <td class="text-center">
+                <input type="number" id="vat_percent" name="vat_percent[]" 
+                    value="0" class="form-control vat-percent" oninput="if(this.value<0)this.value=0;">
+            </td>
+            <td class="text-center">
+                <input type="text" id="vat_amount" name="vat_amount[]" 
+                    value="0" class="form-control vat-amount" readonly>
+            </td>
+            <td class="text-center">
+                <input type="text" id="total_amount" name="total_amount[]" 
+                    value="" class="form-control total" readonly>
+            </td>
+            <td class="text-center">
+                <div style="
+                    color: white; 
+                    user-select: none; 
+                    padding: 5px; 
+                    background: red; 
+                    width: 45px; 
+                    display: flex; 
+                    align-items: center; 
+                    margin-right: 5px; 
+                    justify-content: center; 
+                    border-radius: 4px;
+                    left: 4px;
+                    top: 81px;" 
+                    onclick="removeRow(event)">
+                    X
+                </div>
+
+                <div style="
+                    color: white; 
+                    user-select: none; font-size: 30px;
+                    background: green; 
+                    width: 45px; 
+                    display: flex; 
+                    align-items: center; 
+                    margin-right: 5px; 
+                    justify-content: center; 
+                    border-radius: 4px;
+                    left: 4px;
+                    top: 81px;" 
+                    onclick="addRow(event)">
+                    +
+                </div>
+
+            </td>
+        </tr>`;
+
+        $("table #inner ").append(markup);
+        net_total();
+        net_total_vat();
+    }
+
     function net_total() {
         var grand_total = 0;
         var total_with_vat = 0;
@@ -657,6 +737,23 @@
                                     onclick="removeRow(event)">
                                     X
                                 </div>
+
+                                <div style="
+                                    color: white; 
+                                    user-select: none; font-size: 30px;
+                                    background: green; 
+                                    width: 45px; 
+                                    display: flex; 
+                                    align-items: center; 
+                                    margin-right: 5px; 
+                                    justify-content: center; 
+                                    border-radius: 4px;
+                                    left: 4px;
+                                    top: 81px;" 
+                                    onclick="addRow(event)">
+                                    +
+                                </div>
+
                             </td>
                         </tr>`;
 
@@ -779,6 +876,9 @@
                 partnoshow: $("#partnoshow").val(),
                 return_amount: $("#return_amount").val(),
                 product_id: $("input[name='product_id[]']").map(function() {
+                    return $(this).val();
+                }).get(),
+                productname: $("input[name='productname[]']").map(function() {
                     return $(this).val();
                 }).get(),
                 quantity: $("input[name='quantity[]']").map(function() {

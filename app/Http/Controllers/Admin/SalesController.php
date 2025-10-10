@@ -25,7 +25,21 @@ class SalesController extends Controller
         $brands = Brand::where('branch_id', Auth::user()->branch_id)->get();
         $category = Category::where('branch_id', Auth::user()->branch_id)->get();
 
-        return view('admin.sales.create', compact('brands','category'));
+        // Generate unique invoiceno from Order table
+        $lastOrder = Order::where('branch_id', Auth::user()->branch_id)
+            ->orderBy('id', 'desc')
+            ->first();
+
+        if ($lastOrder && preg_match('/^INV(\d+)$/', $lastOrder->invoiceno, $matches)) {
+            $nextNumber = intval($matches[1]) + 1;
+        } else {
+            $nextNumber = 1;
+        }
+        $invoiceno = 'INV' . str_pad($nextNumber, 6, '0', STR_PAD_LEFT);
+
+        // dd($invoiceno);
+
+        return view('admin.sales.create', compact('brands','category','invoiceno'));
     }
 
     public function getAllQuoation()
@@ -170,10 +184,10 @@ class SalesController extends Controller
 
     public function salesStore(Request $request)
     {
-        $productIDs = $request->input('product_id');
+        $productIDs = $request->productname;
 
         if (empty($productIDs)) {
-            $message = "<div class='alert alert-warning'><a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a><b>Please fill Product field.</b></div>";
+            $message = "<div class='alert alert-warning'><a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a><b>Please fill Product name field.</b></div>";
             return response()->json(['status' => 303, 'message' => $message]);
         }
 
@@ -249,11 +263,12 @@ class SalesController extends Controller
             $transaction->tran_id = 'SL' . date('Ymd') . str_pad($transaction->id, 4, '0', STR_PAD_LEFT);
             $transaction->save();
 
-            foreach ($request->input('product_id') as $key => $value) {
+            foreach ($request->input('productname') as $key => $value) {
                 $orderDtl = new OrderDetail();
                 $orderDtl->invoiceno = $order->invoiceno;
                 $orderDtl->order_id = $order->id;
-                $orderDtl->product_id = $request->get('product_id')[$key];
+                $orderDtl->product_id = $request->get('product_id')[$key] ?? null;
+                $orderDtl->productname = $request->get('productname')[$key] ?? null;
                 $orderDtl->quantity = $request->get('quantity')[$key];
                 $orderDtl->sellingprice = $request->get('unit_price')[$key];
                 $orderDtl->vat_percent = $request->get('vat_percent')[$key];
@@ -263,53 +278,32 @@ class SalesController extends Controller
                 $orderDtl->created_by = Auth::user()->id;
                 $orderDtl->save();
 
-                $purchaseHistory = PurchaseHistory::where('product_id', $orderDtl->product_id)
-                    ->where('branch_id', Auth::user()->branch_id)
-                    ->where('available_stock', '>', 0)
-                    ->orderBy('id', 'asc')
-                    ->first();
-
-                if ($purchaseHistory) {
-                    $orderDtl->purchase_history_id = $purchaseHistory->id;
-                    $orderDtl->save();
-
-                    $purchaseHistory->sold += $orderDtl->quantity;
-                    $purchaseHistory->available_stock -= $orderDtl->quantity;
-                    $purchaseHistory->updated_by = Auth::user()->id;
-                    $purchaseHistory->save();
-                }
-
-                $stockid = Stock::where('product_id', '=', $request->get('product_id')[$key])
-                    ->where('branch_id', '=', Auth::user()->branch_id)
-                    ->first();
-
-                if ($request->delivery_note_id == "") {
-                    if (isset($stockid->id)) {
-                        $dstock = Stock::find($stockid->id);
-                        $dstock->quantity -= $request->get('quantity')[$key];
-                        $dstock->save();
-                    } else {
-                        $newstock = new Stock();
-                        $newstock->branch_id = Auth::user()->branch_id;
-                        $newstock->product_id = $request->get('product_id')[$key];
-                        $newstock->quantity = 0 - $request->get('quantity')[$key];
-                        $newstock->created_by = Auth::user()->id;
-                        $newstock->save();
-                    }
-                } else {
-                    $oldDNqty = OrderDetail::where('order_id', $request->delivery_note_id)
-                        ->where('product_id', $request->get('product_id')[$key])
+                if ($request->get('product_id')[$key]) {
+                    
+                    $purchaseHistory = PurchaseHistory::where('product_id', $orderDtl->product_id)
+                        ->where('branch_id', Auth::user()->branch_id)
+                        ->where('available_stock', '>', 0)
+                        ->orderBy('id', 'asc')
                         ->first();
 
-                    if (isset($oldDNqty)) {
-                        $amend_stock = $oldDNqty->quantity - $request->get('quantity')[$key];
-                        $dstock = Stock::find($stockid->id);
-                        $dstock->quantity += $amend_stock;
-                        $dstock->save();
-                    } else {
+                    if ($purchaseHistory) {
+                        $orderDtl->purchase_history_id = $purchaseHistory->id;
+                        $orderDtl->save();
+
+                        $purchaseHistory->sold += $orderDtl->quantity;
+                        $purchaseHistory->available_stock -= $orderDtl->quantity;
+                        $purchaseHistory->updated_by = Auth::user()->id;
+                        $purchaseHistory->save();
+                    }
+
+                    $stockid = Stock::where('product_id', '=', $request->get('product_id')[$key])
+                        ->where('branch_id', '=', Auth::user()->branch_id)
+                        ->first();
+
+                    if ($request->delivery_note_id == "") {
                         if (isset($stockid->id)) {
                             $dstock = Stock::find($stockid->id);
-                            $dstock ->quantity -= $request->get('quantity')[$key];
+                            $dstock->quantity -= $request->get('quantity')[$key];
                             $dstock->save();
                         } else {
                             $newstock = new Stock();
@@ -319,8 +313,35 @@ class SalesController extends Controller
                             $newstock->created_by = Auth::user()->id;
                             $newstock->save();
                         }
+                    } else {
+                        $oldDNqty = OrderDetail::where('order_id', $request->delivery_note_id)
+                            ->where('product_id', $request->get('product_id')[$key])
+                            ->first();
+
+                        if (isset($oldDNqty)) {
+                            $amend_stock = $oldDNqty->quantity - $request->get('quantity')[$key];
+                            $dstock = Stock::find($stockid->id);
+                            $dstock->quantity += $amend_stock;
+                            $dstock->save();
+                        } else {
+                            if (isset($stockid->id)) {
+                                $dstock = Stock::find($stockid->id);
+                                $dstock ->quantity -= $request->get('quantity')[$key];
+                                $dstock->save();
+                            } else {
+                                $newstock = new Stock();
+                                $newstock->branch_id = Auth::user()->branch_id;
+                                $newstock->product_id = $request->get('product_id')[$key];
+                                $newstock->quantity = 0 - $request->get('quantity')[$key];
+                                $newstock->created_by = Auth::user()->id;
+                                $newstock->save();
+                            }
+                        }
                     }
+                        
                 }
+                
+                
             }
 
             $message = "<div class='alert alert-success'><a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a><b>Thank you for this order.</b></div>";
