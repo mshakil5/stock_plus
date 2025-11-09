@@ -20,7 +20,8 @@
 
     .invoice-box {
       position: relative;
-      padding: 20px;
+      padding-left: 30px;
+      padding-right: 30px;
       margin: 0 auto;
       width: 950px;     /* tune if needed */
       background: #fff;
@@ -80,12 +81,6 @@
     }
 
 
-    .invoice-header {
-      padding: 10px; /* optional */
-      margin-left: -15px; /* adjust based on bootstrap container */
-      margin-right: -15px;
-      
-    }
 
     .invoice-header p {
       font-size: 18px;
@@ -97,12 +92,10 @@
     /* image center align */
     .invoice-header img{
       display: block;
-      margin-left: 14px;
-      margin-right: auto;
     }
 
     @media print {
-      @page { size: A4 portrait; margin: 6mm; }
+      @page { size: A4 portrait; margin: 0mm; }
       thead { display: table-header-group; } /* safe repeat (also we chunk pages) */
       .outer-border, .totals, .footer, .no-break { page-break-inside: avoid; }
       tr, img { page-break-inside: avoid; }
@@ -122,13 +115,14 @@
   @endphp
 
   <div class="page">
-    <div class="invoice-box">
+
+    
       {{-- Header --}}
       <div class="row mb-3">
         <div class="col-12 text-center  invoice-header">
-          <img src="data:image/png;base64,{{ base64_encode(file_get_contents(public_path('touch.png'))) }}" width="100%" height="120" />
+          <img src="data:image/png;base64,{{ base64_encode(file_get_contents(public_path('touch.png'))) }}" width="100%" height="140" />
 
-          <p class="mb-0">{{ $company->address1 }}</p>
+          <p class="mb-0 mt-2">{{ $company->address1 }}</p>
           <p class="mb-0">
             @if ($company->phone1)
               Tel: {{ $company->phone1 }}@if ($company->phone2),@endif
@@ -160,6 +154,10 @@
         </div>
       </div>
 
+
+
+
+    <div class="invoice-box">
       {{-- Customer --}}
       <div class="row mb-3">
         <div class="col-12"><strong>To:</strong> {{ $customerdtl->name ?? '' }}</div>
