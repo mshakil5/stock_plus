@@ -29,7 +29,7 @@
     }
 
     .invoice-title { font-weight: bold; font-size: 20px; text-align: center; }
-    .invoice-subtitle { font-weight: bold; font-size: 16px; text-align: center; padding-right: 200px; }
+    .invoice-subtitle { font-weight: bold; font-size: 16px; text-align: center; padding-right: 10px; }
 
     .custom-table {
       width: 100%;
