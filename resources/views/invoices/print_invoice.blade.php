@@ -150,7 +150,7 @@
           @else
             <h3 class="invoice-title">TAX INVOICE</h3>
           @endif
-          <h3 class="invoice-subtitle">TRN:</h3>
+          <h3 class="invoice-subtitle">TRN: 105164621200003</h3>
         </div>
       </div>
 
