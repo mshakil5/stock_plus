@@ -297,6 +297,18 @@
                             </div>
                         </div>
 
+                        
+                        <div class="form-group col-sm-6">
+                            <div class="row">
+                                <div class="col-sm-4 text-left">
+                                    <label for="trn_number">TRN Number:</label>
+                                </div>
+                                <div class="col-sm-8">
+                                    <input type="text" name="trn_number" class="form-control" id="trn_number" placeholder="" style="width: 100%;">
+                                </div>
+                            </div>
+                        </div>
+
                         <div class="form-group col-sm-6">
                             <div class="row">
                                 <div class="col-sm-4 text-left">

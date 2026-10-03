@@ -163,7 +163,7 @@
         <div class="col-12"><strong>To:</strong> {{ $customerdtl->name ?? '' }}</div>
         <div class="col-12"><strong>Address:</strong> {{ $customerdtl->address ?? '' }}</div>
         <div class="col-12"><strong>Tel:</strong> {{ $customerdtl->phone ?? '' }}</div>
-        <div class="col-12"><strong>TRN:</strong> 105164621200003 </div>
+        <div class="col-12"><strong>TRN:</strong> {{ $customerdtl->trn_number ?? '' }}</div>
       </div>
 
       {{-- Invoice meta --}}

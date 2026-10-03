@@ -37,7 +37,6 @@ class SalesController extends Controller
         }
         $invoiceno = 'INV' . str_pad($nextNumber, 6, '0', STR_PAD_LEFT);
 
-        // dd($invoiceno);
 
         return view('admin.sales.create', compact('brands','category','invoiceno'));
     }
@@ -181,6 +180,7 @@ class SalesController extends Controller
         $customer->address = $request->address;
         $customer->vehicleno = $request->vehicleno;
         $customer->vat_number = $request->vat_number;
+        $customer->trn_number = $request->trn_number;
         $customer->member_id = $request->member_id;
         $customer->type = $request->type;
         $customer->save();
