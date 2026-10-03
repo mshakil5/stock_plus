@@ -131,9 +131,7 @@
               {{ $company->phone2 }}
             @endif
           </p>
-          <p class="mb-0"> 
-            TRN: 105164621200003
-           </p>
+          
           @if ($company->website)
             <p class="mb-0">Website: {{ $company->website }}</p>
           @endif
@@ -162,6 +160,7 @@
         <div class="col-12"><strong>To:</strong> {{ $customerdtl->name ?? '' }}</div>
         <div class="col-12"><strong>Address:</strong> {{ $customerdtl->address ?? '' }}</div>
         <div class="col-12"><strong>Tel:</strong> {{ $customerdtl->phone ?? '' }}</div>
+        <div class="col-12"><strong>TRN:</strong> 105164621200003 </div>
       </div>
 
       {{-- Invoice meta --}}
