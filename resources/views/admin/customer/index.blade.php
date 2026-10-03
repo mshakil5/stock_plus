@@ -52,6 +52,7 @@ echo Session::put('info', '');
                         <th>Address</th>
                         <th>Vehicle no</th>
                         <th>Vat Number</th>
+                        <th>Trn Number</th>
                         <th>Limitation</th>
                         <th>Membership ID</th>
                         <th>Status</th>
@@ -126,6 +127,13 @@ echo Session::put('info', '');
                     </div>
 
                     <div class="form-group">
+                        <label for="trn_number" class="col-sm-3 control-label">TRN Number</label>
+                        <div class="col-sm-9">
+                            <input type="text" name="trn_number" class="form-control" id="trn_number" placeholder="">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
                         <label for="limitation" class="col-sm-3 control-label">Credit Limitation</label>
                         <div class="col-sm-9">
                             <input type="text" name="limitation" class="form-control" id="limitation" >
@@ -192,17 +200,21 @@ echo Session::put('info', '');
 <script>
     
     var customerurl = "{{URL::to('/admin/customers')}}";
+
     var customerTBL = $('#customerTBL').DataTable({
         processing: true,
         serverSide: true,
         ajax: customerurl,
         deferRender: true,
-        // searching:false,
+        pageLength: 100, 
+
         columns: [
             {data: 'id', name: 'id'},
             {data: 'name', name: 'name'},
             {
-                data: 'type', name: 'type', render: function (data, type, row, meta) {
+                data: 'type',
+                name: 'type',
+                render: function (data, type, row, meta) {
                     return (row.type) ? "Distributor" : "Customer";
                 }
             },
@@ -211,19 +223,32 @@ echo Session::put('info', '');
             {data: 'address', name: 'address'},
             {data: 'vehicleno', name: 'vehicleno'},
             {data: 'vat_number', name: 'vat_number'},
+            {data: 'trn_number', name: 'trn_number'},
             {data: 'limitation', name: 'limitation'},
             {data: 'member_id', name: 'member_id'},
             {
-                data: 'status', name: 'status', render: function (data, type, row, meta) {
+                data: 'status',
+                name: 'status',
+                render: function (data, type, row, meta) {
                     let status = null;
+
                     if (row.status == 1) {
-                        status = `<label style="margin-bottom:0px" class="switch"><button class="status-btn" value='${row.id}'>
-                          <input id="switchMenu" type="checkbox" checked><span class="slider round"></span></button></label>`;
+                        status = `<label style="margin-bottom:0px" class="switch">
+                            <button class="status-btn" value="${row.id}">
+                                <input type="checkbox" checked>
+                                <span class="slider round"></span>
+                            </button>
+                        </label>`;
                     } else {
-                        status = `<label style="margin-bottom:0px" class="switch"><button class="status-btn" value='${row.id}'>
-                          <input id="switchMenu" type="checkbox"><span class="slider round"></span></button></label>`;
+                        status = `<label style="margin-bottom:0px" class="switch">
+                            <button class="status-btn" value="${row.id}">
+                                <input type="checkbox">
+                                <span class="slider round"></span>
+                            </button>
+                        </label>`;
                     }
-                    return ` ${status} `;
+
+                    return status;
                 }
             },
             {
@@ -232,13 +257,17 @@ echo Session::put('info', '');
                 orderable: false,
                 searchable: false,
                 render: function (data, type, row, meta) {
-                    let button = `<button type="button" class="btn btn-warning btn-xs edit-btn" data-toggle="modal" data-target="#customerModal" value="${row.id}" title="Edit" data-purpose='1'><i class="fa fa-edit" aria-hidden="true"></i> Edit</button>`;
-                    if (row.amount < 0) {
-                        // button += `<button type="button" class="btn btn-success btn-xs omit-btn" value="${row.id}" title="Omitting Due Amount"><i class="fa fa-heart" aria-hidden="true"></i> Ommit Due</button>`;
-                    }
-                    return button;
+                    return `<button type="button"
+                        class="btn btn-warning btn-xs edit-btn"
+                        data-toggle="modal"
+                        data-target="#customerModal"
+                        value="${row.id}"
+                        title="Edit"
+                        data-purpose="1">
+                        <i class="fa fa-edit" aria-hidden="true"></i> Edit
+                    </button>`;
                 }
-            },
+            }
         ]
     });
 
@@ -334,6 +363,7 @@ echo Session::put('info', '');
                     modal.find('#vehicleno').val(response.vehicleno);
                     modal.find('#limitation').val(response.limitation);
                     modal.find('#vat_number').val(response.vat_number);
+                    modal.find('#trn_number').val(response.trn_number);
                     
                     modal.find("[name=type]").val(response.type);
 

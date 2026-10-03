@@ -51,6 +51,7 @@ class CustomerController extends Controller
         $customer->vehicleno = $request->vehicleno;
         $customer->limitation = $request->limitation;
         $customer->vat_number = $request->vat_number;
+        $customer->trn_number = $request->trn_number;
         $customer->member_id = $request->member_id;
         $customer->type = $request->type;
         $customer->save();
@@ -70,7 +71,7 @@ class CustomerController extends Controller
         if(empty($customerDtl)){
             return response()->json(['status'=> 303,'message'=>"No data found"]);
         }else{
-            return response()->json(['status'=> 300,'customername'=>$customerDtl->name,'member_id'=>$customerDtl->member_id,'id'=>$customerDtl->id,'address'=>$customerDtl->address,'vehicleno'=>$customerDtl->vehicleno,'email'=>$customerDtl->email,'phone'=>$customerDtl->phone,'limitation'=>$customerDtl->limitation,'type'=>$customerDtl->type,'vat_number'=>$customerDtl->vat_number]);
+            return response()->json(['status'=> 300,'customername'=>$customerDtl->name,'member_id'=>$customerDtl->member_id,'id'=>$customerDtl->id,'address'=>$customerDtl->address,'vehicleno'=>$customerDtl->vehicleno,'email'=>$customerDtl->email,'phone'=>$customerDtl->phone,'limitation'=>$customerDtl->limitation,'type'=>$customerDtl->type,'vat_number'=>$customerDtl->vat_number,'trn_number'=>$customerDtl->trn_number]);
         }
     }
 
@@ -87,6 +88,7 @@ class CustomerController extends Controller
         $customer->vehicleno = $request->vehicleno;
         $customer->limitation = $request->limitation;
         $customer->vat_number = $request->vat_number;
+        $customer->trn_number = $request->trn_number;
         $customer->member_id = $request->member_id;
         $customer->type = $request->type;
         $customer->save();
