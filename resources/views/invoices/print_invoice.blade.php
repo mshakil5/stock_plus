@@ -83,7 +83,7 @@
 
 
     .invoice-header p {
-      font-size: 18px;
+      font-size: 15px;
       color: black;
       font-weight: bold;
 
@@ -131,7 +131,9 @@
               {{ $company->phone2 }}
             @endif
           </p>
-
+          <p class="mb-0"> 
+            TRN: 105164621200003
+           </p>
           @if ($company->website)
             <p class="mb-0">Website: {{ $company->website }}</p>
           @endif
@@ -141,8 +143,6 @@
         </div>
 
         <div class="col-12 text-center">
-
-          <br>
           @if ($order->quotation == 1)
             <h3 class="invoice-title">QUOTATION</h3>
           @elseif ($order->delivery_note == 1)
@@ -150,7 +150,6 @@
           @else
             <h3 class="invoice-title">TAX INVOICE</h3>
           @endif
-          <h3 class="invoice-subtitle">TRN: 105164621200003</h3>
         </div>
       </div>
 
